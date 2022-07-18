@@ -1,12 +1,9 @@
 # Backend
 backend/node_modules
 backend/.serverless
-backend/package-lock.json
-backend/Pipfile.lock
 
 # Frontend
 frontend/node_modules
-frontend/package-lock.json
 
 # Misc
 .vscode
