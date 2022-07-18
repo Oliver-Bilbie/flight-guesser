@@ -1,0 +1,60 @@
+service: flight-guesser
+plugins:
+  - serverless-python-requirements
+custom:
+  appName: flight-guesser
+  serviceName: flight-guesser-backend
+  pythonRequirements:
+    slim: true
+    useDownloadCache: false
+    useStaticCache: false
+    layer:
+      name: requirements-layer
+      description: "Python requirements lambda layer"
+      compatibleRuntimes:
+        - python3.7
+provider:
+  name: aws
+  region: eu-west-1
+  runtime: python3.7
+  httpApi:
+    cors:
+      allowedOrigins:
+        - '*'
+      allowedMethods:
+        - '*'
+functions:
+  get_airports:
+    handler: src/service.get_airports
+    package:
+      individually: true
+      include:
+        - src/*
+      exclude:
+        - ./**
+    memorySize: 128
+    events:
+      - httpApi:
+          path: /
+          method: get
+          cors: true
+    timeout: 10
+    layers:
+      - { Ref: PythonRequirementsLambdaLayer }
+  get_closest_flight:
+    handler: src/service.get_closest_flight
+    package:
+      individually: true
+      include:
+        - src/*
+      exclude:
+        - ./**
+    memorySize: 128
+    events:
+      - httpApi:
+          path: /
+          method: post
+          cors: true
+    timeout: 30
+    layers:
+      - { Ref: PythonRequirementsLambdaLayer }

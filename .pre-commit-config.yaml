@@ -1,0 +1,10 @@
+fail_fast: true
+default_stages: [commit]
+repos:
+- repo: local
+  hooks:
+    - id: format-src
+      name: Format
+      entry: make format-src
+      language: system
+      verbose: false
