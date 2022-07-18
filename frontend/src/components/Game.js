@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, Button, Layer, Text } from "grommet";
+import { Box, Button, Layer, Spinner, Text } from "grommet";
 
 const Game = () => {
   const [loading, setLoading] = useState(false);
@@ -36,7 +36,13 @@ const Game = () => {
         if (request.response.status === 200) {
           if (request.response.response.destination) {
             setResponse(
-              `You are looking at a ${request.response.response.aircraft} aircraft on its way from ${request.response.response.origin} to ${request.response.response.destination}`
+              `You are looking at ${["A", "E", "I", "O", "U"].includes(
+                request.response.response.aircraft.substring(0, 1).toUpperCase()
+              ) ? "an" : "a"} ${
+                request.response.response.aircraft
+              } aircraft on its way from ${
+                request.response.response.origin
+              } to ${request.response.response.destination}`
             );
             setShowResponse(true);
           } else {
@@ -62,13 +68,13 @@ const Game = () => {
 
   return (
     <Box direction="row" align="center">
-      <Button label="Get details" onClick={handleSubmit} />
-      {!loading && showResponse && (
+      {loading ? (<Spinner />) : (<Button label="Get details" onClick={handleSubmit} />)}
+      {showResponse && (
         <Layer
           onEsc={() => setShowResponse(false)}
           onClickOutside={() => setShowResponse(false)}
         >
-          <Box width="medium" height="250px" pad="small">
+          <Box width="medium" pad="small" gap="medium" align="center" justify="center">
             <Text>{response}</Text>
             <Box width="xsmall">
               <Button label="Close" onClick={() => setShowResponse(false)} />
