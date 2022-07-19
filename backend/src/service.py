@@ -79,6 +79,7 @@ def handle_turn(event, context):
             response = json.dumps(
                 {
                     "response": {
+                        "id": flight.id,
                         "origin": flight.origin_airport_name,
                         "destination": flight.destination_airport_name,
                         "aircraft": flight.aircraft_code,

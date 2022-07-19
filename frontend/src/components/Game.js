@@ -9,6 +9,7 @@ const Game = () => {
   const [showResponse, setShowResponse] = useState(false);
   const [airport, setAirport] = useState("");
   const [score, setScore] = useState(0);
+  const [ids, setIds] = useState([]);
 
   const handleSubmit = () => {
     if (navigator.geolocation) {
@@ -17,6 +18,33 @@ const Game = () => {
       setResponse("Geolocation is not supported by this browser.");
       setShowResponse(true);
     }
+  };
+
+  const handleResult = (response) => {
+    // search for ids which have already been guessed for to prevent duplication
+    const duplicate = ids.find((id) => id === response.id);
+    if (!duplicate) {
+      // only award points for first guesses
+      setScore(score + parseInt(response.score));
+      setIds(ids.concat(response.id));
+    }
+
+    setResponse(
+      `You are looking at ${
+        ["A", "E", "I", "O", "U"].includes(
+          response.aircraft.substring(0, 1).toUpperCase()
+        )
+          ? "an"
+          : "a"
+      } ${response.aircraft} aircraft on its way from ${response.origin} to ${
+        response.destination
+      }.
+      You have ${
+        duplicate
+          ? `already made a guess for this flight`
+          : `scored ${response.score} points`
+      }.`
+    );
   };
 
   const handleApi = (location) => {
@@ -38,20 +66,7 @@ const Game = () => {
     request.onload = function () {
       if (request.status === 200) {
         if (request.response.status === 200) {
-          setResponse(
-            `You are looking at ${
-              ["A", "E", "I", "O", "U"].includes(
-                request.response.response.aircraft.substring(0, 1).toUpperCase()
-              )
-                ? "an"
-                : "a"
-            } ${request.response.response.aircraft} aircraft on its way from ${
-              request.response.response.origin
-            } to ${request.response.response.destination}. You have scored ${
-              request.response.response.score
-            } points.`
-          );
-          setScore(score + parseInt(request.response.response.score));
+          handleResult(request.response.response);
         } else if (request.response.status === 400) {
           setResponse("No nearby flights were found");
         } else {
@@ -73,16 +88,19 @@ const Game = () => {
   return (
     <Box direction="row" align="center">
       {loading ? (
-        <Spinner />
+        <Spinner size="large" />
       ) : (
         <Box gap="medium">
           <Heading textAlign="center">Score: {score}</Heading>
+          <Text>Destination:</Text>
           <AirportSelect handleSelection={setAirport} />
+          <Box width="190px" alignSelf="center" pad={{vertical: "medium"}}>
           <Button
             label="Make Guess"
             icon={<Location />}
             onClick={handleSubmit}
           />
+          </Box>
         </Box>
       )}
       {showResponse && (
