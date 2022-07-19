@@ -22,7 +22,7 @@ const Game = () => {
   const handleApi = (location) => {
     setLoading(true);
     let request = new XMLHttpRequest();
-    const path = "https://nhqos29571.execute-api.eu-west-1.amazonaws.com";
+    const path = process.env.REACT_APP_ENDPOINT;
     const body = `{"x": ${location.coords.longitude}, "y": ${location.coords.latitude}, "airport": "${airport}"}`;
 
     request.onerror = function () {
@@ -76,7 +76,7 @@ const Game = () => {
         <Spinner />
       ) : (
         <Box gap="medium">
-          <Heading>Score: {score}</Heading>
+          <Heading textAlign="center">Score: {score}</Heading>
           <AirportSelect handleSelection={setAirport} />
           <Button
             label="Make Guess"
