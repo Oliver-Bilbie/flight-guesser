@@ -37,12 +37,11 @@ functions:
       - httpApi:
           path: /
           method: get
-          cors: true
     timeout: 10
     layers:
       - { Ref: PythonRequirementsLambdaLayer }
-  get_closest_flight:
-    handler: src/service.get_closest_flight
+  get_score:
+    handler: src/service.get_score
     package:
       individually: true
       include:
@@ -54,7 +53,6 @@ functions:
       - httpApi:
           path: /
           method: post
-          cors: true
     timeout: 30
     layers:
       - { Ref: PythonRequirementsLambdaLayer }

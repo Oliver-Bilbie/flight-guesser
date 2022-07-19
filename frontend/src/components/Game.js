@@ -1,10 +1,13 @@
 import React, { useState } from "react";
 import { Box, Button, Layer, Spinner, Text } from "grommet";
+import { Location } from "grommet-icons";
+import AirportSelect from "./AirportSelect";
 
 const Game = () => {
   const [loading, setLoading] = useState(false);
   const [response, setResponse] = useState("");
   const [showResponse, setShowResponse] = useState(false);
+  const [airport, setAirport] = useState("");
 
   const handleSubmit = () => {
     if (navigator.geolocation) {
@@ -19,7 +22,7 @@ const Game = () => {
     setLoading(true);
     let request = new XMLHttpRequest();
     const path = "https://nhqos29571.execute-api.eu-west-1.amazonaws.com";
-    const body = `{"x": ${location.coords.longitude}, "y": ${location.coords.latitude}}`;
+    const body = `{"x": ${location.coords.longitude}, "y": ${location.coords.latitude}, "airport": "${airport}"}`;
 
     request.onerror = function () {
       setResponse("An error has occurred");
@@ -36,13 +39,21 @@ const Game = () => {
         if (request.response.status === 200) {
           if (request.response.response.destination) {
             setResponse(
-              `You are looking at ${["A", "E", "I", "O", "U"].includes(
-                request.response.response.aircraft.substring(0, 1).toUpperCase()
-              ) ? "an" : "a"} ${
+              `You are looking at ${
+                ["A", "E", "I", "O", "U"].includes(
+                  request.response.response.aircraft
+                    .substring(0, 1)
+                    .toUpperCase()
+                )
+                  ? "an"
+                  : "a"
+              } ${
                 request.response.response.aircraft
               } aircraft on its way from ${
                 request.response.response.origin
-              } to ${request.response.response.destination}`
+              } to ${request.response.response.destination}. You have scored ${
+                request.response.response.score
+              } points.`
             );
             setShowResponse(true);
           } else {
@@ -68,13 +79,30 @@ const Game = () => {
 
   return (
     <Box direction="row" align="center">
-      {loading ? (<Spinner />) : (<Button label="Get details" onClick={handleSubmit} />)}
+      {loading ? (
+        <Spinner />
+      ) : (
+        <Box gap="medium">
+          <AirportSelect handleSelection={setAirport} />
+          <Button
+            label="Make Guess"
+            icon={<Location />}
+            onClick={handleSubmit}
+          />
+        </Box>
+      )}
       {showResponse && (
         <Layer
           onEsc={() => setShowResponse(false)}
           onClickOutside={() => setShowResponse(false)}
         >
-          <Box width="medium" pad="small" gap="medium" align="center" justify="center">
+          <Box
+            width="medium"
+            pad="small"
+            gap="medium"
+            align="center"
+            justify="center"
+          >
             <Text>{response}</Text>
             <Box width="xsmall">
               <Button label="Close" onClick={() => setShowResponse(false)} />

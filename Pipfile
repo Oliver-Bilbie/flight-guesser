@@ -4,12 +4,8 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-flightradarapi = "*"
-numpy = "*"
-pandas = "*"
 
 [dev-packages]
-black = "*"
 
 [requires]
 python_version = "3.7"
