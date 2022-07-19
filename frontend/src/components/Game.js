@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, Button, Layer, Spinner, Text } from "grommet";
+import { Box, Button, Heading, Layer, Spinner, Text } from "grommet";
 import { Location } from "grommet-icons";
 import AirportSelect from "./AirportSelect";
 
@@ -8,6 +8,7 @@ const Game = () => {
   const [response, setResponse] = useState("");
   const [showResponse, setShowResponse] = useState(false);
   const [airport, setAirport] = useState("");
+  const [score, setScore] = useState(0);
 
   const handleSubmit = () => {
     if (navigator.geolocation) {
@@ -37,41 +38,33 @@ const Game = () => {
     request.onload = function () {
       if (request.status === 200) {
         if (request.response.status === 200) {
-          if (request.response.response.destination) {
-            setResponse(
-              `You are looking at ${
-                ["A", "E", "I", "O", "U"].includes(
-                  request.response.response.aircraft
-                    .substring(0, 1)
-                    .toUpperCase()
-                )
-                  ? "an"
-                  : "a"
-              } ${
-                request.response.response.aircraft
-              } aircraft on its way from ${
-                request.response.response.origin
-              } to ${request.response.response.destination}. You have scored ${
-                request.response.response.score
-              } points.`
-            );
-            setShowResponse(true);
-          } else {
-            setResponse("No flights were found nearby");
-            setShowResponse(true);
-          }
+          setResponse(
+            `You are looking at ${
+              ["A", "E", "I", "O", "U"].includes(
+                request.response.response.aircraft.substring(0, 1).toUpperCase()
+              )
+                ? "an"
+                : "a"
+            } ${request.response.response.aircraft} aircraft on its way from ${
+              request.response.response.origin
+            } to ${request.response.response.destination}. You have scored ${
+              request.response.response.score
+            } points.`
+          );
+          setScore(score + parseInt(request.response.response.score));
+        } else if (request.response.status === 400) {
+          setResponse("No nearby flights were found");
         } else {
-          setResponse("Flight data is unavailable at this time");
-          setShowResponse(true);
+          setResponse("Data for the nearby flight is not available");
         }
       } else {
-        setResponse("Flight data is unavailable at this time");
-        setShowResponse(true);
+        setResponse("Unable to fetch data");
       }
       setLoading(false);
+      setShowResponse(true);
     };
 
-    request.timeout = 10000;
+    request.timeout = 30000;
     request.responseType = "json";
     request.open("POST", path);
     request.send(body);
@@ -83,6 +76,7 @@ const Game = () => {
         <Spinner />
       ) : (
         <Box gap="medium">
+          <Heading>Score: {score}</Heading>
           <AirportSelect handleSelection={setAirport} />
           <Button
             label="Make Guess"

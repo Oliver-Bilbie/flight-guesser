@@ -38,7 +38,30 @@ def get_closest_flight(x, y):
     return flight
 
 
-def get_score(event, context):
+def get_score(flight, airport):
+    if flight.destination_airport_name == airport:
+        # in the case of a perfect match, gain 100 points
+        score = 100
+    else:
+        # else find the distance between the guess and the correct airport
+        # and convert this into a score
+        airport_data = pd.DataFrame(fr_api.get_airports())
+        airport_data = airport_data[
+            (airport_data["name"] == airport)
+            | (airport_data["name"] == flight.destination_airport_name)
+        ]
+        distance = np.sqrt(
+            pow(airport_data["lat"].iloc[0] - airport_data["lat"].iloc[1], 2)
+            + pow(airport_data["lon"].iloc[0] - airport_data["lon"].iloc[1], 2)
+        )
+        score = np.floor(100 - 4 * pow(distance, 3))
+        if score < 0:
+            score = 0
+
+    return score
+
+
+def handle_turn(event, context):
     try:
         body = event.get("body")
         body = json.loads(body)
@@ -49,23 +72,9 @@ def get_score(event, context):
         flight = get_closest_flight(x, y)
 
         if flight == None:
-            response = json.dumps({"response": "No flights were found", "status": 200})
+            response = json.dumps({"response": "No flights were found", "status": 400})
         else:
-            if flight.destination_airport_name == airport:
-                score = 100
-            else:
-                airport_data = pd.DataFrame(fr_api.get_airports())
-                airport_data = airport_data[
-                    (airport_data["name"] == airport)
-                    | (airport_data["name"] == flight.destination_airport_name)
-                ]
-                distance = np.sqrt(
-                    pow(airport_data["lat"].iloc[0] - airport_data["lat"].iloc[1], 2)
-                    + pow(airport_data["lon"].iloc[0] - airport_data["lon"].iloc[1], 2)
-                )
-                score = np.floor(100 - 12 * pow(distance, 2))
-                if score < 0:
-                    score = 0
+            score = get_score(flight, airport)
 
             response = json.dumps(
                 {

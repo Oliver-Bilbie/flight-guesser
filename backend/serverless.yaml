@@ -40,8 +40,8 @@ functions:
     timeout: 10
     layers:
       - { Ref: PythonRequirementsLambdaLayer }
-  get_score:
-    handler: src/service.get_score
+  handle_turn:
+    handler: src/service.handle_turn
     package:
       individually: true
       include:
