@@ -6,6 +6,7 @@ const AirportSelect = ({ setAirport }) => {
   const [options, setOptions] = useState([]);
   const [filteredOptions, setFilteredOptions] = useState([]);
   const [search, setSearch] = useState(false);
+  const [displayValue, setDisplayValue] = useState("");
 
   useEffect(() => {
     let request = new XMLHttpRequest();
@@ -48,6 +49,7 @@ const AirportSelect = ({ setAirport }) => {
 
   const handleChange = (value) => {
     setAirport(value);
+    setDisplayValue(value);
     setFilteredOptions([]);
     setSearch(false);
   };
@@ -55,7 +57,8 @@ const AirportSelect = ({ setAirport }) => {
   return (
     <Box direction="row" align="center">
       <Select
-        options={search ? filteredOptions : []}
+        value={displayValue}
+        options={search ? filteredOptions : displayValue ? [displayValue] : []}
         onChange={(event) => handleChange(event.value)}
         onSearch={(text) => handleSearch(text)}
         placeholder="Search..."
