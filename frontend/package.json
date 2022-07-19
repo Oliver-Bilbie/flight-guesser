@@ -7,8 +7,10 @@
     "@testing-library/react": "^11.2.7",
     "@testing-library/user-event": "^12.8.3",
     "dotenv": "^16.0.0",
+    "eslint": "^7.32.0",
     "grommet": "^2.18.0",
     "grommet-icons": "^4.6.2",
+    "prettier": "^2.7.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-scripts": "4.0.3",
@@ -20,7 +22,9 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "env": "node -r dotenv/config src/index.js"
+    "env": "node -r dotenv/config src/index.js",
+    "pretty": "prettier --write \"src/**/*.js\"",
+    "lint": "eslint ./"
   },
   "eslintConfig": {
     "extends": [

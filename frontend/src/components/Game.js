@@ -50,6 +50,7 @@ const Game = () => {
   const handleApi = (location) => {
     setLoading(true);
     let request = new XMLHttpRequest();
+    // eslint-disable-next-line no-undef
     const path = process.env.REACT_APP_ENDPOINT;
     const body = `{"x": ${location.coords.longitude}, "y": ${location.coords.latitude}, "airport": "${airport}"}`;
 

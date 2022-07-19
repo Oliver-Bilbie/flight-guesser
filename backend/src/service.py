@@ -54,9 +54,7 @@ def get_score(flight, airport):
             pow(airport_data["lat"].iloc[0] - airport_data["lat"].iloc[1], 2)
             + pow(airport_data["lon"].iloc[0] - airport_data["lon"].iloc[1], 2)
         )
-        score = np.floor(100 - 4 * pow(distance, 3))
-        if score < 0:
-            score = 0
+        score = max(np.floor(100 - 4 * pow(distance, 3)), 0)
 
     return score
 
@@ -71,7 +69,7 @@ def handle_turn(event, context):
 
         flight = get_closest_flight(x, y)
 
-        if flight == None:
+        if flight is None:
             response = json.dumps({"response": "No flights were found", "status": 400})
         else:
             score = get_score(flight, airport)

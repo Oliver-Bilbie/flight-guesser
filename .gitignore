@@ -1,6 +1,7 @@
 # Backend
 backend/node_modules
 backend/.serverless
+backend/.mypy_cache
 
 # Frontend
 frontend/node_modules

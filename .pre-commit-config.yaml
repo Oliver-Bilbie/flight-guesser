@@ -8,3 +8,18 @@ repos:
       entry: make format-src
       language: system
       verbose: false
+    - id: lint
+      name: Lint
+      entry: make lint
+      language: system
+      verbose: false
+    - id: bandit
+      name: Bandit
+      entry: make bandit
+      language: system
+      verbose: false
+    - id: type-check
+      name: Type-Check
+      entry: make type-check
+      language: system
+      verbose: false

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Box, Select } from "grommet";
 
+// eslint-disable-next-line react/prop-types
 const AirportSelect = ({ setAirport }) => {
   const [options, setOptions] = useState([]);
   const [filteredOptions, setFilteredOptions] = useState([]);
@@ -35,8 +36,8 @@ const AirportSelect = ({ setAirport }) => {
   }, []);
 
   const handleSearch = (text) => {
-    if (text === "") {
-      setFilteredOptions([]);
+    setFilteredOptions([]);
+    if (text.length < 3) {
       setSearch(false);
     } else {
       const exp = new RegExp(text, "i");
@@ -54,9 +55,10 @@ const AirportSelect = ({ setAirport }) => {
   return (
     <Box direction="row" align="center">
       <Select
-        options={search ? filteredOptions : options}
+        options={search ? filteredOptions : []}
         onChange={(event) => handleChange(event.value)}
         onSearch={(text) => handleSearch(text)}
+        placeholder="Search..."
       />
     </Box>
   );
