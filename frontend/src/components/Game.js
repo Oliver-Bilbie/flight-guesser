@@ -93,13 +93,13 @@ const Game = () => {
         <Box gap="medium">
           <Heading textAlign="center">Score: {score}</Heading>
           <Text>Destination:</Text>
-          <AirportSelect handleSelection={setAirport} />
-          <Box width="190px" alignSelf="center" pad={{vertical: "medium"}}>
-          <Button
-            label="Make Guess"
-            icon={<Location />}
-            onClick={handleSubmit}
-          />
+          <AirportSelect setAirport={setAirport} />
+          <Box width="190px" alignSelf="center" pad={{ vertical: "medium" }}>
+            <Button
+              label="Make Guess"
+              icon={<Location />}
+              onClick={handleSubmit}
+            />
           </Box>
         </Box>
       )}

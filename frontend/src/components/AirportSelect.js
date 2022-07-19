@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Box, Select } from "grommet";
 
-const AirportSelect = ({handleSelection}) => {
+const AirportSelect = ({ setAirport }) => {
   const [options, setOptions] = useState([]);
   const [filteredOptions, setFilteredOptions] = useState([]);
+  const [search, setSearch] = useState(false);
 
   useEffect(() => {
     let request = new XMLHttpRequest();
@@ -19,7 +20,6 @@ const AirportSelect = ({handleSelection}) => {
       if (request.status === 200) {
         if (request.response.status === 200) {
           setOptions(request.response.response);
-          setFilteredOptions(request.response.response);
         } else {
           setOptions(["Failed to load"]);
         }
@@ -35,15 +35,27 @@ const AirportSelect = ({handleSelection}) => {
   }, []);
 
   const handleSearch = (text) => {
-    const exp = new RegExp(text, "i");
-    setFilteredOptions(options.filter((o) => exp.test(o)));
+    if (text === "") {
+      setFilteredOptions([]);
+      setSearch(false);
+    } else {
+      const exp = new RegExp(text, "i");
+      setFilteredOptions(options.filter((o) => exp.test(o)));
+      setSearch(true);
+    }
+  };
+
+  const handleChange = (value) => {
+    setAirport(value);
+    setFilteredOptions([]);
+    setSearch(false);
   };
 
   return (
     <Box direction="row" align="center">
       <Select
-        options={filteredOptions}
-        onChange={(event) => handleSelection(event.value)}
+        options={search ? filteredOptions : options}
+        onChange={(event) => handleChange(event.value)}
         onSearch={(text) => handleSearch(text)}
       />
     </Box>
