@@ -13,6 +13,9 @@ black = "*"
 pylint = "*"
 bandit = "*"
 mypy = "*"
+coverage = "*"
+pytest = "*"
+pytest-mock = "*"
 
 [requires]
 python_version = "3.7"

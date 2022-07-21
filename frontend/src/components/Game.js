@@ -52,17 +52,13 @@ const Game = () => {
     let request = new XMLHttpRequest();
     // eslint-disable-next-line no-undef
     const path = process.env.REACT_APP_ENDPOINT;
-    const body = `{"x": ${location.coords.longitude}, "y": ${location.coords.latitude}, "airport": "${airport}"}`;
+    const body = `{"longitude": ${location.coords.longitude}, "latitude": ${location.coords.latitude}, "airport": "${airport}"}`;
 
     request.onerror = function () {
       setResponse("An error has occurred");
-      setLoading(false);
-      setShowResponse(true);
     };
     request.ontimeout = function () {
       setResponse("The request has timed out");
-      setLoading(false);
-      setShowResponse(true);
     };
     request.onload = function () {
       if (request.status === 200) {
@@ -76,14 +72,16 @@ const Game = () => {
       } else {
         setResponse("Unable to fetch data");
       }
-      setLoading(false);
-      setShowResponse(true);
     };
 
     request.timeout = 30000;
     request.responseType = "json";
     request.open("POST", path);
     request.send(body);
+
+    setLoading(false);
+    setShowResponse(true);
+    setAirport("");
   };
 
   return (

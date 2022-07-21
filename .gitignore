@@ -2,6 +2,8 @@
 backend/node_modules
 backend/.serverless
 backend/.mypy_cache
+backend/.pytest_cache
+backend/target
 
 # Frontend
 frontend/node_modules

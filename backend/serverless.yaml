@@ -25,11 +25,11 @@ provider:
         - '*'
 functions:
   get_airports:
-    handler: src/service.get_airports
+    handler: src/service/api.get_airports
     package:
       individually: true
       include:
-        - src/*
+        - src/service/*
       exclude:
         - ./**
     memorySize: 128
@@ -41,11 +41,11 @@ functions:
     layers:
       - { Ref: PythonRequirementsLambdaLayer }
   handle_turn:
-    handler: src/service.handle_turn
+    handler: src/service/api.handle_turn
     package:
       individually: true
       include:
-        - src/*
+        - src/service/*
       exclude:
         - ./**
     memorySize: 128
