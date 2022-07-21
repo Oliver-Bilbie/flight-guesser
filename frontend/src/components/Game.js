@@ -1,7 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Box, Button, Heading, Layer, Spinner, Text } from "grommet";
 import { Location } from "grommet-icons";
 import AirportSelect from "./AirportSelect";
+import { handleTurnApi, handleResult } from "../helpers/handle_turn";
+import { getAirportsApi } from "../helpers/get_airports";
 
 const Game = () => {
   const [loading, setLoading] = useState(false);
@@ -10,75 +12,43 @@ const Game = () => {
   const [airport, setAirport] = useState("");
   const [score, setScore] = useState(0);
   const [ids, setIds] = useState([]);
+  const [airports, setAirports] = useState([]);
+
+  useEffect(() => {
+    getAirportsApi(setAirports);
+  }, []);
 
   const handleSubmit = () => {
     if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(handleApi);
+      if (airport !== "") {
+        setLoading(true);
+        navigator.geolocation.getCurrentPosition((location) =>
+          handleTurnApi(
+            location.coords.longitude,
+            location.coords.latitude,
+            airport,
+            handleTurn
+          )
+        );
+      } else {
+        setResponse("Please select an airport");
+        setShowResponse(true);
+      }
     } else {
-      setResponse("Geolocation is not supported by this browser.");
+      setResponse("Location services must be enabled to use this application");
       setShowResponse(true);
     }
   };
 
-  const handleResult = (response) => {
-    // search for ids which have already been guessed for to prevent duplication
-    const duplicate = ids.find((id) => id === response.id);
-    if (!duplicate) {
-      // only award points for first guesses
-      setScore(score + parseInt(response.score));
-      setIds(ids.concat(response.id));
+  const handleTurn = (response) => {
+    if (response.message) {
+      setResponse(response.message);
+    } else {
+      const result = handleResult(response.body, score, ids);
+      setResponse(result.message);
+      setScore(result.score);
+      setIds(result.ids);
     }
-
-    setResponse(
-      `You are looking at ${
-        ["A", "E", "I", "O", "U"].includes(
-          response.aircraft.substring(0, 1).toUpperCase()
-        )
-          ? "an"
-          : "a"
-      } ${response.aircraft} aircraft on its way from ${response.origin} to ${
-        response.destination
-      }.
-      You have ${
-        duplicate
-          ? `already made a guess for this flight`
-          : `scored ${response.score} points`
-      }.`
-    );
-  };
-
-  const handleApi = (location) => {
-    setLoading(true);
-    let request = new XMLHttpRequest();
-    // eslint-disable-next-line no-undef
-    const path = process.env.REACT_APP_ENDPOINT;
-    const body = `{"longitude": ${location.coords.longitude}, "latitude": ${location.coords.latitude}, "airport": "${airport}"}`;
-
-    request.onerror = function () {
-      setResponse("An error has occurred");
-    };
-    request.ontimeout = function () {
-      setResponse("The request has timed out");
-    };
-    request.onload = function () {
-      if (request.status === 200) {
-        if (request.response.status === 200) {
-          handleResult(request.response.response);
-        } else if (request.response.status === 400) {
-          setResponse("No nearby flights were found");
-        } else {
-          setResponse("Data for the nearby flight is not available");
-        }
-      } else {
-        setResponse("Unable to fetch data");
-      }
-    };
-
-    request.timeout = 30000;
-    request.responseType = "json";
-    request.open("POST", path);
-    request.send(body);
-
     setLoading(false);
     setShowResponse(true);
     setAirport("");
@@ -91,8 +61,7 @@ const Game = () => {
       ) : (
         <Box gap="medium">
           <Heading textAlign="center">Score: {score}</Heading>
-          <Text>Destination:</Text>
-          <AirportSelect setAirport={setAirport} />
+          <AirportSelect airports={airports} setSelection={setAirport} />
           <Box width="190px" alignSelf="center" pad={{ vertical: "medium" }}>
             <Button
               label="Make Guess"

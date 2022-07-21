@@ -12,6 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Refactored backend
 - 100% backend unit test coverage
 - 100% backend integration test coverage
+- Refactored frontend
+- Frontend now makes fewer API calls
 
 ## 1.1.1
 

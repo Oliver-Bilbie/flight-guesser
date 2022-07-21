@@ -1,68 +1,37 @@
-import React, { useEffect, useState } from "react";
-import { Box, Select } from "grommet";
+import React, { useState } from "react";
+import { Box, Select, Text, Spinner } from "grommet";
 
 // eslint-disable-next-line react/prop-types
-const AirportSelect = ({ setAirport }) => {
-  const [options, setOptions] = useState([]);
-  const [filteredOptions, setFilteredOptions] = useState([]);
-  const [search, setSearch] = useState(false);
-  const [displayValue, setDisplayValue] = useState("");
-
-  useEffect(() => {
-    let request = new XMLHttpRequest();
-    const path = "https://nhqos29571.execute-api.eu-west-1.amazonaws.com";
-
-    request.onerror = function () {
-      setOptions(["Failed to load"]);
-    };
-    request.ontimeout = function () {
-      setOptions(["Failed to load"]);
-    };
-    request.onload = function () {
-      if (request.status === 200) {
-        if (request.response.status === 200) {
-          setOptions(request.response.response);
-        } else {
-          setOptions(["Failed to load"]);
-        }
-      } else {
-        setOptions(["Failed to load"]);
-      }
-    };
-
-    request.timeout = 10000;
-    request.responseType = "json";
-    request.open("GET", path);
-    request.send();
-  }, []);
+const AirportSelect = ({ airports, setSelection }) => {
+  const [filteredOptions, setFilteredOptions] = useState(airports);
 
   const handleSearch = (text) => {
-    setFilteredOptions([]);
-    if (text.length < 3) {
-      setSearch(false);
-    } else {
-      const exp = new RegExp(text, "i");
-      setFilteredOptions(options.filter((o) => exp.test(o)));
-      setSearch(true);
-    }
-  };
-
-  const handleChange = (value) => {
-    setAirport(value);
-    setDisplayValue(value);
-    setFilteredOptions([]);
-    setSearch(false);
+    const exp = new RegExp(text, "i");
+    // eslint-disable-next-line react/prop-types
+    setFilteredOptions(airports.filter((o) => exp.test(o)));
   };
 
   return (
-    <Box direction="row" align="center">
-      <Select
-        value={displayValue}
-        options={search ? filteredOptions : displayValue ? [displayValue] : []}
-        onChange={(event) => handleChange(event.value)}
-        onSearch={(text) => handleSearch(text)}
-        placeholder="Search..."
-      />
+    <Box gap="small">
+      <Text>Destination:</Text>
+      <Box align="center">
+        {
+          // eslint-disable-next-line react/prop-types
+          airports.length > 1 ? (
+            <Select
+              options={filteredOptions}
+              onChange={(event) => setSelection(event.value)}
+              onSearch={(text) => handleSearch(text)}
+              placeholder="Search..."
+            />
+          ) : // eslint-disable-next-line react/prop-types
+          airports.length === 0 ? (
+            <Spinner />
+          ) : (
+            <Text>{airports[0]}</Text>
+          )
+        }
+      </Box>
     </Box>
   );
 };
