@@ -1,16 +1,23 @@
-export const handleTurnApi = (longitude, latitude, airport, onLoad) => {
+import { ResponseType, ResultType, FlightData } from "../types";
+
+export const handleTurnApi = (
+  longitude: number,
+  latitude: number,
+  airport: string,
+  onLoad: (response: ResponseType) => void
+): void => {
   const request = new XMLHttpRequest();
   const body = `{"longitude": ${longitude}, "latitude": ${latitude}, "airport": "${airport}"}`;
 
   let response = {};
 
-  request.onerror = function () {
+  request.onerror = (): void => {
     response = { message: "An error has occurred" };
   };
-  request.ontimeout = function () {
+  request.ontimeout = (): void => {
     response = { message: "The request has timed out" };
   };
-  request.onload = function () {
+  request.onload = (): void => {
     if (request.status === 200) {
       if (request.response.status === 200) {
         response = { body: request.response.response };
@@ -29,12 +36,15 @@ export const handleTurnApi = (longitude, latitude, airport, onLoad) => {
   request.addEventListener("load", () => {
     onLoad(response);
   });
-  // eslint-disable-next-line no-undef
-  request.open("POST", process.env.REACT_APP_ENDPOINT);
+  request.open("POST", process.env.REACT_APP_ENDPOINT as string);
   request.send(body);
 };
 
-export const handleResult = (response, score, ids) => {
+export const handleResult = (
+  response: FlightData,
+  score: number,
+  ids: string[]
+): ResultType => {
   // search for ids which have already been guessed for to prevent duplication
   const duplicate = ids.find((id) => id === response.id);
 

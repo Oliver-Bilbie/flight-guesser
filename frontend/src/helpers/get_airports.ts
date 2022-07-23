@@ -1,15 +1,15 @@
-export const getAirportsApi = (onLoad) => {
+export const getAirportsApi = (onLoad: (airports: string[]) => void): void => {
   const request = new XMLHttpRequest();
 
   let response = {};
 
-  request.onerror = function () {
+  request.onerror = (): void => {
     response = ["An error has occurred"];
   };
-  request.ontimeout = function () {
+  request.ontimeout = (): void => {
     response = ["The request has timed out"];
   };
-  request.onload = function () {
+  request.onload = (): void => {
     if (request.status === 200) {
       if (request.response.status === 200) {
         response = request.response.response;
@@ -23,10 +23,10 @@ export const getAirportsApi = (onLoad) => {
 
   request.timeout = 10000;
   request.responseType = "json";
-  request.addEventListener("load", () => {
-    onLoad(response);
+  request.addEventListener("load", (): void => {
+    onLoad(response as string[]);
   });
-  // eslint-disable-next-line no-undef
-  request.open("GET", process.env.REACT_APP_ENDPOINT);
+
+  request.open("GET", process.env.REACT_APP_ENDPOINT as string);
   request.send();
 };

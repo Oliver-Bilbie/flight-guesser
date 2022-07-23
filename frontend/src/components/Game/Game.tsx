@@ -1,24 +1,24 @@
 import React, { useState, useEffect } from "react";
 import { Box, Button, Heading, Layer, Spinner, Text } from "grommet";
 import { Location } from "grommet-icons";
-import AirportSelect from "./AirportSelect";
-import { handleTurnApi, handleResult } from "../helpers/handle_turn";
-import { getAirportsApi } from "../helpers/get_airports";
+import AirportSelect from "../AirportSelect/AirportSelect";
+import { handleTurnApi, handleResult } from "../../helpers/handle_turn";
+import { getAirportsApi } from "../../helpers/get_airports";
 
-const Game = () => {
+const Game: React.FC = (): React.ReactElement => {
   const [loading, setLoading] = useState(false);
   const [response, setResponse] = useState("");
   const [showResponse, setShowResponse] = useState(false);
   const [airport, setAirport] = useState("");
   const [score, setScore] = useState(0);
-  const [ids, setIds] = useState([]);
-  const [airports, setAirports] = useState([]);
+  const [ids, setIds] = useState([] as string[]);
+  const [airports, setAirports] = useState([] as string[]);
 
   useEffect(() => {
     getAirportsApi(setAirports);
   }, []);
 
-  const handleSubmit = () => {
+  const handleSubmit = (): void => {
     if (navigator.geolocation) {
       if (airport !== "") {
         setLoading(true);
@@ -40,7 +40,7 @@ const Game = () => {
     }
   };
 
-  const handleTurn = (response) => {
+  const handleTurn = (response): void => {
     if (response.message) {
       setResponse(response.message);
     } else {
@@ -73,8 +73,8 @@ const Game = () => {
       )}
       {showResponse && (
         <Layer
-          onEsc={() => setShowResponse(false)}
-          onClickOutside={() => setShowResponse(false)}
+          onEsc={(): void => setShowResponse(false)}
+          onClickOutside={(): void => setShowResponse(false)}
         >
           <Box
             width="medium"
@@ -85,7 +85,10 @@ const Game = () => {
           >
             <Text>{response}</Text>
             <Box width="xsmall">
-              <Button label="Close" onClick={() => setShowResponse(false)} />
+              <Button
+                label="Close"
+                onClick={(): void => setShowResponse(false)}
+              />
             </Box>
           </Box>
         </Layer>

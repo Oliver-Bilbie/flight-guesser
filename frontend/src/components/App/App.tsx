@@ -1,10 +1,10 @@
 import React from "react";
 import { Grommet, Box } from "grommet";
-import Theme from "./theme";
-import Banner from "./components/Banner";
-import Game from "./components/Game";
+import Theme from "../../theme";
+import Banner from "../Banner/Banner";
+import Game from "../Game/Game";
 
-function App() {
+const App: React.FC = (): React.ReactElement => {
   return (
     <div className="App">
       <Grommet theme={Theme} full={true}>
@@ -15,6 +15,6 @@ function App() {
       </Grommet>
     </div>
   );
-}
+};
 
 export default App;

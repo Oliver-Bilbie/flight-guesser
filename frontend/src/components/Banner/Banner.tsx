@@ -15,7 +15,7 @@ const navBarItems = [
   },
 ];
 
-const Banner = () => {
+const Banner: React.FC = (): React.ReactElement => {
   return (
     <Header
       elevation="small"

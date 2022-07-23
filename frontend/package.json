@@ -6,24 +6,34 @@
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^13.3.0",
     "@testing-library/user-event": "^14.3.0",
+    "@types/react-router": "^5.1.18",
     "dotenv": "^16.0.0",
-    "eslint": "^8.20.0",
     "grommet": "^2.18.0",
     "grommet-icons": "^4.6.2",
-    "prettier": "^2.7.1",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-scripts": "5.0.1",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-scripts": "4.0.3",
     "styled-components": "^5.3.1",
-    "web-vitals": "^2.1.4"
+    "typescript": "^4.7.4",
+    "web-vitals": "^1.1.2"
+  },
+  "devDependencies": {
+    "@types/styled-components": "^5.1.2",
+    "@typescript-eslint/eslint-plugin": "^5.28.0",
+    "@typescript-eslint/parser": "^5.28.0",
+    "eslint": "^7.11.0",
+    "eslint-config-prettier": "^8.1.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-react": "^7.30.0",
+    "prettier": "2.6.2"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "env": "node -r dotenv/config src/index.js",
-    "pretty": "prettier --write \"src/**/*.js\"",
+    "env": "node -r dotenv/config src/index.tsx",
+    "pretty": "prettier --write \"src/**/*.{tsx,ts}\"",
     "lint": "eslint ./"
   },
   "eslintConfig": {
