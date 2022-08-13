@@ -30,12 +30,17 @@ repos:
         language: system
         verbose: false
       - id: unit-test
-        name: Unit-Test
+        name: Unit Test
         entry: make unit-test
         language: system
         verbose: false
       - id: int-test
-        name: Integration-Test
+        name: Integration Test
         entry: make int-test
+        language: system
+        verbose: false
+      - id: frontend-test
+        name: Frontend Test
+        entry: make frontend-test
         language: system
         verbose: false
