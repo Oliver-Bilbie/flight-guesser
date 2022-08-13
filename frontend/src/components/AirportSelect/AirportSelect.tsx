@@ -26,10 +26,11 @@ const AirportSelect: React.FC<AirportSelectProps> = ({
             options={filteredOptions}
             onChange={(event): void => setSelection(event.value)}
             onSearch={(text): void => handleSearch(text)}
-            placeholder="Search..."
+            placeholder="Select"
+            searchPlaceholder="Search..."
           />
         ) : airports.length === 0 ? (
-          <Spinner />
+          <Spinner a11yTitle="loading" />
         ) : (
           <Text>{airports[0]}</Text>
         )}

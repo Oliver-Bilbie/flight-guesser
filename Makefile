@@ -45,3 +45,7 @@ int-test:
 	@cd backend && export COVERAGE_FILE=./target/coverage/.cov_int && python -m pipenv run coverage html --directory=target/integration-test/coverage --fail-under=100
 	@cd backend && export COVERAGE_FILE=./target/coverage/.cov_int && python -m pipenv run coverage report
 	@cd backend && export COVERAGE_FILE=./target/coverage/.cov_int && python -m pipenv run coverage xml -o target/integration-test/coverage/coverage.xml
+
+frontend-test:
+	@echo "[INFO] Running frontend tests"
+	@cd frontend && yarn test

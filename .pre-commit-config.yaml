@@ -1,35 +1,41 @@
 fail_fast: true
 default_stages: [commit]
 repos:
-- repo: local
-  hooks:
-    - id: format-src
-      name: Format
-      entry: make format-src
-      language: system
-      verbose: false
-    - id: lint
-      name: Lint
-      entry: make lint
-      language: system
-      verbose: false
-    - id: bandit
-      name: Bandit
-      entry: make bandit
-      language: system
-      verbose: false
-    - id: type-check
-      name: Type-Check
-      entry: make type-check
-      language: system
-      verbose: false
-    - id: unit-test
-      name: Unit-Test
-      entry: make unit-test
-      language: system
-      verbose: false
-    - id: int-test
-      name: Integration-Test
-      entry: make int-test
-      language: system
-      verbose: false
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v3.2.0
+    hooks:
+      - id: trailing-whitespace
+      - id: mixed-line-ending
+      - id: detect-aws-credentials
+  - repo: local
+    hooks:
+      - id: format-src
+        name: Format
+        entry: make format-src
+        language: system
+        verbose: false
+      - id: lint
+        name: Lint
+        entry: make lint
+        language: system
+        verbose: false
+      - id: bandit
+        name: Bandit
+        entry: make bandit
+        language: system
+        verbose: false
+      - id: type-check
+        name: Type-Check
+        entry: make type-check
+        language: system
+        verbose: false
+      - id: unit-test
+        name: Unit-Test
+        entry: make unit-test
+        language: system
+        verbose: false
+      - id: int-test
+        name: Integration-Test
+        entry: make int-test
+        language: system
+        verbose: false

@@ -33,7 +33,7 @@ export const handleTurnApi = (
 
   request.timeout = 30000;
   request.responseType = "json";
-  request.addEventListener("load", () => {
+  window.addEventListener("load", () => {
     onLoad(response);
   });
   request.open("POST", process.env.REACT_APP_ENDPOINT as string);

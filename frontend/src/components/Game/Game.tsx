@@ -6,7 +6,7 @@ import { handleTurnApi, handleResult } from "../../helpers/handle_turn";
 import { getAirportsApi } from "../../helpers/get_airports";
 
 const Game: React.FC = (): React.ReactElement => {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [response, setResponse] = useState("");
   const [showResponse, setShowResponse] = useState(false);
   const [airport, setAirport] = useState("");
@@ -16,6 +16,7 @@ const Game: React.FC = (): React.ReactElement => {
 
   useEffect(() => {
     getAirportsApi(setAirports);
+    setLoading(false);
   }, []);
 
   const handleSubmit = (): void => {

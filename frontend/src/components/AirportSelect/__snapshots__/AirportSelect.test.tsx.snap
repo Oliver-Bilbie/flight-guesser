@@ -1,0 +1,24 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Matches snapshot 1`] = `
+<div
+  className="StyledBox-sc-13pk1d4-0 iNDmPr"
+>
+  <span
+    className="StyledText-sc-1sadyjn-0 hpCRgD"
+  >
+    Destination:
+  </span>
+  <div
+    className="StyledBox__StyledBoxGap-sc-13pk1d4-1 qdAYv"
+  />
+  <div
+    className="StyledBox-sc-13pk1d4-0 bsRcKz"
+  >
+    <div
+      aria-label="loading"
+      className="StyledBox-sc-13pk1d4-0 dSgfBA"
+    />
+  </div>
+</div>
+`;

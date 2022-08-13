@@ -1,0 +1,11 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Matches snapshot 1`] = `
+<div
+  className="StyledBox-sc-13pk1d4-0 cwefyf"
+>
+  <div
+    className="StyledBox-sc-13pk1d4-0 gmiLjI"
+  />
+</div>
+`;
