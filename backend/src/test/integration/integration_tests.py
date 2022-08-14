@@ -21,7 +21,7 @@ def test_get_airports_success(mocker):
 
     test_airports = [
         {
-            "name": "test_destination",
+            "name": "test_airport",
             "iata": "QWE",
             "icao": "ASDF",
             "lat": 0,
@@ -30,7 +30,7 @@ def test_get_airports_success(mocker):
             "alt": 5532,
         },
         {
-            "name": "test_destination_2",
+            "name": "test_airport_2",
             "iata": "RTY",
             "icao": "GHJK",
             "lat": 1,
@@ -39,7 +39,7 @@ def test_get_airports_success(mocker):
             "alt": 326,
         },
         {
-            "name": "test_destination_3",
+            "name": "test_airport_3",
             "iata": "UIO",
             "icao": "ZXCV",
             "lat": -2.5,
@@ -56,7 +56,7 @@ def test_get_airports_success(mocker):
 
     assert (
         actual_response
-        == '{"response": ["test_destination", "test_destination_2", "test_destination_3"], "status": 200}'
+        == '{"response": ["test_airport", "test_airport_2", "test_airport_3"], "status": 200}'
     )
     api.controller.service.fr_api.get_airports.assert_called_once()
 
@@ -74,10 +74,10 @@ def test_get_airports_failure(mocker):
     api.controller.service.fr_api.get_airports.assert_called_once()
 
 
-def test_handle_turn_success_correct_guess(mocker):
+def test_handle_turn_success_correct_guesses(mocker):
     """test the handle_turn function when the flight-radar api call is successful and the destination is guessed correctly"""
     test_event = {
-        "body": '{"longitude": "8.541694", "latitude": "47.376888", "airport": "Lahr Black Forest Airport"}'
+        "body": '{"longitude": "8.541694", "latitude": "47.376888", "origin": "Lugano Airport", "destination": "Lahr Black Forest Airport", "data_saver": "y"}'
     }
 
     mocker.patch.object(api.controller.service.fr_api, "get_airports")
@@ -90,7 +90,7 @@ def test_handle_turn_success_correct_guess(mocker):
 
     assert (
         actual_response
-        == '{"response": {"id": "2cbce32c", "origin": "Lugano Airport", "destination": "Lahr Black Forest Airport", "aircraft": "BE9L", "score": 100}, "status": 200}'
+        == '{"response": {"id": "2cbce32c", "origin": "Lugano Airport", "destination": "Lahr Black Forest Airport", "aircraft": "BE9L", "score": 200}, "status": 200}'
     )
     api.controller.service.fr_api.get_airports.assert_not_called()
     api.controller.service.fr_api.get_flights.assert_called_once_with(
@@ -99,10 +99,10 @@ def test_handle_turn_success_correct_guess(mocker):
     api.controller.service.fr_api.get_flight_details.assert_called_once_with("2cbce32c")
 
 
-def test_handle_turn_success_close_guess(mocker):
+def test_handle_turn_success_perfect_origin_far_destination(mocker):
     """test the handle_turn function when the flight-radar api call is successful and the destination guessed is close enough to score points"""
     test_event = {
-        "body": '{"longitude": "8.541694", "latitude": "47.376888", "airport": "Geneva International Airport"}'
+        "body": '{"longitude": "8.541694", "latitude": "47.376888", "origin": "Lugano Airport", "destination": "Paris Beauvais-Tille Airport", "data_saver": "y"}'
     }
 
     mocker.patch.object(api.controller.service.fr_api, "get_airports")
@@ -116,7 +116,33 @@ def test_handle_turn_success_close_guess(mocker):
 
     assert (
         actual_response
-        == '{"response": {"id": "2cbce32c", "origin": "Lugano Airport", "destination": "Lahr Black Forest Airport", "aircraft": "BE9L", "score": 17.0}, "status": 200}'
+        == '{"response": {"id": "2cbce32c", "origin": "Lugano Airport", "destination": "Lahr Black Forest Airport", "aircraft": "BE9L", "score": 100}, "status": 200}'
+    )
+    api.controller.service.fr_api.get_airports.assert_called_once()
+    api.controller.service.fr_api.get_flights.assert_called_once_with(
+        bounds="47.386888,47.366888,8.531694,8.551694"
+    )
+    api.controller.service.fr_api.get_flight_details.assert_called_once_with("2cbce32c")
+
+
+def test_handle_turn_success_close_guess(mocker):
+    """test the handle_turn function when the flight-radar api call is successful and the destination guessed is close enough to score points"""
+    test_event = {
+        "body": '{"longitude": "8.541694", "latitude": "47.376888", "origin": "Geneva International Airport", "destination": "Paris Beauvais-Tille Airport", "data_saver": "y"}'
+    }
+
+    mocker.patch.object(api.controller.service.fr_api, "get_airports")
+    api.controller.service.fr_api.get_airports.return_value = airport_data
+    mocker.patch.object(api.controller.service.fr_api, "get_flights")
+    api.controller.service.fr_api.get_flights.return_value = [flight_data]
+    mocker.patch.object(api.controller.service.fr_api, "get_flight_details")
+    api.controller.service.fr_api.get_flight_details.return_value = details
+
+    actual_response = api.handle_turn(test_event, None)
+
+    assert (
+        actual_response
+        == '{"response": {"id": "2cbce32c", "origin": "Lugano Airport", "destination": "Lahr Black Forest Airport", "aircraft": "BE9L", "score": 11.0}, "status": 200}'
     )
     api.controller.service.fr_api.get_airports.assert_called_once()
     api.controller.service.fr_api.get_flights.assert_called_once_with(
@@ -128,7 +154,7 @@ def test_handle_turn_success_close_guess(mocker):
 def test_handle_turn_success_far_guess(mocker):
     """test the handle_turn function when the flight-radar api call is successful and the destination guessed is too far away to score points"""
     test_event = {
-        "body": '{"longitude": "8.541694", "latitude": "47.376888", "airport": "Denver Rocky Mountain Metropolitan Airport"}'
+        "body": '{"longitude": "8.541694", "latitude": "47.376888", "origin": "Denver Rocky Mountain Metropolitan Airport", "destination": "Dallas Fort Worth International Airport", "data_saver": "y"}'
     }
 
     mocker.patch.object(api.controller.service.fr_api, "get_airports")
@@ -151,10 +177,62 @@ def test_handle_turn_success_far_guess(mocker):
     api.controller.service.fr_api.get_flight_details.assert_called_once_with("2cbce32c")
 
 
+def test_handle_turn_success_only_origin_guess(mocker):
+    """test the handle_turn function when the flight-radar api call is successful and the destination guessed is close enough to score points"""
+    test_event = {
+        "body": '{"longitude": "8.541694", "latitude": "47.376888", "origin": "Geneva International Airport", "destination": "", "data_saver": "y"}'
+    }
+
+    mocker.patch.object(api.controller.service.fr_api, "get_airports")
+    api.controller.service.fr_api.get_airports.return_value = airport_data
+    mocker.patch.object(api.controller.service.fr_api, "get_flights")
+    api.controller.service.fr_api.get_flights.return_value = [flight_data]
+    mocker.patch.object(api.controller.service.fr_api, "get_flight_details")
+    api.controller.service.fr_api.get_flight_details.return_value = details
+
+    actual_response = api.handle_turn(test_event, None)
+
+    assert (
+        actual_response
+        == '{"response": {"id": "2cbce32c", "origin": "Lugano Airport", "destination": "Lahr Black Forest Airport", "aircraft": "BE9L", "score": 11.0}, "status": 200}'
+    )
+    api.controller.service.fr_api.get_airports.assert_called_once()
+    api.controller.service.fr_api.get_flights.assert_called_once_with(
+        bounds="47.386888,47.366888,8.531694,8.551694"
+    )
+    api.controller.service.fr_api.get_flight_details.assert_called_once_with("2cbce32c")
+
+
+def test_handle_turn_success_only_destination_guess(mocker):
+    """test the handle_turn function when the flight-radar api call is successful and the destination guessed is close enough to score points"""
+    test_event = {
+        "body": '{"longitude": "8.541694", "latitude": "47.376888", "origin": "", "destination": "Geneva International Airport", "data_saver": "y"}'
+    }
+
+    mocker.patch.object(api.controller.service.fr_api, "get_airports")
+    api.controller.service.fr_api.get_airports.return_value = airport_data
+    mocker.patch.object(api.controller.service.fr_api, "get_flights")
+    api.controller.service.fr_api.get_flights.return_value = [flight_data]
+    mocker.patch.object(api.controller.service.fr_api, "get_flight_details")
+    api.controller.service.fr_api.get_flight_details.return_value = details
+
+    actual_response = api.handle_turn(test_event, None)
+
+    assert (
+        actual_response
+        == '{"response": {"id": "2cbce32c", "origin": "Lugano Airport", "destination": "Lahr Black Forest Airport", "aircraft": "BE9L", "score": 17.0}, "status": 200}'
+    )
+    api.controller.service.fr_api.get_airports.assert_called_once()
+    api.controller.service.fr_api.get_flights.assert_called_once_with(
+        bounds="47.386888,47.366888,8.531694,8.551694"
+    )
+    api.controller.service.fr_api.get_flight_details.assert_called_once_with("2cbce32c")
+
+
 def test_handle_turn_no_flights(mocker):
     """test the handle_turn function when the flight-radar api call is successful but no flights are found nearby"""
     test_event = {
-        "body": '{"longitude": "8.541694", "latitude": "47.376888", "airport": "Zurich Airport"}'
+        "body": '{"longitude": "8.541694", "latitude": "47.376888", "origin": "Zurich Airport", "destination": "Dallas Fort Worth International Airport", "data_saver": "y"}'
     }
 
     mocker.patch.object(api.controller.service.fr_api, "get_airports")
@@ -173,7 +251,7 @@ def test_handle_turn_no_flights(mocker):
 def test_handle_turn_failure(mocker):
     """test the handle_turn function when the flight-radar api call is unsuccessful"""
     test_event = {
-        "body": '{"longitude": "8.541694", "latitude": "47.376888", "airport": "Zurich Airport"}'
+        "body": '{"longitude": "8.541694", "latitude": "47.376888", "origin": "Zurich Airport", "destination": "Dallas Fort Worth International Airport", "data_saver": "y"}'
     }
 
     mocker.patch.object(api.controller.service.fr_api, "get_airports")

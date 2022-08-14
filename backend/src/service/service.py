@@ -53,33 +53,60 @@ def get_closest_flight(longitude, latitude):
     return flight
 
 
-def get_score(flight, airport):
+def get_score(flight, origin, destination):
     """
-    Function to evaluate the points earned from a desination guess
+    Function to evaluate the points earned from a destination guess
 
     Args:
         flight [FlightRadar24 Flight]: flight to check
-        airport [string]: destination airport guess
+        origin [string]: origin airport guess
+        destination [string]: destination airport guess
 
     Returns:
         integer: points awarded
     """
 
-    if flight.destination_airport_name == airport:
-        # in the case of a perfect match, gain 100 points
-        score = 100
-    else:
-        # else find the distance between the guess and the correct airport
-        # and convert this into a score
-        airport_data = pd.DataFrame(fr_api.get_airports())
-        airport_data = airport_data[
-            (airport_data["name"] == airport)
-            | (airport_data["name"] == flight.destination_airport_name)
-        ]
-        distance = np.sqrt(
-            pow(airport_data["lat"].iloc[0] - airport_data["lat"].iloc[1], 2)
-            + pow(airport_data["lon"].iloc[0] - airport_data["lon"].iloc[1], 2)
-        )
-        score = max(np.floor(100 - 4 * pow(distance, 3)), 0)
+    score = 0
+    airport_list = None
+
+    # Origin Guess
+    if origin != "":
+        if flight.origin_airport_name == origin:
+            # in the case of a perfect match, gain 100 points
+            score += 100
+        else:
+            # else find the distance between the guess and the correct airport
+            # and convert this into a score
+            if airport_list is None:
+                airport_list = pd.DataFrame(fr_api.get_airports())
+            airport_data = airport_list[
+                (airport_list["name"] == origin)
+                | (airport_list["name"] == flight.origin_airport_name)
+            ]
+            distance = np.sqrt(
+                pow(airport_data["lat"].iloc[0] - airport_data["lat"].iloc[1], 2)
+                + pow(airport_data["lon"].iloc[0] - airport_data["lon"].iloc[1], 2)
+            )
+            score += max(np.floor(100 - 4 * pow(distance, 3)), 0)
+
+    # Destination Guess
+    if destination != "":
+        if flight.destination_airport_name == destination:
+            # in the case of a perfect match, gain 100 points
+            score += 100
+        else:
+            # else find the distance between the guess and the correct airport
+            # and convert this into a score
+            if airport_list is None:
+                airport_list = pd.DataFrame(fr_api.get_airports())
+            airport_data = airport_list[
+                (airport_list["name"] == destination)
+                | (airport_list["name"] == flight.destination_airport_name)
+            ]
+            distance = np.sqrt(
+                pow(airport_data["lat"].iloc[0] - airport_data["lat"].iloc[1], 2)
+                + pow(airport_data["lon"].iloc[0] - airport_data["lon"].iloc[1], 2)
+            )
+            score += max(np.floor(100 - 4 * pow(distance, 3)), 0)
 
     return score

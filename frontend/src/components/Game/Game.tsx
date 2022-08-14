@@ -1,38 +1,67 @@
 import React, { useState, useEffect } from "react";
-import { Box, Button, Heading, Layer, Spinner, Text } from "grommet";
-import { Location } from "grommet-icons";
+import { Box, Button, Heading, Spinner, Stack } from "grommet";
+import { Location, Performance } from "grommet-icons";
 import AirportSelect from "../AirportSelect/AirportSelect";
+import SettingsMenu from "../SettingsMenu/SettingsMenu";
 import { handleTurnApi, handleResult } from "../../helpers/handle_turn";
 import { getAirportsApi } from "../../helpers/get_airports";
+import PopupMenu from "../PopupMenu/PopupMenu";
 
 const Game: React.FC = (): React.ReactElement => {
+  const [settingsValues, setSettingsValues] = useState({
+    useOrigin: false,
+    useDestination: true,
+    dataSaver: true,
+  });
+  const [showSettings, setShowSettings] = useState(false);
   const [loading, setLoading] = useState(true);
   const [response, setResponse] = useState("");
   const [showResponse, setShowResponse] = useState(false);
-  const [airport, setAirport] = useState("");
+  const [guess, setGuess] = useState({ origin: "", destination: "" });
   const [score, setScore] = useState(0);
   const [ids, setIds] = useState([] as string[]);
   const [airports, setAirports] = useState([] as string[]);
 
   useEffect(() => {
+    // Load a list of airports from an API
     getAirportsApi(setAirports);
     setLoading(false);
   }, []);
 
+  useEffect(() => {
+    // Reset guesses if they are disabled in the settings
+    setGuess({
+      origin: settingsValues.useOrigin ? guess.origin : "",
+      destination: settingsValues.useDestination ? guess.destination : "",
+    });
+  }, [settingsValues]);
+
   const handleSubmit = (): void => {
+    // Validates user inputs and calls the handleTurnApi helper
     if (navigator.geolocation) {
-      if (airport !== "") {
+      if (
+        (guess.origin !== "" || !settingsValues.useOrigin) &&
+        (guess.destination !== "" || !settingsValues.useDestination)
+      ) {
         setLoading(true);
         navigator.geolocation.getCurrentPosition((location) =>
           handleTurnApi(
             location.coords.longitude,
             location.coords.latitude,
-            airport,
+            guess.origin,
+            guess.destination,
+            settingsValues.dataSaver,
             handleTurn
           )
         );
       } else {
-        setResponse("Please select an airport");
+        setResponse(
+          `Please select ${
+            guess.origin === "" && settingsValues.useOrigin
+              ? "an origin"
+              : "a destination"
+          } airport`
+        );
         setShowResponse(true);
       }
     } else {
@@ -42,6 +71,7 @@ const Game: React.FC = (): React.ReactElement => {
   };
 
   const handleTurn = (response): void => {
+    // Handles the output from the handleTurnApi helper
     if (response.message) {
       setResponse(response.message);
     } else {
@@ -52,49 +82,78 @@ const Game: React.FC = (): React.ReactElement => {
     }
     setLoading(false);
     setShowResponse(true);
-    setAirport("");
+    setGuess({ origin: "", destination: "" });
   };
 
   return (
-    <Box direction="row" align="center">
-      {loading ? (
-        <Spinner size="large" />
-      ) : (
-        <Box gap="medium">
-          <Heading textAlign="center">Score: {score}</Heading>
-          <AirportSelect airports={airports} setSelection={setAirport} />
-          <Box width="190px" alignSelf="center" pad={{ vertical: "medium" }}>
-            <Button
-              label="Make Guess"
-              icon={<Location />}
-              onClick={handleSubmit}
-            />
-          </Box>
-        </Box>
-      )}
-      {showResponse && (
-        <Layer
-          onEsc={(): void => setShowResponse(false)}
-          onClickOutside={(): void => setShowResponse(false)}
-        >
-          <Box
-            width="medium"
-            pad="small"
-            gap="medium"
-            align="center"
-            justify="center"
-          >
-            <Text>{response}</Text>
-            <Box width="xsmall">
+    <Stack anchor="center" interactiveChild={showSettings ? 1 : 0}>
+      <Box
+        direction="column"
+        align="center"
+        width="large"
+        background="light-2"
+        elevation="small"
+        margin="small"
+        round
+      >
+        {loading ? (
+          <Spinner size="large" pad="small" />
+        ) : (
+          <Box gap="medium">
+            <Heading textAlign="center">Score: {score}</Heading>
+            {settingsValues.useOrigin && (
+              <AirportSelect
+                label="Origin:"
+                value={guess.origin}
+                airports={airports}
+                setSelection={(selection: string): void =>
+                  setGuess({ ...guess, origin: selection })
+                }
+              />
+            )}
+            {settingsValues.useDestination && (
+              <AirportSelect
+                label="Destination:"
+                value={guess.destination}
+                airports={airports}
+                setSelection={(selection: string): void =>
+                  setGuess({
+                    ...guess,
+                    destination: selection,
+                  })
+                }
+              />
+            )}
+            <Box width="190px" alignSelf="center" pad={{ vertical: "medium" }}>
               <Button
-                label="Close"
-                onClick={(): void => setShowResponse(false)}
+                label="Make Guess"
+                icon={<Location />}
+                onClick={handleSubmit}
               />
             </Box>
           </Box>
-        </Layer>
+        )}
+        <Button
+          icon={<Performance />}
+          onClick={(): void => setShowSettings(!showSettings)}
+          alignSelf="end"
+          hoverIndicator
+        />
+      </Box>
+      {showResponse && (
+        <PopupMenu
+          message={response}
+          onClose={(): void => setShowResponse(false)}
+        />
       )}
-    </Box>
+      {showSettings && (
+        <SettingsMenu
+          settingsValues={settingsValues}
+          setSettingsValues={setSettingsValues}
+          onClose={(): void => setShowSettings(false)}
+        />
+      )}
+    </Stack>
   );
 };
 

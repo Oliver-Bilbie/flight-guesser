@@ -3,11 +3,15 @@ import { ResponseType, ResultType, FlightData } from "../types";
 export const handleTurnApi = (
   longitude: number,
   latitude: number,
-  airport: string,
-  onLoad: (response: ResponseType) => void
+  origin: string,
+  destination: string,
+  data_saver: boolean,
+  onComplete: (response: ResponseType) => void
 ): void => {
   const request = new XMLHttpRequest();
-  const body = `{"longitude": ${longitude}, "latitude": ${latitude}, "airport": "${airport}"}`;
+  const body = `{"longitude": ${longitude}, "latitude": ${latitude}, "origin": "${origin}", "destination": "${destination}", "data_saver": "${
+    data_saver ? "y" : "n"
+  }"}`;
 
   let response = {};
 
@@ -34,7 +38,7 @@ export const handleTurnApi = (
   request.timeout = 30000;
   request.responseType = "json";
   request.addEventListener("load", () => {
-    onLoad(response);
+    onComplete(response);
   });
   request.open("POST", process.env.REACT_APP_ENDPOINT as string);
   request.send(body);

@@ -27,11 +27,12 @@ def handle_turn(event, context):
     """
     Handler for the handle_turn Lambda function, which returns data
     corresponding to the closest flight to a provided longitude-latitude
-    pair along with a score based on the proximity of a destination guess.
+    pair along with a score based on the proximity of an origin and
+    destination guess.
 
     Args:
         event: AWS Lambda event. "body" should be a json string containing
-               "longitude", "latitude", and "airport".
+               "longitude", "latitude", "origin", "destination", and "data_saver".
         context: AWS Lambda context
 
     Returns a json object with:
@@ -51,8 +52,12 @@ def handle_turn(event, context):
     body = json.loads(body)
     longitude = float(body.get("longitude"))
     latitude = float(body.get("latitude"))
-    airport = body.get("airport")
+    origin = body.get("origin")
+    destination = body.get("destination")
+    data_saver = body.get("data_saver")
 
-    response = controller.handle_turn(longitude, latitude, airport)
+    response = controller.handle_turn(
+        longitude, latitude, origin, destination, data_saver
+    )
 
     return response
