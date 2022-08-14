@@ -11,6 +11,7 @@ import {
 } from "grommet";
 import { Close, Globe, Launch } from "grommet-icons";
 import { SettingsType } from "../../types";
+import PopupMenu from "../PopupMenu/PopupMenu";
 
 interface SettingsMenuProps {
   settingsValues: SettingsType;
@@ -47,8 +48,10 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({
     },
   ];
 
+  const [showAlert, setShowAlert] = React.useState(false);
+
   return (
-    <Card>
+    <Card width="406px">
       <CardHeader
         pad={{ horizontal: "small", vertical: "xxsmall" }}
         background="brand"
@@ -73,9 +76,23 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({
         ))}
       </CardBody>
       <CardFooter pad="small" background="light-2">
-        <Button label="Create Lobby" icon={<Launch />} />
-        <Button label="Join Lobby" icon={<Globe />} />
+        <Button
+          label="Create Lobby"
+          icon={<Launch />}
+          onClick={(): void => setShowAlert(true)}
+        />
+        <Button
+          label="Join Lobby"
+          icon={<Globe />}
+          onClick={(): void => setShowAlert(true)}
+        />
       </CardFooter>
+      {showAlert && (
+        <PopupMenu
+          message="Coming soon"
+          onClose={(): void => setShowAlert(false)}
+        />
+      )}
     </Card>
   );
 };

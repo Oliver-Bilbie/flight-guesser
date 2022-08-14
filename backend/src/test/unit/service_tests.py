@@ -9,8 +9,8 @@ class Flight:
 
     def __init__(self):
         self.id = "test_id"
-        self.origin_airport_name = "test_origin"
-        self.destination_airport_name = "test_destination"
+        self.origin_airport_name = "test_airport"
+        self.destination_airport_name = "test_airport_2"
         self.aircraft_code = "test_aircraft"
 
     def set_flight_details(self, details):
@@ -19,7 +19,7 @@ class Flight:
 
 airport_data = [
     {
-        "name": "test_destination",
+        "name": "test_airport",
         "iata": "QWE",
         "icao": "ASDF",
         "lat": 0,
@@ -28,7 +28,7 @@ airport_data = [
         "alt": 5532,
     },
     {
-        "name": "test_destination_2",
+        "name": "test_airport_2",
         "iata": "RTY",
         "icao": "GHJK",
         "lat": 1,
@@ -37,7 +37,7 @@ airport_data = [
         "alt": 326,
     },
     {
-        "name": "test_destination_3",
+        "name": "test_airport_3",
         "iata": "UIO",
         "icao": "ZXCV",
         "lat": -2.5,
@@ -56,9 +56,9 @@ def test_get_airports(mocker):
     response = service.get_airports()
 
     assert response == [
-        "test_destination",
-        "test_destination_2",
-        "test_destination_3",
+        "test_airport",
+        "test_airport_2",
+        "test_airport_3",
     ]
     service.fr_api.get_airports.assert_called_once()
 
@@ -78,8 +78,8 @@ def test_get_closest_flight(mocker):
     response = service.get_closest_flight(test_longitude, test_latitude)
 
     assert response.id == "test_id"
-    assert response.origin_airport_name == "test_origin"
-    assert response.destination_airport_name == "test_destination"
+    assert response.origin_airport_name == "test_airport"
+    assert response.destination_airport_name == "test_airport_2"
     assert response.aircraft_code == "test_aircraft"
     assert response.details == "details"
 
@@ -101,43 +101,76 @@ def test_get_closest_flight_no_flights(mocker):
     assert service.fr_api.get_flights.call_count == 49
 
 
-def test_get_score_perfect(mocker):
+def test_get_score_both_perfect(mocker):
     """test the response and function calls for the get_score service function when the guess matches the destination"""
     test_flight = Flight()
-    test_airport = "test_destination"
+    test_origin = "test_airport"
+    test_destination = "test_airport_2"
 
     mocker.patch.object(service.fr_api, "get_airports")
     service.fr_api.get_airports.return_value = airport_data
 
-    response = service.get_score(test_flight, test_airport)
+    response = service.get_score(test_flight, test_origin, test_destination)
 
-    assert response == 100
+    assert response == 200
     service.fr_api.get_airports.assert_not_called()
 
 
-def test_get_score_close(mocker):
-    """test the response and function calls for the get_score service function when the guess is close enough to the desination to score points"""
+def test_get_score_origin_perfect(mocker):
+    """test the response and function calls for the get_score service function when the guess matches the destination"""
     test_flight = Flight()
-    test_airport = "test_destination_2"
+    test_origin = "test_airport"
+    test_destination = "test_airport_3"
 
     mocker.patch.object(service.fr_api, "get_airports")
     service.fr_api.get_airports.return_value = airport_data
 
-    response = service.get_score(test_flight, test_airport)
+    response = service.get_score(test_flight, test_origin, test_destination)
 
-    assert response == 88
+    assert response == 100
+    service.fr_api.get_airports.assert_called_once()
+
+
+def test_get_score_destination_perfect(mocker):
+    """test the response and function calls for the get_score service function when the guess matches the destination"""
+    test_flight = Flight()
+    test_origin = "test_airport_3"
+    test_destination = "test_airport_2"
+
+    mocker.patch.object(service.fr_api, "get_airports")
+    service.fr_api.get_airports.return_value = airport_data
+
+    response = service.get_score(test_flight, test_origin, test_destination)
+
+    assert response == 100
+    service.fr_api.get_airports.assert_called_once()
+
+
+def test_get_score_both_close(mocker):
+    """test the response and function calls for the get_score service function when the guess is close enough to the desination to score points"""
+    test_flight = Flight()
+    test_origin = "test_airport_2"
+    test_destination = "test_airport"
+
+    mocker.patch.object(service.fr_api, "get_airports")
+    service.fr_api.get_airports.return_value = airport_data
+
+    response = service.get_score(test_flight, test_origin, test_destination)
+
+    assert response == 176.0
     service.fr_api.get_airports.assert_called_once()
 
 
 def test_get_score_far(mocker):
     """test the response and function calls for the get_score service function when the guess is too far from the desination to score points"""
     test_flight = Flight()
-    test_airport = "test_destination_3"
+    test_origin = "test_airport_3"
+    test_destination = "test_airport_3"
 
     mocker.patch.object(service.fr_api, "get_airports")
     service.fr_api.get_airports.return_value = airport_data
 
-    response = service.get_score(test_flight, test_airport)
+    response = service.get_score(test_flight, test_origin, test_destination)
 
     assert response == 0
     service.fr_api.get_airports.assert_called_once()

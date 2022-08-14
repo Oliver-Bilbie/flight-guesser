@@ -24,7 +24,7 @@ def get_airports():
     return response
 
 
-def handle_turn(longitude, latitude, airport):
+def handle_turn(longitude, latitude, origin, destination, data_saver):
     """
     Controller for the handle_turn Lambda function, which returns data
     corresponding to the closest flight to a provided longitude-latitude
@@ -33,7 +33,9 @@ def handle_turn(longitude, latitude, airport):
     Args:
         longitude [float]: longitude to search from
         latitude [float]: latitude to search from
-        airport [string]: destination airport guess
+        origin [string]: origin airport guess
+        destination [string]: destination airport guess
+        data_saver [string]: "y" or "n" corresponding to yes or no
 
     Returns a json object with:
         "response":
@@ -54,7 +56,7 @@ def handle_turn(longitude, latitude, airport):
         if flight is None:
             response = json.dumps({"response": "No flights were found", "status": 400})
         else:
-            score = service.get_score(flight, airport)
+            score = service.get_score(flight, origin, destination)
 
             response = json.dumps(
                 {

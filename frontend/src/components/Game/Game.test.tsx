@@ -47,7 +47,9 @@ test("Test with no guess", () => {
 
   // Click on the "Make Guess" button and check that the expected components render
   fireEvent.click(screen.getByText("Make Guess"));
-  expect(screen.getByText("Please select an airport")).toBeInTheDocument();
+  expect(
+    screen.getByText("Please select a destination airport")
+  ).toBeInTheDocument();
   expect(screen.getByText("Close")).toBeInTheDocument();
 });
 

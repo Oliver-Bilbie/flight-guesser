@@ -43,7 +43,9 @@ def test_handle_turn_success(mocker):
     """test the response and function calls for the handle_turn controller function when the request is successful"""
     test_longitude = "test_longitude"
     test_latitude = "test_latitude"
-    test_airport = "test_airport"
+    test_origin = "test_origin"
+    test_destination = "test_destination"
+    test_data_saver = "test_data_saver"
     mock_flight = Flight()
 
     mocker.patch.object(controller.service, "get_closest_flight")
@@ -51,7 +53,9 @@ def test_handle_turn_success(mocker):
     mocker.patch.object(controller.service, "get_score")
     controller.service.get_score.return_value = "mock_score"
 
-    response = controller.handle_turn(test_longitude, test_latitude, test_airport)
+    response = controller.handle_turn(
+        test_longitude, test_latitude, test_origin, test_destination, test_data_saver
+    )
 
     assert (
         response
@@ -60,20 +64,26 @@ def test_handle_turn_success(mocker):
     controller.service.get_closest_flight.assert_called_once_with(
         test_longitude, test_latitude
     )
-    controller.service.get_score.assert_called_once_with(mock_flight, test_airport)
+    controller.service.get_score.assert_called_once_with(
+        mock_flight, test_origin, test_destination
+    )
 
 
 def test_handle_turn_no_flights(mocker):
     """test the response and function calls for the handle_turn controller function when no flights are found nearby"""
     test_longitude = "test_longitude"
     test_latitude = "test_latitude"
-    test_airport = "test_airport"
+    test_origin = "test_origin"
+    test_destination = "test_destination"
+    test_data_saver = "test_data_saver"
 
     mocker.patch.object(controller.service, "get_closest_flight")
     controller.service.get_closest_flight.return_value = None
     mocker.patch.object(controller.service, "get_score")
 
-    response = controller.handle_turn(test_longitude, test_latitude, test_airport)
+    response = controller.handle_turn(
+        test_longitude, test_latitude, test_origin, test_destination, test_data_saver
+    )
 
     assert response == '{"response": "No flights were found", "status": 400}'
     controller.service.get_closest_flight.assert_called_once_with(
@@ -86,12 +96,16 @@ def test_handle_turn_failure(mocker):
     """test the response and function calls for the handle_turn controller function when the request is unsuccessful"""
     test_longitude = "test_longitude"
     test_latitude = "test_latitude"
-    test_airport = "test_airport"
+    test_origin = "test_origin"
+    test_destination = "test_destination"
+    test_data_saver = "test_data_saver"
 
     mocker.patch.object(controller.service, "get_closest_flight")
     controller.service.get_closest_flight.side_effect = Exception("test_error")
 
-    response = controller.handle_turn(test_longitude, test_latitude, test_airport)
+    response = controller.handle_turn(
+        test_longitude, test_latitude, test_origin, test_destination, test_data_saver
+    )
 
     assert response == '{"response": "An error has occurred.", "status": 500}'
     controller.service.get_closest_flight.assert_called_once()

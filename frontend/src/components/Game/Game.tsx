@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { Box, Button, Heading, Layer, Spinner, Text } from "grommet";
+import { Box, Button, Heading, Spinner, Stack } from "grommet";
 import { Location, Performance } from "grommet-icons";
 import AirportSelect from "../AirportSelect/AirportSelect";
 import SettingsMenu from "../SettingsMenu/SettingsMenu";
 import { handleTurnApi, handleResult } from "../../helpers/handle_turn";
 import { getAirportsApi } from "../../helpers/get_airports";
+import PopupMenu from "../PopupMenu/PopupMenu";
 
 const Game: React.FC = (): React.ReactElement => {
   const [settingsValues, setSettingsValues] = useState({
@@ -22,11 +23,21 @@ const Game: React.FC = (): React.ReactElement => {
   const [airports, setAirports] = useState([] as string[]);
 
   useEffect(() => {
+    // Load a list of airports from an API
     getAirportsApi(setAirports);
     setLoading(false);
   }, []);
 
+  useEffect(() => {
+    // Reset guesses if they are disabled in the settings
+    setGuess({
+      origin: settingsValues.useOrigin ? guess.origin : "",
+      destination: settingsValues.useDestination ? guess.destination : "",
+    });
+  }, [settingsValues]);
+
   const handleSubmit = (): void => {
+    // Validates user inputs and calls the handleTurnApi helper
     if (navigator.geolocation) {
       if (
         (guess.origin !== "" || !settingsValues.useOrigin) &&
@@ -38,11 +49,19 @@ const Game: React.FC = (): React.ReactElement => {
             location.coords.longitude,
             location.coords.latitude,
             guess.origin,
+            guess.destination,
+            settingsValues.dataSaver,
             handleTurn
           )
         );
       } else {
-        setResponse("Please select an airport");
+        setResponse(
+          `Please select ${
+            guess.origin === "" && settingsValues.useOrigin
+              ? "an origin"
+              : "a destination"
+          } airport`
+        );
         setShowResponse(true);
       }
     } else {
@@ -52,6 +71,7 @@ const Game: React.FC = (): React.ReactElement => {
   };
 
   const handleTurn = (response): void => {
+    // Handles the output from the handleTurnApi helper
     if (response.message) {
       setResponse(response.message);
     } else {
@@ -66,7 +86,7 @@ const Game: React.FC = (): React.ReactElement => {
   };
 
   return (
-    <>
+    <Stack anchor="center" interactiveChild={showSettings ? 1 : 0}>
       <Box
         direction="column"
         align="center"
@@ -77,16 +97,33 @@ const Game: React.FC = (): React.ReactElement => {
         round
       >
         {loading ? (
-          <Spinner size="large" />
+          <Spinner size="large" pad="small" />
         ) : (
           <Box gap="medium">
             <Heading textAlign="center">Score: {score}</Heading>
-            <AirportSelect
-              airports={airports}
-              setSelection={(selection: string): void =>
-                setGuess({ ...guess, origin: selection })
-              }
-            />
+            {settingsValues.useOrigin && (
+              <AirportSelect
+                label="Origin:"
+                value={guess.origin}
+                airports={airports}
+                setSelection={(selection: string): void =>
+                  setGuess({ ...guess, origin: selection })
+                }
+              />
+            )}
+            {settingsValues.useDestination && (
+              <AirportSelect
+                label="Destination:"
+                value={guess.destination}
+                airports={airports}
+                setSelection={(selection: string): void =>
+                  setGuess({
+                    ...guess,
+                    destination: selection,
+                  })
+                }
+              />
+            )}
             <Box width="190px" alignSelf="center" pad={{ vertical: "medium" }}>
               <Button
                 label="Make Guess"
@@ -104,26 +141,10 @@ const Game: React.FC = (): React.ReactElement => {
         />
       </Box>
       {showResponse && (
-        <Layer
-          onEsc={(): void => setShowResponse(false)}
-          onClickOutside={(): void => setShowResponse(false)}
-        >
-          <Box
-            width="medium"
-            pad="small"
-            gap="medium"
-            align="center"
-            justify="center"
-          >
-            <Text>{response}</Text>
-            <Box width="xsmall">
-              <Button
-                label="Close"
-                onClick={(): void => setShowResponse(false)}
-              />
-            </Box>
-          </Box>
-        </Layer>
+        <PopupMenu
+          message={response}
+          onClose={(): void => setShowResponse(false)}
+        />
       )}
       {showSettings && (
         <SettingsMenu
@@ -132,7 +153,7 @@ const Game: React.FC = (): React.ReactElement => {
           onClose={(): void => setShowSettings(false)}
         />
       )}
-    </>
+    </Stack>
   );
 };
 
