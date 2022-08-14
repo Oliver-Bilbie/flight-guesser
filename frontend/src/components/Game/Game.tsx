@@ -1,15 +1,22 @@
 import React, { useState, useEffect } from "react";
 import { Box, Button, Heading, Layer, Spinner, Text } from "grommet";
-import { Location } from "grommet-icons";
+import { Location, Performance } from "grommet-icons";
 import AirportSelect from "../AirportSelect/AirportSelect";
+import SettingsMenu from "../SettingsMenu/SettingsMenu";
 import { handleTurnApi, handleResult } from "../../helpers/handle_turn";
 import { getAirportsApi } from "../../helpers/get_airports";
 
 const Game: React.FC = (): React.ReactElement => {
+  const [settingsValues, setSettingsValues] = useState({
+    useOrigin: false,
+    useDestination: true,
+    dataSaver: true,
+  });
+  const [showSettings, setShowSettings] = useState(false);
   const [loading, setLoading] = useState(true);
   const [response, setResponse] = useState("");
   const [showResponse, setShowResponse] = useState(false);
-  const [airport, setAirport] = useState("");
+  const [guess, setGuess] = useState({ origin: "", destination: "" });
   const [score, setScore] = useState(0);
   const [ids, setIds] = useState([] as string[]);
   const [airports, setAirports] = useState([] as string[]);
@@ -21,13 +28,16 @@ const Game: React.FC = (): React.ReactElement => {
 
   const handleSubmit = (): void => {
     if (navigator.geolocation) {
-      if (airport !== "") {
+      if (
+        (guess.origin !== "" || !settingsValues.useOrigin) &&
+        (guess.destination !== "" || !settingsValues.useDestination)
+      ) {
         setLoading(true);
         navigator.geolocation.getCurrentPosition((location) =>
           handleTurnApi(
             location.coords.longitude,
             location.coords.latitude,
-            airport,
+            guess.origin,
             handleTurn
           )
         );
@@ -52,26 +62,47 @@ const Game: React.FC = (): React.ReactElement => {
     }
     setLoading(false);
     setShowResponse(true);
-    setAirport("");
+    setGuess({ origin: "", destination: "" });
   };
 
   return (
-    <Box direction="row" align="center">
-      {loading ? (
-        <Spinner size="large" />
-      ) : (
-        <Box gap="medium">
-          <Heading textAlign="center">Score: {score}</Heading>
-          <AirportSelect airports={airports} setSelection={setAirport} />
-          <Box width="190px" alignSelf="center" pad={{ vertical: "medium" }}>
-            <Button
-              label="Make Guess"
-              icon={<Location />}
-              onClick={handleSubmit}
+    <>
+      <Box
+        direction="column"
+        align="center"
+        width="large"
+        background="light-2"
+        elevation="small"
+        margin="small"
+        round
+      >
+        {loading ? (
+          <Spinner size="large" />
+        ) : (
+          <Box gap="medium">
+            <Heading textAlign="center">Score: {score}</Heading>
+            <AirportSelect
+              airports={airports}
+              setSelection={(selection: string): void =>
+                setGuess({ ...guess, origin: selection })
+              }
             />
+            <Box width="190px" alignSelf="center" pad={{ vertical: "medium" }}>
+              <Button
+                label="Make Guess"
+                icon={<Location />}
+                onClick={handleSubmit}
+              />
+            </Box>
           </Box>
-        </Box>
-      )}
+        )}
+        <Button
+          icon={<Performance />}
+          onClick={(): void => setShowSettings(!showSettings)}
+          alignSelf="end"
+          hoverIndicator
+        />
+      </Box>
       {showResponse && (
         <Layer
           onEsc={(): void => setShowResponse(false)}
@@ -94,7 +125,14 @@ const Game: React.FC = (): React.ReactElement => {
           </Box>
         </Layer>
       )}
-    </Box>
+      {showSettings && (
+        <SettingsMenu
+          settingsValues={settingsValues}
+          setSettingsValues={setSettingsValues}
+          onClose={(): void => setShowSettings(false)}
+        />
+      )}
+    </>
   );
 };
 

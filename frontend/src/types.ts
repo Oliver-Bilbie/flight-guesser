@@ -16,3 +16,9 @@ export type FlightData = {
   destination: string;
   score: string;
 };
+
+export type SettingsType = {
+  useOrigin: boolean;
+  useDestination: boolean;
+  dataSaver: boolean;
+};
