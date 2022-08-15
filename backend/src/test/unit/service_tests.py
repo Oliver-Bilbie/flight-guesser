@@ -1,5 +1,6 @@
 """unit tests for the core functions"""
 
+import numpy as np
 from unittest import mock
 from src.service import service
 
@@ -53,14 +54,28 @@ def test_get_airports(mocker):
     mocker.patch.object(service.fr_api, "get_airports")
     service.fr_api.get_airports.return_value = airport_data
 
+    mocker.patch.object(service, "remove_escape_characters")
+    service.remove_escape_characters.return_value = [
+        "test_airport_4",
+        "test_airport_5",
+        "test_airport_6",
+    ]
+
     response = service.get_airports()
 
     assert response == [
-        "test_airport",
-        "test_airport_2",
-        "test_airport_3",
+        "test_airport_4",
+        "test_airport_5",
+        "test_airport_6",
     ]
     service.fr_api.get_airports.assert_called_once()
+    service.remove_escape_characters.assert_called_once_with(
+        [
+            "test_airport",
+            "test_airport_2",
+            "test_airport_3",
+        ]
+    )
 
 
 def test_get_closest_flight(mocker):
@@ -174,3 +189,13 @@ def test_get_score_far(mocker):
 
     assert response == 0
     service.fr_api.get_airports.assert_called_once()
+
+
+def test_remove_escape_characters():
+    """test the response for the remove_escape_characters service function"""
+    escape_chars = ["\t", "\b", "\n", "\r", "\f"]
+    items = ["item1", "item2", "item3", "item4", "item5"]
+
+    test_items = test_items = np.core.defchararray.add(escape_chars, items)
+
+    assert (service.remove_escape_characters(test_items) == items).all()

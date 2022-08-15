@@ -15,10 +15,19 @@ def get_airports():
         string[]: Airport names
     """
 
+    # Get data from FR API
     airports = fr_api.get_airports()
+
     airport_data = pd.DataFrame(airports)
     airport_names = airport_data.loc[:, "name"].to_list()
-    return airport_names
+
+    # Remove escape characters
+    airport_names = remove_escape_characters(airport_names)
+
+    # Sort alphabetically
+    airport_names = np.sort(airport_names)
+
+    return airport_names.tolist()
 
 
 def get_closest_flight(longitude, latitude):
@@ -79,6 +88,11 @@ def get_score(flight, origin, destination):
             # and convert this into a score
             if airport_list is None:
                 airport_list = pd.DataFrame(fr_api.get_airports())
+                # Remove any escape characters
+                airport_list["name"] = remove_escape_characters(
+                    airport_list.loc[:, "name"].to_list()
+                )
+
             airport_data = airport_list[
                 (airport_list["name"] == origin)
                 | (airport_list["name"] == flight.origin_airport_name)
@@ -99,6 +113,11 @@ def get_score(flight, origin, destination):
             # and convert this into a score
             if airport_list is None:
                 airport_list = pd.DataFrame(fr_api.get_airports())
+                # Remove any escape characters
+                airport_list["name"] = remove_escape_characters(
+                    airport_list.loc[:, "name"].to_list()
+                )
+
             airport_data = airport_list[
                 (airport_list["name"] == destination)
                 | (airport_list["name"] == flight.destination_airport_name)
@@ -110,3 +129,21 @@ def get_score(flight, origin, destination):
             score += max(np.floor(100 - 4 * pow(distance, 3)), 0)
 
     return score
+
+
+def remove_escape_characters(items):
+    """
+    Removes escape characters from a list of strings
+
+    Args:
+        items (string[]): Items to be cleaned
+
+    Returns:
+        string[]: Cleaned items
+
+    """
+
+    for esc_char in ["\t", "\b", "\n", "\r", "\f"]:
+        items = np.char.replace(items, esc_char, "")
+
+    return items
