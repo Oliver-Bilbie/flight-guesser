@@ -90,7 +90,6 @@ const Game: React.FC = (): React.ReactElement => {
       <Box
         direction="column"
         align="center"
-        width="large"
         background="light-2"
         elevation="small"
         margin="small"
@@ -99,7 +98,7 @@ const Game: React.FC = (): React.ReactElement => {
         {loading ? (
           <Spinner size="large" pad="small" />
         ) : (
-          <Box gap="medium">
+          <Box gap="medium" margin={{ horizontal: "large" }}>
             <Heading textAlign="center">Score: {score}</Heading>
             {settingsValues.useOrigin && (
               <AirportSelect

@@ -51,7 +51,7 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({
   const [showAlert, setShowAlert] = React.useState(false);
 
   return (
-    <Card width="406px">
+    <Card>
       <CardHeader
         pad={{ horizontal: "small", vertical: "xxsmall" }}
         background="brand"
