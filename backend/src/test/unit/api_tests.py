@@ -20,7 +20,7 @@ def test_get_airports(mocker):
 def test_handle_turn(mocker):
     """test the response and function calls for the handle_turn api function"""
     test_event = {
-        "body": '{"longitude": "1", "latitude": "2", "origin": "test_origin", "destination": "test_destination", "data_saver": "y"}'
+        "body": '{"longitude": "1", "latitude": "2", "origin": "test_origin", "destination": "test_destination", "player_id": "player_id"}'
     }
 
     mocker.patch.object(api.controller, "handle_turn")
@@ -30,5 +30,5 @@ def test_handle_turn(mocker):
 
     assert actual_response == "expected_response"
     api.controller.handle_turn.assert_called_once_with(
-        1, 2, "test_origin", "test_destination", "y"
+        1, 2, "test_origin", "test_destination", "player_id"
     )
