@@ -1,3 +1,5 @@
+import { AIRPORT_ENDPOINT } from "../config";
+
 export const getAirportsApi = (onLoad: (airports: string[]) => void): void => {
   const request = new XMLHttpRequest();
 
@@ -27,6 +29,6 @@ export const getAirportsApi = (onLoad: (airports: string[]) => void): void => {
     onLoad(response as string[]);
   });
 
-  request.open("GET", process.env.REACT_APP_ENDPOINT as string);
+  request.open("GET", AIRPORT_ENDPOINT);
   request.send();
 };

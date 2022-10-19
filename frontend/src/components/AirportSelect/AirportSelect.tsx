@@ -26,24 +26,24 @@ const AirportSelect: React.FC<AirportSelectProps> = ({
   };
 
   return (
-    <Box gap="small">
+    <Box gap="small" width="300px">
       <Text>{label}</Text>
-      <Box align="center">
-        {airports.length > 1 ? (
-          <Select
-            value={value}
-            options={filteredOptions}
-            onChange={(event): void => setSelection(event.value)}
-            onSearch={(text): void => handleSearch(text)}
-            placeholder="Select"
-            searchPlaceholder="Search..."
-          />
-        ) : airports.length === 0 ? (
+      {airports.length > 1 ? (
+        <Select
+          value={value}
+          options={filteredOptions}
+          onChange={(event): void => setSelection(event.value)}
+          onSearch={(text): void => handleSearch(text)}
+          placeholder="Select"
+          searchPlaceholder="Search..."
+        />
+      ) : airports.length === 0 ? (
+        <Box height="46px" align="center">
           <Spinner a11yTitle="loading" />
-        ) : (
-          <Text>{airports[0]}</Text>
-        )}
-      </Box>
+        </Box>
+      ) : (
+        <Text>{airports[0]}</Text>
+      )}
     </Box>
   );
 };

@@ -1,11 +1,17 @@
 import React, { useState, useEffect } from "react";
-import { Box, Button, Heading, Spinner, Stack } from "grommet";
-import { Location, Performance } from "grommet-icons";
+import { Box, Button, Heading, Text, Spinner, Stack } from "grommet";
+import { Close, Location, Performance } from "grommet-icons";
+
 import AirportSelect from "../AirportSelect/AirportSelect";
+import Scoreboard from "../Scoreboard/Scoreboard";
 import SettingsMenu from "../SettingsMenu/SettingsMenu";
-import { handleTurnApi, handleResult } from "../../helpers/handle_turn";
-import { getAirportsApi } from "../../helpers/get_airports";
+import LobbyMenu from "../LobbyMenu/LobbyMenu";
 import PopupMenu from "../PopupMenu/PopupMenu";
+
+import { handleResult } from "../../helpers/handle_turn";
+import { callApi } from "../../helpers/callApi";
+import { AIRPORT_ENDPOINT, TURN_ENDPOINT } from "../../config";
+import { LobbyMode, PlayerData } from "../../types";
 
 const Game: React.FC = (): React.ReactElement => {
   const [settingsValues, setSettingsValues] = useState({
@@ -14,17 +20,21 @@ const Game: React.FC = (): React.ReactElement => {
     dataSaver: true,
   });
   const [showSettings, setShowSettings] = useState(false);
+  const [showLobbyMenu, setShowLobbyMenu] = useState(LobbyMode.hidden);
   const [loading, setLoading] = useState(true);
-  const [response, setResponse] = useState("");
-  const [showResponse, setShowResponse] = useState(false);
+  const [alert, setAlert] = useState({ message: "", show: false });
   const [guess, setGuess] = useState({ origin: "", destination: "" });
   const [score, setScore] = useState(0);
   const [ids, setIds] = useState([] as string[]);
   const [airports, setAirports] = useState([] as string[]);
+  const [playerId, setPlayerId] = useState("");
+  const [lobbyId, setLobbyId] = useState("");
+  const [lobbyData, setLobbyData] = useState([] as PlayerData[]);
+  const [refreshScores, setRefreshScores] = useState(false);
 
   useEffect(() => {
     // Load a list of airports from an API
-    getAirportsApi(setAirports);
+    callApi(AIRPORT_ENDPOINT, "GET", "", handleAirports);
     setLoading(false);
   }, []);
 
@@ -36,6 +46,15 @@ const Game: React.FC = (): React.ReactElement => {
     });
   }, [settingsValues]);
 
+  const handleAirports = (response): void => {
+    // Handles the output from the airport API
+    if (response.message) {
+      setAlert({ message: response.message, show: true });
+    } else {
+      setAirports(response.body);
+    }
+  };
+
   const handleSubmit = (): void => {
     // Validates user inputs and calls the handleTurnApi helper
     if (navigator.geolocation) {
@@ -44,112 +63,208 @@ const Game: React.FC = (): React.ReactElement => {
         (guess.destination !== "" || !settingsValues.useDestination)
       ) {
         setLoading(true);
-        navigator.geolocation.getCurrentPosition((location) =>
-          handleTurnApi(
-            location.coords.longitude,
-            location.coords.latitude,
-            guess.origin,
-            guess.destination,
-            settingsValues.dataSaver,
-            handleTurn
-          )
-        );
+        navigator.geolocation.getCurrentPosition((location) => {
+          const body =
+            `{` +
+            `"longitude": ${location.coords.longitude},` +
+            `"latitude": ${location.coords.latitude},` +
+            `"origin": "${guess.origin}",` +
+            `"destination": "${guess.destination}",` +
+            `"player_id": "${playerId}"` +
+            `}`;
+          callApi(TURN_ENDPOINT, "POST", body, handleTurn);
+        });
       } else {
-        setResponse(
-          `Please select ${
+        setAlert({
+          message: `Please select ${
             guess.origin === "" && settingsValues.useOrigin
               ? "an origin"
               : "a destination"
-          } airport`
-        );
-        setShowResponse(true);
+          } airport`,
+          show: true,
+        });
       }
     } else {
-      setResponse("Location services must be enabled to use this application");
-      setShowResponse(true);
+      setAlert({
+        message: "Location services must be enabled to use this application",
+        show: true,
+      });
     }
   };
 
   const handleTurn = (response): void => {
-    // Handles the output from the handleTurnApi helper
+    // Handles the output from the turn API
     if (response.message) {
-      setResponse(response.message);
+      setAlert({ message: response.message, show: true });
     } else {
       const result = handleResult(response.body, score, ids);
-      setResponse(result.message);
+      setAlert({ message: result.message, show: true });
       setScore(result.score);
       setIds(result.ids);
     }
     setLoading(false);
-    setShowResponse(true);
+    setRefreshScores(!refreshScores);
     setGuess({ origin: "", destination: "" });
   };
 
+  const handleJoinLobby = (response): void => {
+    // Handles the output from the Join Lobby API
+    if (response.message) {
+      setAlert({ message: response.message, show: true });
+    } else {
+      setPlayerId(response.body.player_id);
+
+      // Parse the lobby data string from the API into a JSON array
+      const newLobbyData = JSON.parse(
+        response.body.lobby_data
+          .replace(/'/g, '"')
+          .replace(/}/g, "},")
+          .replace(/,]/g, "]")
+      );
+      setLobbyData(newLobbyData);
+
+      // Retrieve the player's previous score from the lobby data
+      newLobbyData.map((playerData: PlayerData): void => {
+        if (playerData.player_id === response.body.player_id) {
+          setScore(playerData.score);
+        }
+      });
+    }
+  };
+
+  const handleCreateLobby = (response): void => {
+    // Handles the output from the Create Lobby API
+    if (response.message) {
+      setAlert({ message: response.message, show: true });
+    } else {
+      setLobbyId(response.body.lobby_id);
+      setPlayerId(response.body.player_id);
+
+      // Parse the lobby data string from the API into a JSON array
+      const newLobbyData = JSON.parse(
+        response.body.lobby_data
+          .replace(/'/g, '"')
+          .replace(/}/g, "},")
+          .replace(/,]/g, "]")
+      );
+      setLobbyData(newLobbyData);
+    }
+  };
+
   return (
-    <Stack anchor="center" interactiveChild={showSettings ? 1 : 0}>
-      <Box
-        direction="column"
-        align="center"
-        background="light-2"
-        elevation="small"
-        margin="small"
-        round
-      >
-        {loading ? (
-          <Spinner size="large" pad="small" />
-        ) : (
-          <Box gap="medium" margin={{ horizontal: "large" }}>
-            <Heading textAlign="center">Score: {score}</Heading>
-            {settingsValues.useOrigin && (
-              <AirportSelect
-                label="Origin:"
-                value={guess.origin}
-                airports={airports}
-                setSelection={(selection: string): void =>
-                  setGuess({ ...guess, origin: selection })
-                }
-              />
-            )}
-            {settingsValues.useDestination && (
-              <AirportSelect
-                label="Destination:"
-                value={guess.destination}
-                airports={airports}
-                setSelection={(selection: string): void =>
-                  setGuess({
-                    ...guess,
-                    destination: selection,
-                  })
-                }
-              />
-            )}
-            <Box width="190px" alignSelf="center" pad={{ vertical: "medium" }}>
-              <Button
-                label="Make Guess"
-                icon={<Location />}
-                onClick={handleSubmit}
-              />
-            </Box>
-          </Box>
-        )}
-        <Button
-          icon={<Performance />}
-          onClick={(): void => setShowSettings(!showSettings)}
-          alignSelf="end"
-          hoverIndicator
-        />
-      </Box>
-      {showResponse && (
-        <PopupMenu
-          message={response}
-          onClose={(): void => setShowResponse(false)}
-        />
-      )}
-      {showSettings && (
+    <Stack anchor="center">
+      {showSettings ? (
         <SettingsMenu
           settingsValues={settingsValues}
           setSettingsValues={setSettingsValues}
+          setShowLobbyMenu={setShowLobbyMenu}
           onClose={(): void => setShowSettings(false)}
+        />
+      ) : (
+        <Box
+          direction="column"
+          align="center"
+          background="light-2"
+          elevation="small"
+          margin="small"
+          round
+        >
+          {loading ? (
+            <Box
+              width="300px"
+              height="361px"
+              align="center"
+              justify="center"
+              gap="medium"
+              margin={{ horizontal: "large" }}
+            >
+              <Spinner size="large" pad="small" />
+            </Box>
+          ) : (
+            <Box gap="medium" align="center" margin={{ horizontal: "large" }}>
+              <Box width="300px" />
+              {lobbyId === "" && (
+                <Heading textAlign="center">Score: {score}</Heading>
+              )}
+              {settingsValues.useOrigin && (
+                <AirportSelect
+                  label="Origin:"
+                  value={guess.origin}
+                  airports={airports}
+                  setSelection={(selection: string): void =>
+                    setGuess({
+                      ...guess,
+                      origin: selection,
+                    })
+                  }
+                />
+              )}
+              {settingsValues.useDestination && (
+                <AirportSelect
+                  label="Destination:"
+                  value={guess.destination}
+                  airports={airports}
+                  setSelection={(selection: string): void =>
+                    setGuess({
+                      ...guess,
+                      destination: selection,
+                    })
+                  }
+                />
+              )}
+              <Box
+                width="190px"
+                alignSelf="center"
+                pad={{ vertical: "medium" }}
+              >
+                <Button
+                  label="Make Guess"
+                  icon={<Location />}
+                  onClick={handleSubmit}
+                />
+              </Box>
+            </Box>
+          )}
+          {lobbyId !== "" && (
+            <Scoreboard
+              refresh={refreshScores}
+              lobbyId={lobbyId}
+              lobbyData={lobbyData}
+              setLobbyData={setLobbyData}
+              setAlert={setAlert}
+            />
+          )}
+          <Button
+            icon={<Performance />}
+            onClick={(): void => setShowSettings(!showSettings)}
+            alignSelf="end"
+            hoverIndicator
+          />
+        </Box>
+      )}
+      {alert.show && (
+        <PopupMenu
+          body={<Text>{alert.message}</Text>}
+          buttons={[
+            {
+              label: "Close",
+              icon: <Close />,
+              onClick: (): void => setAlert({ ...alert, show: false }),
+            },
+          ]}
+        />
+      )}
+      {showLobbyMenu !== LobbyMode.hidden && (
+        <LobbyMenu
+          mode={showLobbyMenu}
+          score={score}
+          setLobbyId={setLobbyId}
+          onJoinLobby={handleJoinLobby}
+          onCreateLobby={handleCreateLobby}
+          onClose={(): void => {
+            setShowSettings(false);
+            setShowLobbyMenu(LobbyMode.hidden);
+          }}
         />
       )}
     </Stack>
