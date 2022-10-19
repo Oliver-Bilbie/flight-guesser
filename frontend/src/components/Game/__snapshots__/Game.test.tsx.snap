@@ -11,8 +11,12 @@ exports[`Matches snapshot 1`] = `
       className="StyledBox-sc-13pk1d4-0 cGYwol"
     >
       <div
-        className="StyledBox-sc-13pk1d4-0 gmiLjI"
-      />
+        className="StyledBox-sc-13pk1d4-0 gMLlqj"
+      >
+        <div
+          className="StyledBox-sc-13pk1d4-0 fsqPOp"
+        />
+      </div>
       <button
         className="StyledButton-sc-323bzc-0 hiNAcw"
         onBlur={[Function]}

@@ -10,18 +10,20 @@ import {
   Button,
 } from "grommet";
 import { Close, Globe, Launch } from "grommet-icons";
-import { SettingsType } from "../../types";
-import PopupMenu from "../PopupMenu/PopupMenu";
+
+import { LobbyMode, SettingsType } from "../../types";
 
 interface SettingsMenuProps {
   settingsValues: SettingsType;
   setSettingsValues: (values: SettingsType) => void;
+  setShowLobbyMenu: (setting: LobbyMode) => void;
   onClose: () => void;
 }
 
 const SettingsMenu: React.FC<SettingsMenuProps> = ({
   settingsValues,
   setSettingsValues,
+  setShowLobbyMenu,
   onClose,
 }): React.ReactElement => {
   const settingsItems = [
@@ -47,8 +49,6 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({
         setSettingsValues({ ...settingsValues, dataSaver: value }),
     },
   ];
-
-  const [showAlert, setShowAlert] = React.useState(false);
 
   return (
     <Card>
@@ -79,20 +79,14 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({
         <Button
           label="Create Lobby"
           icon={<Launch />}
-          onClick={(): void => setShowAlert(true)}
+          onClick={(): void => setShowLobbyMenu(LobbyMode.create)}
         />
         <Button
           label="Join Lobby"
           icon={<Globe />}
-          onClick={(): void => setShowAlert(true)}
+          onClick={(): void => setShowLobbyMenu(LobbyMode.join)}
         />
       </CardFooter>
-      {showAlert && (
-        <PopupMenu
-          message="Coming soon"
-          onClose={(): void => setShowAlert(false)}
-        />
-      )}
     </Card>
   );
 };

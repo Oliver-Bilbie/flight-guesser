@@ -14,7 +14,8 @@ from FlightRadar24.api import FlightRadar24API
 fr_api = FlightRadar24API()
 
 table_name = os.getenv("GAME_DATA_TABLE", None)
-dynamoClient = boto3.client("dynamodb")
+dynamoResource = boto3.resource("dynamodb")
+lobbyTable = dynamoResource.Table(table_name) if table_name != None else None
 
 
 def get_airports():
@@ -151,15 +152,13 @@ def get_unique_lobby_id():
 
     unique = False
 
-    # while not unique:
-    lobby_id = "".join(random.choice(string.ascii_uppercase) for i in range(4))
-    if (
-        dynamoClient.scan(
-            TableName=table_name, FilterExpression=Attr("lobby_id").eq(lobby_id)
-        )["Count"]
-        == 0
-    ):
-        unique = True
+    while not unique:
+        lobby_id = "".join(random.choice(string.ascii_uppercase) for i in range(4))
+        if (
+            lobbyTable.scan(FilterExpression=Attr("lobby_id").eq(lobby_id))["Count"]
+            == 0
+        ):
+            unique = True
 
     return lobby_id
 
@@ -175,8 +174,7 @@ def create_player_data(lobby_id, name, score):
 
     player_id = str(uuid.uuid4())
 
-    dynamoClient.put_item(
-        TableName=table_name,
+    lobbyTable.put_item(
         Item={
             "player_id": player_id,
             "lobby_id": lobby_id,
@@ -200,9 +198,8 @@ def get_player_id(lobby_id, name):
                 Player ID, otherwise this will be an empty string.
     """
 
-    scan_response = dynamoClient.scan(
-        TableName=table_name,
-        FilterExpression=Attr("lobby_id").eq(lobby_id) & Attr("name").eq(name),
+    scan_response = lobbyTable.scan(
+        FilterExpression=Attr("lobby_id").eq(lobby_id) & Attr("player_name").eq(name),
     )
     result = (
         "" if scan_response["Count"] == 0 else scan_response["Items"][0]["player_id"]
@@ -224,13 +221,18 @@ def get_lobby_scores(lobby_id):
     """
 
     lobby_data = []
-    scan_response = dynamoClient.scan(
-        TableName=table_name, FilterExpression=Attr("lobby_id").eq(lobby_id)
-    )["Items"]
+    scan_response = lobbyTable.scan(FilterExpression=Attr("lobby_id").eq(lobby_id))[
+        "Items"
+    ]
 
     for entry in scan_response:
         lobby_data = np.append(
-            lobby_data, {"name": entry["name"], "score": int(entry["score"])}
+            lobby_data,
+            {
+                "name": entry["player_name"],
+                "player_id": entry["player_id"],
+                "score": int(entry["score"]),
+            },
         )
 
     lobby_data = str(lobby_data)  # string type allows for json serialization
@@ -247,8 +249,7 @@ def update_player_score(player_id, score):
         score [integer]: Points to add to the player's score
     """
 
-    dynamoClient.update_item(
-        TableName=table_name,
+    lobbyTable.update_item(
         Key={"player_id": player_id},
         UpdateExpression="SET score = score + :val",
         ExpressionAttributeValues={":val": score},
@@ -260,21 +261,19 @@ def delete_lobby():
     Deletes data older than one day from the dynamo table.
     """
 
-    scan_response = dynamoClient.scan(TableName=table_name)["Items"]
+    scan_response = lobbyTable.scan()["Items"]
 
     for entry in scan_response:
         date = datetime(
-            year=entry["last_interaction"][:4],
-            month=entry["last_interaction"][5:7],
-            day=entry["last_interaction"][8:10],
-            hour=entry["last_interaction"][11:13],
-            minute=entry["last_interaction"][14:],
+            year=int(entry["last_interaction"][:4]),
+            month=int(entry["last_interaction"][5:7]),
+            day=int(entry["last_interaction"][8:10]),
+            hour=int(entry["last_interaction"][11:13]),
+            minute=int(entry["last_interaction"][14:]),
         )
 
         if date < datetime.now() - timedelta(days=1):
-            dynamoClient.delete_item(
-                TableName=table_name, Key={"player_id": entry["player_id"]}
-            )
+            lobbyTable.delete_item(Key={"player_id": entry["player_id"]})
 
 
 def remove_escape_characters(items):

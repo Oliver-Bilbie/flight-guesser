@@ -10,6 +10,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ### Added
 
 - Added support for multiplayer lobbies using DynamoDB
+    - Players may now create or join a lobby from the settings menu.
+    - Whilst a player is a member of a lobby, a leaderboard will be displayed for all players in the same lobby.
+    - Players may re-join a lobby using the same name to assume their previous score.
+    - Inactive players will be removed from lobbies after 24 hours.
 
 ## 1.2.2
 

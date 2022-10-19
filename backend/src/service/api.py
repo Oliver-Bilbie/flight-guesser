@@ -75,7 +75,9 @@ def create_lobby(event, context):
         context: AWS Lambda context
 
     Returns a json object with:
-        "response" (string): id of the lobby
+        "response": a json object with:
+            "player_id": unique ID for the player
+            "lobby_id": unique ID of the lobby
         "status": request status code
     """
 
@@ -137,9 +139,8 @@ def get_lobby_scores(event, context):
         "status": request status code
     """
 
-    body = event.get("body")
-    body = json.loads(body)
-    lobby_id = body.get("lobby_id")
+    queryStringParameters = event.get("queryStringParameters")
+    lobby_id = queryStringParameters.get("lobby_id")
 
     response = controller.get_lobby_scores(lobby_id)
 

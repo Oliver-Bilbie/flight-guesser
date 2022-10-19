@@ -54,7 +54,7 @@ functions:
     memorySize: 128
     events:
       - httpApi:
-          path: /
+          path: /turn
           method: post
     timeout: 25
     iamRoleStatementsName: handle-turn-role
@@ -131,6 +131,13 @@ functions:
       - httpApi:
           path: /lobby
           method: get
+          request:
+            parameters:
+              querystrings:
+                lobby_id: true
+              template:
+                application/json: >
+                  {"lobby_id": "$input.params('lobby_id')"}
     timeout: 25
     iamRoleStatementsName: get-lobby-scores-role
     iamRoleStatements:
@@ -159,7 +166,7 @@ functions:
       - Effect: Allow
         Action:
           - dynamodb:Scan
-          - dynamodb:Delete
+          - dynamodb:DeleteItem
         Resource: arn:aws:dynamodb:eu-west-1:082862148481:table/flight-guesser-game-data
     layers:
       - { Ref: PythonRequirementsLambdaLayer }

@@ -93,15 +93,33 @@ def create_lobby(name, score):
         score [string]: Score of the player
 
     Returns a json object with:
-        "response" (string): id of the lobby
+        "response": a json object with:
+            "player_id": unique ID for the player
+            "lobby_id": unique ID of the lobby
         "status": request status code
     """
 
     try:
         lobby_id = service.get_unique_lobby_id()
         player_id = service.create_player_data(lobby_id, name, score)
+        lobby_data = str(
+            [
+                {
+                    "name": name,
+                    "player_id": player_id,
+                    "score": score,
+                }
+            ]
+        )
         response = json.dumps(
-            {"response": {"lobby_id": lobby_id, "player_id": player_id}, "status": 200}
+            {
+                "response": {
+                    "lobby_id": lobby_id,
+                    "player_id": player_id,
+                    "lobby_data": lobby_data,
+                },
+                "status": 200,
+            }
         )
 
     except:

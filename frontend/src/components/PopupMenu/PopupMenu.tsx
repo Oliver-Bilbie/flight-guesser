@@ -1,17 +1,18 @@
 import React from "react";
-import { Box, Button, Layer, Text } from "grommet";
+import { Box, Button, Layer } from "grommet";
+import { ButtonType } from "../../types";
 
 interface PopupMenuProps {
-  message: string;
-  onClose: () => void;
+  body: React.ReactElement;
+  buttons: ButtonType[];
 }
 
 const Game: React.FC<PopupMenuProps> = ({
-  message,
-  onClose,
+  body,
+  buttons,
 }): React.ReactElement => {
   return (
-    <Layer onEsc={onClose} onClickOutside={onClose}>
+    <Layer>
       <Box
         width="medium"
         pad="small"
@@ -19,9 +20,18 @@ const Game: React.FC<PopupMenuProps> = ({
         align="center"
         justify="center"
       >
-        <Text>{message}</Text>
-        <Box width="xsmall">
-          <Button label="Close" onClick={onClose} />
+        {body}
+        <Box direction="row" justify="center" gap="medium">
+          {buttons.map((button: ButtonType) => {
+            return (
+              <Button
+                label={button.label}
+                icon={button.icon}
+                onClick={button.onClick}
+                key={button.label}
+              />
+            );
+          })}
         </Box>
       </Box>
     </Layer>

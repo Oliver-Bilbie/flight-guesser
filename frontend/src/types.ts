@@ -1,3 +1,10 @@
+import { ReactElement } from "react";
+
+export type AlertType = {
+  message: string;
+  show: boolean;
+};
+
 export type ResponseType = {
   message?: string;
   body?: string;
@@ -17,8 +24,26 @@ export type FlightData = {
   score: string;
 };
 
+export type PlayerData = {
+  name: string;
+  player_id: string;
+  score: number;
+};
+
 export type SettingsType = {
   useOrigin: boolean;
   useDestination: boolean;
   dataSaver: boolean;
 };
+
+export type ButtonType = {
+  label: string;
+  icon: ReactElement;
+  onClick: () => void;
+};
+
+export enum LobbyMode {
+  hidden,
+  join,
+  create,
+}

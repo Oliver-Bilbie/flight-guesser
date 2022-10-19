@@ -49,3 +49,7 @@ int-test:
 frontend-test:
 	@echo "[INFO] Running frontend tests"
 	@cd frontend && yarn test
+
+deploy-backend:
+	@echo "[INFO] Deploying backend to production environment"
+	@cd backend && sls deploy -s prd

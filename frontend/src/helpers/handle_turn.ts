@@ -1,3 +1,4 @@
+import { TURN_ENDPOINT } from "../config";
 import { ResponseType, ResultType, FlightData } from "../types";
 
 export const handleTurnApi = (
@@ -5,13 +6,11 @@ export const handleTurnApi = (
   latitude: number,
   origin: string,
   destination: string,
-  data_saver: boolean,
+  player_id: string,
   onComplete: (response: ResponseType) => void
 ): void => {
   const request = new XMLHttpRequest();
-  const body = `{"longitude": ${longitude}, "latitude": ${latitude}, "origin": "${origin}", "destination": "${destination}", "data_saver": "${
-    data_saver ? "y" : "n"
-  }"}`;
+  const body = `{"longitude": ${longitude}, "latitude": ${latitude}, "origin": "${origin}", "destination": "${destination}", "player_id": "${player_id}"}`;
 
   let response = {};
 
@@ -40,7 +39,7 @@ export const handleTurnApi = (
   request.addEventListener("load", () => {
     onComplete(response);
   });
-  request.open("POST", process.env.REACT_APP_ENDPOINT as string);
+  request.open("POST", TURN_ENDPOINT);
   request.send(body);
 };
 
