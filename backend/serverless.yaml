@@ -13,11 +13,11 @@ custom:
       name: requirements-layer
       description: "Python requirements lambda layer"
       compatibleRuntimes:
-        - python3.7
+        - python3.9
 provider:
   name: aws
   region: eu-west-1
-  runtime: python3.7
+  runtime: python3.9
   httpApi:
     cors:
       allowedOrigins:

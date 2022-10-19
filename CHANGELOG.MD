@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## 1.3.1
+
+### Security
+
+- Updated backend from Python 3.7 to 3.9
+- Updated frontend dependencies
+
 ## 1.3.0
 
 ### Added
@@ -17,13 +24,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## 1.2.2
 
-### Updated
+### Changed
 
 - Added a backend funciton to remove escape characters from airport names
 
 ## 1.2.1
 
-### Updated
+### Changed
 
 - Improved UI on small displays
 
@@ -49,13 +56,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## 1.1.4
 
-### Updated
+### Changed
 
 - Added frontend tests
 
 ## 1.1.3
 
-### Updated
+### Changed
 
 - Converted frontend from JavaScript into TypeScript
 
@@ -71,7 +78,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## 1.1.1
 
-### Updated
+### Changed
 
 - UI Tidying
 
