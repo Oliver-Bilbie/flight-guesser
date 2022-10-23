@@ -10,6 +10,7 @@ npm install
 cd ..
 
 echo "[INFO] Deploying backend"
+terraform force-unlock 3a750690-52f0-11ed-8142-0631a5021135
 make deploy-backend
 
 echo "[INFO] Installing terraform"
