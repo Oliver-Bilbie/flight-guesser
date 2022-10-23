@@ -1,7 +1,11 @@
 !/bin/bash
 
-echo "[INFO] Installing serverless framework"
+set -Eeo pipefail
+trap "pipeline_notification 'fail' && exit 1" ERR
+
+echo "[INFO] Installing serverless framework and required plugins"
 npm install -g serverless
+cd backend && npm install
 
 echo "[INFO] Installing terraform"
 sudo yum install -y yum-utils
