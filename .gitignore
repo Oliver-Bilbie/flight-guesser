@@ -4,6 +4,7 @@ backend/.serverless
 backend/.mypy_cache
 backend/.pytest_cache
 backend/target
+backend/requirements.txt
 
 # Frontend
 frontend/node_modules

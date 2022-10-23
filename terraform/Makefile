@@ -1,4 +1,3 @@
-BUILD_ENV = "development"
 ENV_VAR_FILE := "./environments/${BUILD_ENV}.tfvars"
 
 init:

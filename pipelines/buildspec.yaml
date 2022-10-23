@@ -1,0 +1,4 @@
+phases:
+  build:
+    commands:
+      - bash pipelines/${env:BUILD_ENV}.sh

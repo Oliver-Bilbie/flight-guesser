@@ -51,5 +51,7 @@ frontend-test:
 	@cd frontend && yarn test
 
 deploy-backend:
-	@echo "[INFO] Deploying backend to production environment"
-	@cd backend && sls deploy -s prd
+	@echo "[INFO] Deploying backend to ${BUILD_ENV} environment"
+	@cd backend && pipenv requirements > requirements.txt
+	@cd backend && sls deploy -s ${STAGE}
+	
