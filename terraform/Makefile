@@ -1,10 +1,11 @@
-ENV_VAR_FILE := "./environments/${BUILD_ENV}.tfvars"
+ENV_VAR_FILE := "./environments/${BUILD_ENV}/terraform.tfvars"
+BACKEND_CONF := "./environments/${BUILD_ENV}/backend.conf"
 
 init:
 	@echo "[INFO] Removing cached terraform modules"
 	@rm -Rf .terraform/modules
 	@echo "[INFO] Initialiasing terraform in ${BUILD_ENV} environment"
-	@terraform init -reconfigure
+	@terraform init -reconfigure -backend-config=${BACKEND_CONF}
 	@echo "[INFO] Validating terraform code"
 	@terraform validate
 
