@@ -11,7 +11,9 @@ You will score points based on accuracy. Data is sourced from FlightRadar24 usin
 -   Set game rules for lobby members to match those of the host
 -   Log guessed flights for each player to the database to avoid cheating
 -   Improve input validation
+-   Fix stalling on first location request
 -   Automatically fetch lobby data periodically when data saver is off
 -   Refactoring
 -   Write and update tests
 -   Retrieve additional flight data if data saver is off
+-   Redesign the dynamo table to use composite keys
