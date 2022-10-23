@@ -16,7 +16,7 @@ plan:
 	@echo "[INFO] Running a terraform plan in ${BUILD_ENV} environment"
 	@terraform plan -parallelism=30 -refresh=true -out=plan.out -var-file=${ENV_VAR_FILE}
 
-apply: validate
+apply:
 	@echo "[INFO] Deploying the infrastructure in ${BUILD_ENV} environment"
 	@terraform apply -auto-approve -var-file=${ENV_VAR_FILE}
 
