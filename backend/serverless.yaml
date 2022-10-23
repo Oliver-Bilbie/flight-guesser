@@ -58,7 +58,7 @@ functions:
           path: /turn
           method: post
     timeout: 25
-    iamRoleStatementsName: handle-turn-role-${env:STAGE}
+    iamRoleStatementsName: flight-guesser-handle-turn-role-${env:STAGE}
     iamRoleStatements:
       - Effect: Allow
         Action:
@@ -83,7 +83,7 @@ functions:
           path: /lobby
           method: put
     timeout: 25
-    iamRoleStatementsName: create-lobby-role-${env:STAGE}
+    iamRoleStatementsName: flight-guesser-create-lobby-role-${env:STAGE}
     iamRoleStatements:
       - Effect: Allow
         Action:
@@ -108,7 +108,7 @@ functions:
           path: /lobby
           method: post
     timeout: 25
-    iamRoleStatementsName: join-lobby-role-${env:STAGE}
+    iamRoleStatementsName: flight-guesser-join-lobby-role-${env:STAGE}
     iamRoleStatements:
       - Effect: Allow
         Action:
@@ -140,7 +140,7 @@ functions:
                 application/json: >
                   {"lobby_id": "$input.params('lobby_id')"}
     timeout: 25
-    iamRoleStatementsName: get-lobby-scores-role-${env:STAGE}
+    iamRoleStatementsName: flight-guesser-get-lobby-scores-role-${env:STAGE}
     iamRoleStatements:
       - Effect: Allow
         Action:
@@ -162,7 +162,7 @@ functions:
     events:
       - schedule: cron(0 12 ? * * *)
     timeout: 25
-    iamRoleStatementsName: delete-lobby-role-${env:STAGE}
+    iamRoleStatementsName: flight-guesser-delete-lobby-role-${env:STAGE}
     iamRoleStatements:
       - Effect: Allow
         Action:
