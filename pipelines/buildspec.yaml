@@ -3,6 +3,6 @@ version: 0.2
 phases:
   build:
     commands:
-      - echo ${env:BUILD_ENV}
-      - echo pipelines/${env:BUILD_ENV}.sh
-      - bash pipelines/${env:BUILD_ENV}.sh
+      - echo ${BUILD_ENV}
+      - echo pipelines/${BUILD_ENV}.sh
+      - bash pipelines/${BUILD_ENV}.sh
