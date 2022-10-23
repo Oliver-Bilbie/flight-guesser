@@ -26,148 +26,148 @@ provider:
       allowedMethods:
         - '*'
 functions:
-  get_airports:
-    handler: src/service/api.get_airports
-    package:
-      individually: true
-      include:
-        - src/service/*
-      exclude:
-        - ./**
-    memorySize: 128
-    events:
-      - httpApi:
-          path: /airports
-          method: get
-    timeout: 10
-    layers:
-      - { Ref: PythonRequirementsLambdaLayer }
-  handle_turn:
-    handler: src/service/api.handle_turn
-    environment:
-      GAME_DATA_TABLE: flight-guesser-lobby-table-${env:STAGE}
-    package:
-      individually: true
-      include:
-        - src/service/*
-      exclude:
-        - ./**
-    memorySize: 128
-    events:
-      - httpApi:
-          path: /turn
-          method: post
-    timeout: 25
-    iamRoleStatementsName: handle-turn-role-${env:STAGE}
-    iamRoleStatements:
-      - Effect: Allow
-        Action:
-          - dynamodb:Scan
-          - dynamodb:UpdateItem
-        Resource: arn:aws:dynamodb:eu-west-1:082862148481:table/flight-guesser-lobby-table-${env:STAGE}
-    layers:
-      - { Ref: PythonRequirementsLambdaLayer }
-  create_lobby:
-    handler: src/service/api.create_lobby
-    environment:
-      GAME_DATA_TABLE: flight-guesser-lobby-table-${env:STAGE}
-    package:
-      individually: true
-      include:
-        - src/service/*
-      exclude:
-        - ./**
-    memorySize: 128
-    events:
-      - httpApi:
-          path: /lobby
-          method: put
-    timeout: 25
-    iamRoleStatementsName: create-lobby-role-${env:STAGE}
-    iamRoleStatements:
-      - Effect: Allow
-        Action:
-          - dynamodb:Scan
-          - dynamodb:PutItem
-        Resource: arn:aws:dynamodb:eu-west-1:082862148481:table/flight-guesser-lobby-table-${env:STAGE}
-    layers:
-      - { Ref: PythonRequirementsLambdaLayer }
-  join_lobby:
-    handler: src/service/api.join_lobby
-    environment:
-      GAME_DATA_TABLE: flight-guesser-lobby-table-${env:STAGE}
-    package:
-      individually: true
-      include:
-        - src/service/*
-      exclude:
-        - ./**
-    memorySize: 128
-    events:
-      - httpApi:
-          path: /lobby
-          method: post
-    timeout: 25
-    iamRoleStatementsName: join-lobby-role-${env:STAGE}
-    iamRoleStatements:
-      - Effect: Allow
-        Action:
-          - dynamodb:Scan
-          - dynamodb:PutItem
-        Resource: arn:aws:dynamodb:eu-west-1:082862148481:table/flight-guesser-lobby-table-${env:STAGE}
-    layers:
-      - { Ref: PythonRequirementsLambdaLayer }
-  get_lobby_scores:
-    handler: src/service/api.get_lobby_scores
-    environment:
-      GAME_DATA_TABLE: flight-guesser-lobby-table-${env:STAGE}
-    package:
-      individually: true
-      include:
-        - src/service/*
-      exclude:
-        - ./**
-    memorySize: 128
-    events:
-      - httpApi:
-          path: /lobby
-          method: get
-          request:
-            parameters:
-              querystrings:
-                lobby_id: true
-              template:
-                application/json: >
-                  {"lobby_id": "$input.params('lobby_id')"}
-    timeout: 25
-    iamRoleStatementsName: get-lobby-scores-role-${env:STAGE}
-    iamRoleStatements:
-      - Effect: Allow
-        Action:
-          - dynamodb:Scan
-        Resource: arn:aws:dynamodb:eu-west-1:082862148481:table/flight-guesser-lobby-table-${env:STAGE}
-    layers:
-      - { Ref: PythonRequirementsLambdaLayer }
-  delete_lobby:
-    handler: src/service/api.delete_lobby
-    environment:
-      GAME_DATA_TABLE: flight-guesser-lobby-table-${env:STAGE}
-    package:
-      individually: true
-      include:
-        - src/service/*
-      exclude:
-        - ./**
-    memorySize: 128
-    events:
-      - schedule: cron(0 12 ? * * *)
-    timeout: 25
-    iamRoleStatementsName: delete-lobby-role-${env:STAGE}
-    iamRoleStatements:
-      - Effect: Allow
-        Action:
-          - dynamodb:Scan
-          - dynamodb:DeleteItem
-        Resource: arn:aws:dynamodb:eu-west-1:082862148481:table/flight-guesser-lobby-table-${env:STAGE}
-    layers:
-      - { Ref: PythonRequirementsLambdaLayer }
+  # get_airports:
+  #   handler: src/service/api.get_airports
+  #   package:
+  #     individually: true
+  #     include:
+  #       - src/service/*
+  #     exclude:
+  #       - ./**
+  #   memorySize: 128
+  #   events:
+  #     - httpApi:
+  #         path: /airports
+  #         method: get
+  #   timeout: 10
+  #   layers:
+  #     - { Ref: PythonRequirementsLambdaLayer }
+  # handle_turn:
+  #   handler: src/service/api.handle_turn
+  #   environment:
+  #     GAME_DATA_TABLE: flight-guesser-lobby-table-${env:STAGE}
+  #   package:
+  #     individually: true
+  #     include:
+  #       - src/service/*
+  #     exclude:
+  #       - ./**
+  #   memorySize: 128
+  #   events:
+  #     - httpApi:
+  #         path: /turn
+  #         method: post
+  #   timeout: 25
+  #   iamRoleStatementsName: handle-turn-role-${env:STAGE}
+  #   iamRoleStatements:
+  #     - Effect: Allow
+  #       Action:
+  #         - dynamodb:Scan
+  #         - dynamodb:UpdateItem
+  #       Resource: arn:aws:dynamodb:eu-west-1:082862148481:table/flight-guesser-lobby-table-${env:STAGE}
+  #   layers:
+  #     - { Ref: PythonRequirementsLambdaLayer }
+  # create_lobby:
+  #   handler: src/service/api.create_lobby
+  #   environment:
+  #     GAME_DATA_TABLE: flight-guesser-lobby-table-${env:STAGE}
+  #   package:
+  #     individually: true
+  #     include:
+  #       - src/service/*
+  #     exclude:
+  #       - ./**
+  #   memorySize: 128
+  #   events:
+  #     - httpApi:
+  #         path: /lobby
+  #         method: put
+  #   timeout: 25
+  #   iamRoleStatementsName: create-lobby-role-${env:STAGE}
+  #   iamRoleStatements:
+  #     - Effect: Allow
+  #       Action:
+  #         - dynamodb:Scan
+  #         - dynamodb:PutItem
+  #       Resource: arn:aws:dynamodb:eu-west-1:082862148481:table/flight-guesser-lobby-table-${env:STAGE}
+  #   layers:
+  #     - { Ref: PythonRequirementsLambdaLayer }
+  # join_lobby:
+  #   handler: src/service/api.join_lobby
+  #   environment:
+  #     GAME_DATA_TABLE: flight-guesser-lobby-table-${env:STAGE}
+  #   package:
+  #     individually: true
+  #     include:
+  #       - src/service/*
+  #     exclude:
+  #       - ./**
+  #   memorySize: 128
+  #   events:
+  #     - httpApi:
+  #         path: /lobby
+  #         method: post
+  #   timeout: 25
+  #   iamRoleStatementsName: join-lobby-role-${env:STAGE}
+  #   iamRoleStatements:
+  #     - Effect: Allow
+  #       Action:
+  #         - dynamodb:Scan
+  #         - dynamodb:PutItem
+  #       Resource: arn:aws:dynamodb:eu-west-1:082862148481:table/flight-guesser-lobby-table-${env:STAGE}
+  #   layers:
+  #     - { Ref: PythonRequirementsLambdaLayer }
+  # get_lobby_scores:
+  #   handler: src/service/api.get_lobby_scores
+  #   environment:
+  #     GAME_DATA_TABLE: flight-guesser-lobby-table-${env:STAGE}
+  #   package:
+  #     individually: true
+  #     include:
+  #       - src/service/*
+  #     exclude:
+  #       - ./**
+  #   memorySize: 128
+  #   events:
+  #     - httpApi:
+  #         path: /lobby
+  #         method: get
+  #         request:
+  #           parameters:
+  #             querystrings:
+  #               lobby_id: true
+  #             template:
+  #               application/json: >
+  #                 {"lobby_id": "$input.params('lobby_id')"}
+  #   timeout: 25
+  #   iamRoleStatementsName: get-lobby-scores-role-${env:STAGE}
+  #   iamRoleStatements:
+  #     - Effect: Allow
+  #       Action:
+  #         - dynamodb:Scan
+  #       Resource: arn:aws:dynamodb:eu-west-1:082862148481:table/flight-guesser-lobby-table-${env:STAGE}
+  #   layers:
+  #     - { Ref: PythonRequirementsLambdaLayer }
+  # delete_lobby:
+  #   handler: src/service/api.delete_lobby
+  #   environment:
+  #     GAME_DATA_TABLE: flight-guesser-lobby-table-${env:STAGE}
+  #   package:
+  #     individually: true
+  #     include:
+  #       - src/service/*
+  #     exclude:
+  #       - ./**
+  #   memorySize: 128
+  #   events:
+  #     - schedule: cron(0 12 ? * * *)
+  #   timeout: 25
+  #   iamRoleStatementsName: delete-lobby-role-${env:STAGE}
+  #   iamRoleStatements:
+  #     - Effect: Allow
+  #       Action:
+  #         - dynamodb:Scan
+  #         - dynamodb:DeleteItem
+  #       Resource: arn:aws:dynamodb:eu-west-1:082862148481:table/flight-guesser-lobby-table-${env:STAGE}
+  #   layers:
+  #     - { Ref: PythonRequirementsLambdaLayer }
