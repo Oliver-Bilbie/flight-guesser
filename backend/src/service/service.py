@@ -163,10 +163,17 @@ def get_unique_lobby_id():
     return lobby_id
 
 
-def create_player_data(lobby_id, name, score):
+def create_player_data(lobby_id, name, score, guessed_flights, rules):
     """
     Generates a unique ID to identify a player, and creates a record in the
     dynamo table corresponding to the player.
+
+    Args:
+        lobby_id [string]: ID of the lobby
+        name [string]: Name of the player
+        score [string]: Score of the player
+        guessed_flights [string[]]: Flight IDs previously guessed by the player
+        rules [integer]: Integer encoded ruleset of the lobby
 
     Returns:
         string: Player ID
@@ -180,6 +187,8 @@ def create_player_data(lobby_id, name, score):
             "lobby_id": lobby_id,
             "player_name": name,
             "score": int(score),
+            "guessed_flights": guessed_flights,
+            "rules": rules,
             "last_interaction": datetime.now().strftime("%Y-%m-%d %H:%M"),
         },
     )
@@ -192,6 +201,10 @@ def get_player_id(lobby_id, name):
     Checks by name whether a player exists within a given lobby.
     If so, the function will return their existing player_id.
     Otherwise the function will generate a player_id for the player.
+
+    Args:
+        lobby_id [string]: ID of the lobby
+        name [string]: Name of the player
 
     Returns:
         string: If the player already exists, this will be their Unique
@@ -206,6 +219,36 @@ def get_player_id(lobby_id, name):
     )
 
     return result
+
+
+def get_lobby_rules(lobby_id):
+    """
+    Returns an integer corresponding to the specified lobby's rules.
+
+    Args:
+        lobby_id [string]: ID of the lobby
+
+    Returns:
+        int: Integer-encoded lobby rules
+    """
+
+    scan_response = lobbyTable.scan(FilterExpression=Attr("lobby_id").eq(lobby_id))[
+        "Items"
+    ]
+
+    for entry in scan_response:
+        lobby_data = np.append(
+            lobby_data,
+            {
+                "name": entry["player_name"],
+                "player_id": entry["player_id"],
+                "score": int(entry["score"]),
+            },
+        )
+
+    lobby_data = str(lobby_data)  # string type allows for json serialization
+
+    return lobby_data
 
 
 def get_lobby_scores(lobby_id):

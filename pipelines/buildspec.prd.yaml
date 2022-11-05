@@ -3,4 +3,4 @@ version: 0.2
 phases:
   build:
     commands:
-      - bash pipelines/${BUILD_ENV}.sh
+      - bash pipelines/deploy.sh

@@ -54,4 +54,8 @@ deploy-backend:
 	@echo "[INFO] Deploying backend to ${BUILD_ENV} environment"
 	@cd backend && pipenv requirements > requirements.txt
 	@cd backend && sls deploy -s ${STAGE}
+
+build-frontend:
+	@echo "[INFO] Deploying frontend to ${BUILD_ENV} environment"
+	@cd frontend && yarn && yarn build:${STAGE}
 	
