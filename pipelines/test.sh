@@ -1,10 +1,18 @@
 !/bin/bash
 
 set -Eeo pipefail
-trap "echo 'fail' && exit 1" ERR
+trap "echo '[FAILED]' && exit 1" ERR
 
-echo "[INFO] Running backend tests"
-echo "Placeholder"
+echo "[INFO] Installing dependencies"
+make install-deps
+make install-dev-deps
 
-echo "[INFO] Running frontend tests"
-echo "Placeholder"
+echo "[INFO] Running tests"
+make lint
+make bandit
+make type-check
+make unit-test
+make int-test
+make frontend-test
+
+echo "[INFO] Testing successful"

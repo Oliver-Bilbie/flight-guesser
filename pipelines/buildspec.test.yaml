@@ -3,4 +3,4 @@ version: 0.2
 phases:
   build:
     commands:
-      - bash pipelines/deploy.sh
+      - bash pipelines/test.sh
