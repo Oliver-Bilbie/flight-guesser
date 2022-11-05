@@ -1,16 +1,15 @@
-bootstrap: install-deps install-dev-deps
+bootstrap: install-dev-deps
 	@pre-commit install
 
 install-deps:
 	@echo "[INFO] Installing dependencies"
-	@cd backend && python -m pipenv lock --pre
 	@cd backend && python -m pipenv install
-	@cd frontend && yarn
+	@cd frontend && yarn --production
 
 install-dev-deps:
 	@echo "[INFO] Installing dev dependencies"
-	@cd backend && python -m pipenv lock --pre
 	@cd backend && python -m pipenv install --dev
+	@cd frontend && yarn
 
 format-src:
 	@echo "[INFO] Formatting backend source code using black"
@@ -22,7 +21,7 @@ lint:
 	@echo "[INFO] Linting backend source code using pylint"
 	@cd backend && python -m pipenv run pylint --fail-under 7.5 src/service/*
 	@echo "[INFO] Linting frontend source code using eslint"
-	@cd frontend && yarn lint
+	@cd frontend/src && yarn lint
 
 bandit:
 	@echo "[INFO] Linting source code using bandit to look for common security issues in python source"
@@ -51,5 +50,11 @@ frontend-test:
 	@cd frontend && yarn test
 
 deploy-backend:
-	@echo "[INFO] Deploying backend to production environment"
-	@cd backend && sls deploy -s prd
+	@echo "[INFO] Deploying backend to ${BUILD_ENV} environment"
+	@cd backend && pipenv requirements > requirements.txt
+	@cd backend && sls deploy -s ${STAGE}
+
+build-frontend:
+	@echo "[INFO] Deploying frontend to ${BUILD_ENV} environment"
+	@cd frontend && yarn && yarn build:${STAGE}
+	

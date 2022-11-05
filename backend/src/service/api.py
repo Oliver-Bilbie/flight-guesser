@@ -71,7 +71,7 @@ def create_lobby(event, context):
 
     Args:
         event: AWS Lambda event. "body" should be a json string containing
-               "name" and "score".
+               "name", "score", "guessed_flights", and "rules".
         context: AWS Lambda context
 
     Returns a json object with:
@@ -85,8 +85,10 @@ def create_lobby(event, context):
     body = json.loads(body)
     name = body.get("name")
     score = body.get("score")
+    guessed_flights = body.get("guessed_flights")
+    rules = body.get("rules")
 
-    response = controller.create_lobby(name, score)
+    response = controller.create_lobby(name, score, guessed_flights, rules)
 
     return response
 
@@ -99,12 +101,14 @@ def join_lobby(event, context):
 
     Args:
         event: AWS Lambda event. "body" should be a json string containing
-               "lobby_id", "name", and "score".
+               "lobby_id", "name", "score", and "guessed_flights".
         context: AWS Lambda context
 
     Returns a json object with:
         "response": a json object with:
             "player_id": unique ID for the player
+            "guessed_flights": a list of previous guessed flight IDs
+            "rules": enum of the ruleset of the lobby
             "lobby_data": [{"name": string, "score": string}, ...]
         "status": request status code
     """
@@ -114,8 +118,9 @@ def join_lobby(event, context):
     lobby_id = body.get("lobby_id")
     name = body.get("name")
     score = body.get("score")
+    guessed_flights = body.get("guessed_flights")
 
-    response = controller.join_lobby(lobby_id, name, score)
+    response = controller.join_lobby(lobby_id, name, score, guessed_flights)
 
     return response
 

@@ -4,8 +4,10 @@ repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v3.2.0
     hooks:
-      - id: mixed-line-ending
+      - id: check-merge-conflict
       - id: detect-aws-credentials
+      - id: mixed-line-ending
+      - id: check-yaml
   - repo: local
     hooks:
       - id: format-src
