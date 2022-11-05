@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## 1.4.0
+
+### Added
+
+- Added CI/CD Pipelines to automatically deploy the application
+    - Added terraform modules to build the DynamoDB table
+    - Added build scripts for use by corresponding AWS CodeBuild projects
+    - CodeBuild will now deploy the terraform, frontend, and backend into a development environment upon creating a pull request
+    - CodeBuild will now run tests upon creating a pull request
+    - CodeBuild will now deploy the terraform, frontend, and backend into a production environment upon merge into main
+
 ## 1.3.1
 
 ### Security
@@ -26,7 +37,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Changed
 
-- Added a backend funciton to remove escape characters from airport names
+- Added a backend function to remove escape characters from airport names
 
 ## 1.2.1
 
@@ -41,12 +52,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 #### Frontend
 
 - Added SettingsMenu component
-- Added inputs for guessing an origin, desintation, or both
+- Added inputs for guessing an origin, destination, or both
 
 #### Backend
 
 - Added handling for origin guesses
-- Changes naming convention for desintation airports from "airport" to "destination"
+- Changed naming convention for destination airports from "airport" to "destination"
 
 ## 1.1.5
 

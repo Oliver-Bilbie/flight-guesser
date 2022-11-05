@@ -17,3 +17,4 @@ You will score points based on accuracy. Data is sourced from FlightRadar24 usin
 -   Write and update tests
 -   Retrieve additional flight data if data saver is off
 -   Redesign the dynamo table to use composite keys
+-   Documentation
