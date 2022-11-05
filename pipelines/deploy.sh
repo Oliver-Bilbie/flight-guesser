@@ -30,4 +30,4 @@ if [ $STAGE == "prd" ]; then
 else
     BUCKET_NAME="s3://dev.oliver-bilbie.co.uk"
 fi
-aws s3 cp --recursive dist $BUCKET_NAME
+aws s3 cp --recursive frontend/build/* $BUCKET_NAME
