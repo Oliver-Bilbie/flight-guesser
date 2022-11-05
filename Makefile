@@ -1,16 +1,15 @@
-bootstrap: install-deps install-dev-deps
+bootstrap: install-dev-deps
 	@pre-commit install
 
 install-deps:
 	@echo "[INFO] Installing dependencies"
-	@cd backend && python -m pipenv lock --pre
 	@cd backend && python -m pipenv install
-	@cd frontend && yarn
+	@cd frontend && yarn --production
 
 install-dev-deps:
 	@echo "[INFO] Installing dev dependencies"
-	@cd backend && python -m pipenv lock --pre
 	@cd backend && python -m pipenv install --dev
+	@cd frontend && yarn
 
 format-src:
 	@echo "[INFO] Formatting backend source code using black"

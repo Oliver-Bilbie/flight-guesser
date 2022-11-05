@@ -4,7 +4,6 @@ set -Eeo pipefail
 trap "echo '[FAILED]' && exit 1" ERR
 
 echo "[INFO] Installing dependencies"
-make install-deps
 make install-dev-deps
 
 echo "[INFO] Running tests"
