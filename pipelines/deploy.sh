@@ -11,6 +11,7 @@ sudo yum -y install terraform
 # Deploy the terraform
 cd terraform
 make init
+make destroy
 make apply
 cd ..
 
