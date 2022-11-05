@@ -9,7 +9,6 @@ make install-dev-deps
 echo "[INFO] Running tests"
 make lint
 make bandit
-make type-check
 make unit-test
 make int-test
 make frontend-test
