@@ -52,7 +52,7 @@ frontend-test:
 deploy-backend:
 	@echo "[INFO] Deploying backend to ${BUILD_ENV} environment"
 	@cd backend && pipenv requirements > requirements.txt
-	@cd backend && sls deploy -s ${STAGE}
+	@cd backend && npx sls deploy -s ${STAGE}
 
 build-frontend:
 	@echo "[INFO] Deploying frontend to ${BUILD_ENV} environment"
