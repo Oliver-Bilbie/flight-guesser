@@ -1,6 +1,6 @@
 {
     "name": "flight-guesser-frontend",
-    "version": "1.4.0",
+    "version": "1.4.1",
     "private": true,
     "dependencies": {
         "@testing-library/dom": "^7.21.4",
@@ -42,7 +42,9 @@
         "ansi-html": "^0.0.8",
         "glob-parent": "^5.1.2",
         "nth-check": "^2.0.1",
-        "browserslist": "^4.16.5"
+        "browserslist": "^4.16.5",
+        "loader-utils": "^2.0.3",
+        "minimatch": "^3.0.5"
     },
     "scripts": {
         "start": "react-scripts start",
@@ -52,7 +54,7 @@
         "eject": "react-scripts eject",
         "env": "node -r dotenv/config src/index.tsx",
         "pretty": "prettier --write \"src/**/*.{tsx,ts}\"",
-        "lint": "eslint ./"
+        "lint": "eslint src/*"
     },
     "eslintConfig": {
         "extends": [

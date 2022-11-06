@@ -21,7 +21,7 @@ lint:
 	@echo "[INFO] Linting backend source code using pylint"
 	@cd backend && python -m pipenv run pylint --fail-under 7.5 src/service/*
 	@echo "[INFO] Linting frontend source code using eslint"
-	@cd frontend/src && yarn lint
+	@cd frontend && yarn lint
 
 bandit:
 	@echo "[INFO] Linting source code using bandit to look for common security issues in python source"
