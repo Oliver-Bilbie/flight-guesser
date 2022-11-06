@@ -22,12 +22,14 @@ sudo yum -y install terraform
 
 # Deploy the terraform
 cd terraform
+# Copy the tfstate and lock file from s3 - a bit of a hack until I get it working properly
 aws s3 cp $TF_BUCKET_PATH"terraform.tfstate" "terraform.tfstate"
-aws s3 cp $TF_BUCKET_PATH".terraform.loc.hcl" ".terraform.loc.hcl"
+aws s3 cp $TF_BUCKET_PATH".terraform.lock.hcl" ".terraform.lock.hcl"
 make init
 make apply
+# Write the tfstate and lock file back to s3
 aws s3 cp "terraform.tfstate" $TF_BUCKET_PATH"terraform.tfstate"
-aws s3 cp ".terraform.loc.hcl" $TF_BUCKET_PATH".terraform.loc.hcl"
+aws s3 cp ".terraform.lock.hcl" $TF_BUCKET_PATH".terraform.lock.hcl"
 cd ..
 
 echo "[INFO] Installing serverless framework and required plugins"
