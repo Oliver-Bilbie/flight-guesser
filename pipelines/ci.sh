@@ -15,7 +15,6 @@ make apply
 cd ..
 
 echo "[INFO] Installing serverless framework and required plugins"
-npm install -g serverless
 cd backend
 npm install
 cd ..
@@ -26,8 +25,8 @@ make deploy-backend
 # Build and deploy the frontend to S3
 make build-frontend
 if [ $STAGE == "prd" ]; then
-    BUCKET_NAME="s3://oliver-bilbie.co.uk"
+    BUCKET_NAME="s3://flight-guesser.net"
 else
-    BUCKET_NAME="s3://dev.oliver-bilbie.co.uk"
+    BUCKET_NAME="s3://dev.flight-guesser.net"
 fi
 aws s3 cp frontend/build $BUCKET_NAME --recursive 
