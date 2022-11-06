@@ -5,7 +5,7 @@ The flight-guesser repository contains the frontend and backend source code for 
 When you see an aircraft overhead, you may use the flight-guesser application to guess the destination of the aircraft.
 You will score points based on accuracy. Data is sourced from FlightRadar24 using [FlightRadarAPI](https://github.com/JeanExtreme002/FlightRadarAPI).
 
-[Hosted here](https://main.d1abqlvrin6wnu.amplifyapp.com/)
+[Hosted here](https://flight-guesser.net)
 
 ## To Do
 -   Set game rules for lobby members to match those of the host
