@@ -21,7 +21,6 @@ lobbyTable = dynamoResource.Table(table_name) if table_name != None else None
 def get_airports():
     """
     Function to get a complete list of airports
-
     Returns:
         string[]: Airport names
     """
@@ -44,11 +43,9 @@ def get_airports():
 def get_closest_flight(longitude, latitude):
     """
     Function to get the details of the closest flight to a given location
-
     Args:
         longitude [float]: longitude to search from
         latitude [float]: latitude to search from
-
     Returns:
         FlightRadar24 Flight: closest flight
     """
@@ -76,12 +73,10 @@ def get_closest_flight(longitude, latitude):
 def get_score(flight, origin, destination):
     """
     Function to evaluate the points earned from a destination guess
-
     Args:
         flight [FlightRadar24 Flight]: flight to check
         origin [string]: origin airport guess
         destination [string]: destination airport guess
-
     Returns:
         integer: points awarded
     """
@@ -145,7 +140,6 @@ def get_score(flight, origin, destination):
 def get_unique_lobby_id():
     """
     Generates a unique four-letter code to identify a lobby.
-
     Returns:
         string: Lobby ID
     """
@@ -163,18 +157,10 @@ def get_unique_lobby_id():
     return lobby_id
 
 
-def create_player_data(lobby_id, name, score, guessed_flights, rules):
+def create_player_data(lobby_id, name, score):
     """
     Generates a unique ID to identify a player, and creates a record in the
     dynamo table corresponding to the player.
-
-    Args:
-        lobby_id [string]: ID of the lobby
-        name [string]: Name of the player
-        score [string]: Score of the player
-        guessed_flights [string[]]: Flight IDs previously guessed by the player
-        rules [integer]: Integer encoded ruleset of the lobby
-
     Returns:
         string: Player ID
     """
@@ -187,8 +173,6 @@ def create_player_data(lobby_id, name, score, guessed_flights, rules):
             "lobby_id": lobby_id,
             "player_name": name,
             "score": int(score),
-            "guessed_flights": guessed_flights,
-            "rules": rules,
             "last_interaction": datetime.now().strftime("%Y-%m-%d %H:%M"),
         },
     )
@@ -201,11 +185,6 @@ def get_player_id(lobby_id, name):
     Checks by name whether a player exists within a given lobby.
     If so, the function will return their existing player_id.
     Otherwise the function will generate a player_id for the player.
-
-    Args:
-        lobby_id [string]: ID of the lobby
-        name [string]: Name of the player
-
     Returns:
         string: If the player already exists, this will be their Unique
                 Player ID, otherwise this will be an empty string.
@@ -221,44 +200,12 @@ def get_player_id(lobby_id, name):
     return result
 
 
-def get_lobby_rules(lobby_id):
-    """
-    Returns an integer corresponding to the specified lobby's rules.
-
-    Args:
-        lobby_id [string]: ID of the lobby
-
-    Returns:
-        int: Integer-encoded lobby rules
-    """
-
-    scan_response = lobbyTable.scan(FilterExpression=Attr("lobby_id").eq(lobby_id))[
-        "Items"
-    ]
-
-    for entry in scan_response:
-        lobby_data = np.append(
-            lobby_data,
-            {
-                "name": entry["player_name"],
-                "player_id": entry["player_id"],
-                "score": int(entry["score"]),
-            },
-        )
-
-    lobby_data = str(lobby_data)  # string type allows for json serialization
-
-    return lobby_data
-
-
 def get_lobby_scores(lobby_id):
     """
     Returns the a list containing the names and scores of all members of
     a given lobby.
-
     Args:
         lobby_id [string]: ID of the lobby
-
     Returns:
         string: [{"name": string, "score": string}, ...]
     """
@@ -286,7 +233,6 @@ def get_lobby_scores(lobby_id):
 def update_player_score(player_id, score):
     """
     Adds a given number of points to a player's score in the dynamo table.
-
     Args:
         player_id [string]: ID of the player
         score [integer]: Points to add to the player's score
@@ -322,10 +268,8 @@ def delete_lobby():
 def remove_escape_characters(items):
     """
     Removes escape characters from a list of strings
-
     Args:
         items (string[]): Items to be cleaned
-
     Returns:
         string[]: Cleaned items
     """
