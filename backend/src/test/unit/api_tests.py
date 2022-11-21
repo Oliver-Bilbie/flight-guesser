@@ -30,5 +30,5 @@ def test_handle_turn(mocker):
 
     assert actual_response == "expected_response"
     api.controller.handle_turn.assert_called_once_with(
-        1, 2, "test_origin", "test_destination", "player_id"
+        "1", "2", "test_origin", "test_destination", "player_id"
     )

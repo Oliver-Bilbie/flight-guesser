@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## 1.5.0
+
+### Added
+
+- The backend will now validate user inputs to reduce the potential for code-injection attacks
+
+### Fixed
+
+- The ci script will now invalidate the CloudFront cache once the new frontend has been deployed to S3
+
 ## 1.4.2
 
 ### Updated

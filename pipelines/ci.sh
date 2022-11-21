@@ -3,18 +3,6 @@
 set -Eeo pipefail
 trap "echo '[FAILED]' && exit 1" ERR
 
-# Evaluate S3 bucket addresses based on the build environment
-if [ $STAGE == "prd" ]; then
-    DEPLOY_BUCKET_NAME="s3://flight-guesser.net"
-    TF_BUCKET_PATH="s3://terraform-state-yyq3vrfhye7d/flight-guesser/prd/"
-elif [ $STAGE == "dev" ]; then
-    DEPLOY_BUCKET_NAME="s3://dev.flight-guesser.net"
-    TF_BUCKET_PATH="s3://terraform-state-yyq3vrfhye7d/flight-guesser/dev/"
-else
-    echo "[ERROR] Invalid Stage: "$STAGE
-    exit 1
-fi
-
 echo "[INFO] Installing terraform"
 sudo yum install -y yum-utils
 sudo yum-config-manager --add-repo https://rpm.releases.hashicorp.com/AmazonLinux/hashicorp.repo
@@ -43,3 +31,4 @@ make deploy-backend
 # Build and deploy the frontend to S3
 make build-frontend
 aws s3 cp frontend/build $DEPLOY_BUCKET_NAME --recursive
+aws cloudfront create-invalidation --distribution-id $CF_DISTRIBUTION_ID --paths '/*'
