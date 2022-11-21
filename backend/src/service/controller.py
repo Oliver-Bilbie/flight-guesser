@@ -1,7 +1,7 @@
 """Controllers for AWS Lambda functions"""
 
 import json
-from src.service import service
+from src.service import service, validator
 
 
 def get_airports():
@@ -31,8 +31,8 @@ def handle_turn(longitude, latitude, origin, destination, player_id):
     If a player_id is provided, the dynamo table will be updated to reflect
     any points scored.
     Args:
-        longitude [float]: longitude to search from
-        latitude [float]: latitude to search from
+        longitude [string]: longitude to search from
+        latitude [string]: latitude to search from
         origin [string]: origin airport guess
         destination [string]: destination airport guess
         player_id [string]: ID of the player
@@ -50,28 +50,39 @@ def handle_turn(longitude, latitude, origin, destination, player_id):
     """
 
     try:
-        flight = service.get_closest_flight(longitude, latitude)
+        # Validate user inputs
+        if not validator.validate_position(longitude, latitude):
+            response = json.dumps({"response": "Invalid position", "status": 400})
+        elif not validator.validate_airport_names(origin, destination):
+            response = json.dumps({"response": "Invalid airport names", "status": 400})
+        elif not validator.validate_player_id(player_id):
+            response = json.dumps({"response": "Invalid player ID", "status": 400})
 
-        if flight is None:
-            response = json.dumps({"response": "No flights were found", "status": 400})
-        else:
-            score = service.get_score(flight, origin, destination)
+        else:  # If validation is successful
+            flight = service.get_closest_flight(float(longitude), float(latitude))
 
-            if player_id != "":
-                service.update_player_score(player_id, score)
+            if flight is None:
+                response = json.dumps(
+                    {"response": "No flights were found", "status": 400}
+                )
+            else:
+                score = service.get_score(flight, origin, destination)
 
-            response = json.dumps(
-                {
-                    "response": {
-                        "id": flight.id,
-                        "origin": flight.origin_airport_name,
-                        "destination": flight.destination_airport_name,
-                        "aircraft": flight.aircraft_code,
-                        "score": score,
-                    },
-                    "status": 200,
-                }
-            )
+                if player_id != "":
+                    service.update_player_score(player_id, score)
+
+                response = json.dumps(
+                    {
+                        "response": {
+                            "id": flight.id,
+                            "origin": flight.origin_airport_name,
+                            "destination": flight.destination_airport_name,
+                            "aircraft": flight.aircraft_code,
+                            "score": score,
+                        },
+                        "status": 200,
+                    }
+                )
 
     except:
         response = json.dumps({"response": "An error has occurred.", "status": 500})
@@ -95,27 +106,34 @@ def create_lobby(name, score):
     """
 
     try:
-        lobby_id = service.get_unique_lobby_id()
-        player_id = service.create_player_data(lobby_id, name, score)
-        lobby_data = str(
-            [
+        # Validate user inputs
+        if not validator.validate_player_name(name):
+            response = json.dumps({"response": "Invalid name", "status": 400})
+        elif not validator.validate_score(score):
+            response = json.dumps({"response": "Invalid score", "status": 400})
+
+        else:  # If validation is successful
+            lobby_id = service.get_unique_lobby_id()
+            player_id = service.create_player_data(lobby_id, name, score)
+            lobby_data = str(
+                [
+                    {
+                        "name": name,
+                        "player_id": player_id,
+                        "score": score,
+                    }
+                ]
+            )
+            response = json.dumps(
                 {
-                    "name": name,
-                    "player_id": player_id,
-                    "score": score,
+                    "response": {
+                        "lobby_id": lobby_id,
+                        "player_id": player_id,
+                        "lobby_data": lobby_data,
+                    },
+                    "status": 200,
                 }
-            ]
-        )
-        response = json.dumps(
-            {
-                "response": {
-                    "lobby_id": lobby_id,
-                    "player_id": player_id,
-                    "lobby_data": lobby_data,
-                },
-                "status": 200,
-            }
-        )
+            )
 
     except:
         response = json.dumps({"response": "An error has occurred.", "status": 500})
@@ -140,18 +158,27 @@ def join_lobby(lobby_id, name, score):
     """
 
     try:
-        player_id = service.get_player_id(lobby_id, name)
-        if player_id == "":  # If the player does not have an ID, create a new one
-            player_id = service.create_player_data(lobby_id, name, score)
+        # Validate user inputs
+        if not validator.validate_lobby_id(lobby_id):
+            response = json.dumps({"response": "Invalid lobby ID", "status": 400})
+        elif not validator.validate_player_name(name):
+            response = json.dumps({"response": "Invalid name", "status": 400})
+        elif not validator.validate_score(score):
+            response = json.dumps({"response": "Invalid score", "status": 400})
 
-        lobby_data = service.get_lobby_scores(lobby_id)
+        else:  # If validation is successful
+            player_id = service.get_player_id(lobby_id, name)
+            if player_id == "":  # If the player does not have an ID, create a new one
+                player_id = service.create_player_data(lobby_id, name, score)
 
-        response = json.dumps(
-            {
-                "response": {"player_id": player_id, "lobby_data": lobby_data},
-                "status": 200,
-            }
-        )
+            lobby_data = service.get_lobby_scores(lobby_id)
+
+            response = json.dumps(
+                {
+                    "response": {"player_id": player_id, "lobby_data": lobby_data},
+                    "status": 200,
+                }
+            )
 
     except:
         response = json.dumps({"response": "An error has occurred.", "status": 500})
@@ -171,9 +198,13 @@ def get_lobby_scores(lobby_id):
     """
 
     try:
-        lobby_data = service.get_lobby_scores(lobby_id)
+        # Validate user inputs
+        if not validator.validate_lobby_id(lobby_id):
+            response = json.dumps({"response": "Invalid lobby ID", "status": 400})
 
-        response = json.dumps({"response": lobby_data, "status": 200})
+        else:  # If validation is successful
+            lobby_data = service.get_lobby_scores(lobby_id)
+            response = json.dumps({"response": lobby_data, "status": 200})
 
     except:
         response = json.dumps({"response": "An error has occurred.", "status": 500})

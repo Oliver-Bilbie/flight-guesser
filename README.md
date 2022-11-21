@@ -34,7 +34,6 @@ The pipelines will build the required DynamoDB table using [Terraform](https://w
 ## To Do
 -   Set game rules for lobby members to match those of the host
 -   Log guessed flights for each player to the database to avoid cheating
--   Improve input validation
 -   Automatically fetch lobby data periodically when data saver is turned off
 -   Allow aircraft model guesses
 -   Retrieve additional flight data if data saver is turned off

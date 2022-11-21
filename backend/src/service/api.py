@@ -46,8 +46,8 @@ def handle_turn(event, context):
 
     body = event.get("body")
     body = json.loads(body)
-    longitude = float(body.get("longitude"))
-    latitude = float(body.get("latitude"))
+    longitude = body.get("longitude")
+    latitude = body.get("latitude")
     origin = body.get("origin")
     destination = body.get("destination")
     player_id = body.get("player_id")

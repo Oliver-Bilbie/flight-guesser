@@ -307,3 +307,63 @@ def test_handle_turn_failure(mocker):
     api.controller.service.fr_api.get_airports.assert_not_called()
     api.controller.service.fr_api.get_flight_details.assert_not_called()
     api.controller.service.lobbyTable.update_item.assert_not_called()
+
+
+def test_handle_turn_bad_position(mocker):
+    """test the handle_turn function when the longitude is not a number"""
+    test_event = {
+        "body": '{"longitude": "Error", "latitude": "47.376888", "origin": "Zurich Airport", "destination": "Dallas Fort Worth International Airport", "player_id": "ff3efc7a-a555-4119-9b24-f60ebae5de20"}'
+    }
+
+    mocker.patch.object(api.controller.service.fr_api, "get_airports")
+    mocker.patch.object(api.controller.service.fr_api, "get_flights")
+    mocker.patch.object(api.controller.service.fr_api, "get_flight_details")
+    mocker.patch.object(api.controller.service, "lobbyTable")
+
+    actual_response = api.handle_turn(test_event, None)
+
+    assert actual_response == '{"response": "Invalid position", "status": 400}'
+    api.controller.service.fr_api.get_flights.assert_not_called()
+    api.controller.service.fr_api.get_airports.assert_not_called()
+    api.controller.service.fr_api.get_flight_details.assert_not_called()
+    api.controller.service.lobbyTable.update_item.assert_not_called()
+
+
+def test_handle_turn_bad_origin(mocker):
+    """test the handle_turn function when SQL injection is attempted in the origin field"""
+    test_event = {
+        "body": '{"longitude": "8.541694", "latitude": "47.376888", "origin": "SELECT * FROM PlayerData WHERE UserId = 105 OR 1=1;", "destination": "Dallas Fort Worth International Airport", "player_id": "ff3efc7a-a555-4119-9b24-f60ebae5de20"}'
+    }
+
+    mocker.patch.object(api.controller.service.fr_api, "get_airports")
+    mocker.patch.object(api.controller.service.fr_api, "get_flights")
+    mocker.patch.object(api.controller.service.fr_api, "get_flight_details")
+    mocker.patch.object(api.controller.service, "lobbyTable")
+
+    actual_response = api.handle_turn(test_event, None)
+
+    assert actual_response == '{"response": "Invalid airport names", "status": 400}'
+    api.controller.service.fr_api.get_flights.assert_not_called()
+    api.controller.service.fr_api.get_airports.assert_not_called()
+    api.controller.service.fr_api.get_flight_details.assert_not_called()
+    api.controller.service.lobbyTable.update_item.assert_not_called()
+
+
+def test_handle_turn_bad_player_id(mocker):
+    """test the handle_turn function when SQL injection is attempted in the player_id field"""
+    test_event = {
+        "body": '{"longitude": "8.541694", "latitude": "47.376888", "origin": "Zurich Airport", "destination": "Dallas Fort Worth International Airport", "player_id": "SELECT * FROM PlayerData WHERE UserId = 105 OR 1=1;"}'
+    }
+
+    mocker.patch.object(api.controller.service.fr_api, "get_airports")
+    mocker.patch.object(api.controller.service.fr_api, "get_flights")
+    mocker.patch.object(api.controller.service.fr_api, "get_flight_details")
+    mocker.patch.object(api.controller.service, "lobbyTable")
+
+    actual_response = api.handle_turn(test_event, None)
+
+    assert actual_response == '{"response": "Invalid player ID", "status": 400}'
+    api.controller.service.fr_api.get_flights.assert_not_called()
+    api.controller.service.fr_api.get_airports.assert_not_called()
+    api.controller.service.fr_api.get_flight_details.assert_not_called()
+    api.controller.service.lobbyTable.update_item.assert_not_called()
