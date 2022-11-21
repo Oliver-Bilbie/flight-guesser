@@ -7,7 +7,7 @@ phases:
       - |
         if [ $STAGE == "prd" ]; then
             curl -s "https://img.shields.io/badge/build-in%20progress-blue" > "build-status.svg"
-            aws s3 cp "build-status.svg" "s3://flight-guesser.net/badges/build-status.svg" --acl public-read --cache-control no-cache
+            aws s3 cp "build-status.svg" "s3://flight-guesser.net/badges/build-status.svg" --cache-control no-cache
         fi
   build:
     commands:
@@ -25,5 +25,5 @@ phases:
                 badge_colour=green
             fi
             curl -s "https://img.shields.io/badge/build-$badge_status-$badge_colour.svg" > "build-status.svg"
-            aws s3 cp "build-status.svg" "s3://flight-guesser.net/badges/build-status.svg" --acl public-read --cache-control no-cache
+            aws s3 cp "build-status.svg" "s3://flight-guesser.net/badges/build-status.svg" --cache-control no-cache
         fi
