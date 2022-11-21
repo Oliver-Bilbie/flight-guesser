@@ -1,5 +1,6 @@
 # Flight Guesser
 [![Site-Up](https://img.shields.io/website?url=https%3A%2F%2Fflight-guesser.net%2F)](https://flight-guesser.net)
+[![Build-Status](https://flight-guesser.net.s3-eu-west-1.amazonaws.com/build-status.svg)](#pipelines)
 [![Last-Commit](https://img.shields.io/github/last-commit/Oliver-Bilbie/flight-guesser)](https://github.com/Oliver-Bilbie/flight-guesser/blob/main/CHANGELOG.MD)
 
 ---
@@ -8,7 +9,7 @@
 When you see an aircraft overhead, you may use the flight-guesser application to guess the destination of the aircraft.
 You will score points based on accuracy. Data is sourced from FlightRadar24 using [FlightRadarAPI](https://github.com/JeanExtreme002/FlightRadarAPI).
 
-[**Hosted here**](https://flight-guesser.net)
+### [Hosted here](https://flight-guesser.net)
 
 ---
 
