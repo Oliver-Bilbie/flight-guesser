@@ -1,6 +1,29 @@
 version: 0.2
 
 phases:
+  pre_build:
+    commands:
+      # Create build in progress badge
+      - |
+        if [ $STAGE == "prd" ]; then
+            curl -s "https://img.shields.io/badge/build-in%20progress-blue" > "build-status.svg"
+            aws s3 cp "build-status.svg" "s3://flight-guesser.net/badges/build-status.svg" --acl public-read --cache-control no-cache
+        fi
   build:
     commands:
       - bash pipelines/ci.sh
+  post_build:
+    finally:
+      # Create build status badge
+      - |
+        if [ $STAGE == "prd" ]; then
+            if [ "$1" -ne 0 ]; then
+                badge_status=failing
+                badge_colour=red
+            else
+                badge_status=passing
+                badge_colour=green
+            fi
+            curl -s "https://img.shields.io/badge/build-$badge_status-$badge_colour.svg" > "build-status.svg"
+            aws s3 cp "build-status.svg" "s3://flight-guesser.net/badges/build-status.svg" --acl public-read --cache-control no-cache
+        fi

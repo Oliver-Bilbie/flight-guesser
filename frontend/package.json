@@ -1,6 +1,6 @@
 {
     "name": "flight-guesser-frontend",
-    "version": "1.4.1",
+    "version": "1.4.2",
     "private": true,
     "dependencies": {
         "@testing-library/dom": "^7.21.4",
@@ -31,7 +31,7 @@
         "eslint-config-prettier": "^8.1.0",
         "eslint-plugin-prettier": "^4.0.0",
         "eslint-plugin-react": "^7.30.0",
-        "prettier": "2.6.2",
+        "prettier": "^2.6.2",
         "react-test-renderer": "^17.0.2"
     },
     "resolutions": {
@@ -43,7 +43,7 @@
         "glob-parent": "^5.1.2",
         "nth-check": "^2.0.1",
         "browserslist": "^4.16.5",
-        "loader-utils": "^2.0.3",
+        "loader-utils": "^2.0.4",
         "minimatch": "^3.0.5"
     },
     "scripts": {
