@@ -1,6 +1,6 @@
 # Flight Guesser
 [![Site-Up](https://img.shields.io/website?url=https%3A%2F%2Fflight-guesser.net%2F)](https://flight-guesser.net)
-![Build-Status](https://s3.eu-west-1.amazonaws.com/flight-guesser.net/build-status.svg)
+![Build-Status](https://s3.eu-west-1.amazonaws.com/flight-guesser.net/build-status.svg?)
 [![Last-Commit](https://img.shields.io/github/last-commit/Oliver-Bilbie/flight-guesser)](https://github.com/Oliver-Bilbie/flight-guesser/blob/main/CHANGELOG.MD)
 
 ---
