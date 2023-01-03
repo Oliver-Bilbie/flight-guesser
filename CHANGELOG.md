@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## 1.6.0
+
+### Added
+
+- Scoring has been reworked to follow an exponential decay, making it slightly more generous for further away guesses
+- The host's game settings are now enforced for all players in a multiplayer lobby
+- Previously guessed flight IDs are now stored in the DynamoDB table to prevent duplicated guesses across multiple sessions
+
 ## 1.5.0
 
 ### Added

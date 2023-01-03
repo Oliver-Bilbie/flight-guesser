@@ -1,6 +1,6 @@
 {
     "name": "flight-guesser-frontend",
-    "version": "1.5.0",
+    "version": "VERSION_NUMBER",
     "private": true,
     "dependencies": {
         "@testing-library/dom": "^7.21.4",
