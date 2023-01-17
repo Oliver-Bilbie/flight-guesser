@@ -123,7 +123,7 @@ def create_lobby(name, score, guessed_flights, rules):
             response = json.dumps({"response": "Invalid score", "status": 400})
 
         else:  # If validation is successful
-            lobby_id = service.get_unique_lobby_id()
+            lobby_id = service.create_lobby(rules)
             player_id = service.create_player_data(
                 lobby_id, name, score, guessed_flights, rules
             )

@@ -5,9 +5,9 @@ name = "pypi"
 
 [packages]
 flightradarapi = "~=1.2.1"
-numpy = "~=1.23.4"
-pandas = "~=1.5.1"
-boto3 = "~=1.24.93"
+numpy = "~=1.24.1"
+pandas = "~=1.5.2"
+boto3 = "~=1.26.42"
 
 [dev-packages]
 black = "*"

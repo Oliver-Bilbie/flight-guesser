@@ -100,6 +100,7 @@ functions:
       - Effect: Allow
         Action:
           - dynamodb:Query
+          - dynamodb:PutItem
           - dynamodb:UpdateItem
         Resource: arn:aws:dynamodb:eu-west-1:082862148481:table/flight-guesser-lobby-table-${env:STAGE}
     layers:

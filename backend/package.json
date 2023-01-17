@@ -1,10 +1,7 @@
 {
     "devDependencies": {
-        "serverless": "^3.24.1",
+        "serverless": "^3.26.0",
         "serverless-python-requirements": "^6.0.0",
         "serverless-iam-roles-per-function": "^3.2.0"
-    },
-    "resolutions": {
-        "file-type": "^16.5.4"
     }
 }
