@@ -234,7 +234,11 @@ def get_lobby_scores(lobby_id):
 
         else:  # If validation is successful
             lobby_data = service.get_lobby_scores(lobby_id)
-            response = json.dumps({"response": lobby_data, "status": 200})
+
+            if lobby_data == "[]":
+                response = json.dumps({"response": "Lobby not found", "status": 404})
+            else:
+                response = json.dumps({"response": lobby_data, "status": 200})
 
     except:
         response = json.dumps({"response": "An error has occurred", "status": 500})

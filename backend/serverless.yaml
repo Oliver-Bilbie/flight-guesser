@@ -132,6 +132,10 @@ functions:
       - Effect: Allow
         Action:
           - dynamodb:Query
+        Resource: arn:aws:dynamodb:eu-west-1:082862148481:table/flight-guesser-player-table-${env:STAGE}/index/LobbyIndex
+      - Effect: Allow
+        Action:
+          - dynamodb:Query
           - dynamodb:UpdateItem
         Resource: arn:aws:dynamodb:eu-west-1:082862148481:table/flight-guesser-lobby-table-${env:STAGE}
     layers:
@@ -171,6 +175,10 @@ functions:
           - dynamodb:Query
           - dynamodb:UpdateItem
         Resource: arn:aws:dynamodb:eu-west-1:082862148481:table/flight-guesser-lobby-table-${env:STAGE}
+      - Effect: Allow
+        Action:
+          - dynamodb:Query
+        Resource: arn:aws:dynamodb:eu-west-1:082862148481:table/flight-guesser-lobby-table-${env:STAGE}/index/LobbyIndex
     layers:
       - { Ref: PythonRequirementsLambdaLayer }
   delete_old_data:

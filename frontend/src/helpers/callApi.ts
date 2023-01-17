@@ -24,7 +24,7 @@ export const callApi = (
         response = { message: "No nearby flights were found" };
       } else {
         response = {
-          message: "Data for the nearby flight is not available",
+          message: "Unable to fetch data",
         };
       }
     } else {
