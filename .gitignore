@@ -5,10 +5,13 @@ backend/.mypy_cache
 backend/.pytest_cache
 backend/target
 backend/requirements.txt
+backend/Pipfile.lock
+backend/package-lock.json
 
 # Frontend
 frontend/node_modules
 frontend/build
+frontend/yarn.lock
 
 # Terraform
 terraform/.terraform

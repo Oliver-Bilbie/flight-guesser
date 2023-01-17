@@ -58,7 +58,20 @@ def handle_turn(longitude, latitude, origin, destination, player_id):
         elif not validator.validate_player_id(player_id):
             response = json.dumps({"response": "Invalid player ID", "status": 400})
 
-        else:  # If validation is successful
+        else:  # If input validation is successful
+            # If the player is a member of a multiplayer lobby we must also check that
+            # their guess does not violate the lobby rules
+
+            guessed_flights, rules = service.get_player_data(player_id)
+
+            # Check that the guess conforms to the rules
+            ### come back to this
+            print(f"Lobby Rules: {rules}")
+
+            # Confirm that a guess has not already been made for this flight
+            ### come back to this
+            print(f"Previous Guesses: {guessed_flights}")
+
             flight = service.get_closest_flight(float(longitude), float(latitude))
 
             if flight is None:
@@ -66,14 +79,6 @@ def handle_turn(longitude, latitude, origin, destination, player_id):
                     {"response": "No flights were found", "status": 400}
                 )
             else:
-                # Check that the guess conforms to the rules
-                ### come back to this
-                print(f"Lobby Rules: {service.get_lobby_rules()}")
-
-                # Confirm that a guess has not already been made for this flight
-                ### come back to this
-                print(f"Previous Guesses: {service.get_player_guesses()}")
-
                 score = service.get_score(flight, origin, destination)
 
                 if player_id != "":
@@ -125,7 +130,7 @@ def create_lobby(name, score, guessed_flights, rules):
         else:  # If validation is successful
             lobby_id = service.create_lobby(rules)
             player_id = service.create_player_data(
-                lobby_id, name, score, guessed_flights, rules
+                lobby_id, name, score, guessed_flights
             )
             lobby_data = str(
                 [
@@ -197,7 +202,7 @@ def join_lobby(lobby_id, name, score, guessed_flights):
                     player_id == ""
                 ):  # If the player does not have an ID, create a new one
                     player_id = service.create_player_data(
-                        lobby_id, name, score, guessed_flights, rules
+                        lobby_id, name, score, guessed_flights
                     )
 
                 # Get the latest scores for players in the lobby

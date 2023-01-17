@@ -198,39 +198,6 @@ def create_lobby(rules):
     return lobby_id
 
 
-def create_player_data(lobby_id, name, score, guessed_flights, rules):
-    """
-    Generates a unique ID to identify a player, and creates a record in the
-    dynamo table corresponding to the player.
-
-    Args:
-        lobby_id [string]: ID of the lobby
-        name [string]: Name of the player
-        score [string]: Score of the player
-        guessed_flights [string[]]: Flight IDs previously guessed by the player
-        rules [integer]: Integer encoded ruleset of the lobby
-
-    Returns:
-        string: Player ID
-    """
-
-    player_id = str(uuid.uuid4())
-
-    playerTable.put_item(
-        Item={
-            "player_id": player_id,
-            "lobby_id": lobby_id,
-            "player_name": name,
-            "score": int(score),
-            "guessed_flights": guessed_flights,
-            "rules": rules,
-            "last_interaction": datetime.now().strftime("%Y-%m-%d %H:%M"),
-        },
-    )
-
-    return player_id
-
-
 def get_player_id(lobby_id, name):
     """
     Checks by name whether a player exists within a given lobby.
@@ -267,12 +234,10 @@ def get_lobby_rules(lobby_id):
         lobby_id [string]: ID of the lobby
 
     Returns:
-        int: Integer-encoded lobby rules, or an empty string if the lobby does not exist
+        string: Integer-encoded lobby rules, or an empty string if the lobby does not exist
     """
 
-    query_response = lobbyTable.query(
-        KeyConditionExpression=Key("lobby_id").eq(lobby_id)
-    )
+    query_response = lobbyTable.get_item(Key={"lobby_id": lobby_id})
 
     rules = "" if query_response["Count"] == 0 else query_response["Items"][0]["rules"]
 
@@ -290,9 +255,9 @@ def get_player_guesses(player_id):
         string[]: The player's previously guessed flight IDs
     """
 
-    guessed_flights = playerTable.query(
-        KeyConditionExpression=Key("player_id").eq(player_id)
-    )["Items"][0]["guessed_flights"]
+    guessed_flights = playerTable.get_item(Key={"player_id": player_id})["Items"][0][
+        "guessed_flights"
+    ]
 
     return guessed_flights
 
@@ -327,6 +292,57 @@ def get_lobby_scores(lobby_id):
     lobby_data = str(lobby_data)  # string type allows for json serialization
 
     return lobby_data
+
+
+def create_player_data(lobby_id, name, score, guessed_flights):
+    """
+    Generates a unique ID to identify a player, and creates a record in the
+    dynamo table corresponding to the player.
+
+    Args:
+        lobby_id [string]: ID of the lobby
+        name [string]: Name of the player
+        score [string]: Score of the player
+        guessed_flights [string[]]: Flight IDs previously guessed by the player
+
+    Returns:
+        string: Player ID
+    """
+
+    player_id = str(uuid.uuid4())
+
+    playerTable.put_item(
+        Item={
+            "player_id": player_id,
+            "lobby_id": lobby_id,
+            "player_name": name,
+            "score": int(score),
+            "guessed_flights": guessed_flights,
+            "last_interaction": datetime.now().strftime("%Y-%m-%d %H:%M"),
+        },
+    )
+
+    return player_id
+
+
+def get_player_data(player_id):
+    """
+    Retrieves the player data required for input validation from the dynamo tables.
+
+    Args:
+        player_id [string]: ID of the player
+
+    Returns:
+        string[]: Flight IDs previously guessed by the player
+        string: Integer encoded ruleset of the lobby
+    """
+
+    playerData = playerTable.get_item(Key={"player_id": player_id})
+    lobby_id = playerData["Items"][0]["lobby_id"]
+    rules = get_lobby_rules(lobby_id)
+    guessed_flights = playerData["Items"][0]["guessed_flights"]
+
+    return guessed_flights, rules
 
 
 def update_player_data(player_id, score, flight_id):
