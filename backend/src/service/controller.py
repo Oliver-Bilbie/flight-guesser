@@ -69,6 +69,7 @@ def handle_turn(longitude, latitude, origin, destination, player_id):
             print(f"Lobby Rules: {rules}")
 
             # Confirm that a guess has not already been made for this flight
+            # If not handle the turn and then append the guessed flight to the list
             ### come back to this
             print(f"Previous Guesses: {guessed_flights}")
 

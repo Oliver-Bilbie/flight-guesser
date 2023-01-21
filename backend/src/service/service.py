@@ -239,7 +239,9 @@ def get_lobby_rules(lobby_id):
 
     query_response = lobbyTable.get_item(Key={"lobby_id": lobby_id})
 
-    rules = "" if query_response["Count"] == 0 else query_response["Items"][0]["rules"]
+    rules = (
+        "" if query_response.get("Item") else query_response.get("Item").get("rules")
+    )
 
     return rules
 
@@ -255,9 +257,11 @@ def get_player_guesses(player_id):
         string[]: The player's previously guessed flight IDs
     """
 
-    guessed_flights = playerTable.get_item(Key={"player_id": player_id})["Items"][0][
-        "guessed_flights"
-    ]
+    guessed_flights = (
+        playerTable.get_item(Key={"player_id": player_id})
+        .get("Item")
+        .get("guessed_flights")
+    )
 
     return guessed_flights
 
@@ -337,10 +341,10 @@ def get_player_data(player_id):
         string: Integer encoded ruleset of the lobby
     """
 
-    playerData = playerTable.get_item(Key={"player_id": player_id})
-    lobby_id = playerData["Items"][0]["lobby_id"]
+    playerData = playerTable.get_item(Key={"player_id": player_id}).get("Item")
+    lobby_id = playerData.get("lobby_id")
     rules = get_lobby_rules(lobby_id)
-    guessed_flights = playerData["Items"][0]["guessed_flights"]
+    guessed_flights = playerData.get("guessed_flights")
 
     return guessed_flights, rules
 
