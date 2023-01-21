@@ -25,11 +25,6 @@ cd backend
 npm install
 cd ..
 
-echo "[INFO] Installing required Python dependencies"
-cd backend
-pipenv install -q
-cd ..
-
 ### Deploy the backend using serverless framework
 make deploy-backend
 
