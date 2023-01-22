@@ -22,9 +22,13 @@ provider:
   httpApi:
     cors:
       allowedOrigins:
-        - '*'
+        - "*"
+        # - https://flight-guesser.net
+        # - https://dev.flight-guesser.net
       allowedMethods:
-        - '*'
+        - GET
+        - POST
+        - PUT
 functions:
   get_airports:
     handler: src/service/api.get_airports
@@ -122,6 +126,10 @@ functions:
     timeout: 25
     iamRoleStatementsName: flight-guesser-join-lobby-role-${env:STAGE}
     iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:PutItem
+        Resource: arn:aws:dynamodb:eu-west-1:082862148481:table/flight-guesser-player-table-${env:STAGE}
       - Effect: Allow
         Action:
           - dynamodb:Query

@@ -35,7 +35,7 @@ def handle_turn(longitude, latitude, origin, destination, player_id):
         latitude [string]: latitude to search from
         origin [string]: origin airport guess
         destination [string]: destination airport guess
-        player_id [string]: ID of the player
+        player_id [string]: ID of the player (optional)
     Returns a json object with:
         "response":
             on success, a json object with:
@@ -55,23 +55,26 @@ def handle_turn(longitude, latitude, origin, destination, player_id):
             response = json.dumps({"response": "Invalid position", "status": 400})
         elif not validator.validate_airport_names(origin, destination):
             response = json.dumps({"response": "Invalid airport names", "status": 400})
-        elif not validator.validate_player_id(player_id):
-            response = json.dumps({"response": "Invalid player ID", "status": 400})
 
         else:  # If input validation is successful
-            # If the player is a member of a multiplayer lobby we must also check that
-            # their guess does not violate the lobby rules
+            if player_id != "":
+                if not validator.validate_player_id(player_id):
+                    response = json.dumps(
+                        {"response": "Invalid player ID", "status": 400}
+                    )
 
-            guessed_flights, rules = service.get_player_data(player_id)
+                # If the player is a member of a multiplayer lobby we must also check that
+                # their guess does not violate the lobby rules
+                guessed_flights, rules = service.get_player_data(player_id)
 
-            # Check that the guess conforms to the rules
-            ### come back to this
-            print(f"Lobby Rules: {rules}")
+                # Check that the guess conforms to the rules
+                ### come back to this
+                print(f"Lobby Rules: {rules}")
 
-            # Confirm that a guess has not already been made for this flight
-            # If not handle the turn and then append the guessed flight to the list
-            ### come back to this
-            print(f"Previous Guesses: {guessed_flights}")
+                # Confirm that a guess has not already been made for this flight
+                # If not handle the turn and then append the guessed flight to the list
+                ### come back to this
+                print(f"Previous Guesses: {guessed_flights}")
 
             flight = service.get_closest_flight(float(longitude), float(latitude))
 
@@ -83,7 +86,9 @@ def handle_turn(longitude, latitude, origin, destination, player_id):
                 score = service.get_score(flight, origin, destination)
 
                 if player_id != "":
-                    service.update_player_data(player_id, score, flight.id)
+                    service.update_player_data(
+                        player_id, score, flight.id, guessed_flights
+                    )
 
                 response = json.dumps(
                     {

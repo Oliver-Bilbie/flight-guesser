@@ -20,11 +20,11 @@ export const callApi = (
     if (request.status === 200) {
       if (request.response.status === 200) {
         response = { body: request.response.response };
-      } else if (request.response.status === 400) {
-        response = { message: "No nearby flights were found" };
       } else {
         response = {
-          message: "Unable to fetch data",
+          message: request.response.response
+            ? request.response.response
+            : "Unable to fetch data",
         };
       }
     } else {

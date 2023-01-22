@@ -9,6 +9,8 @@ import { Group, LinkPrevious } from "grommet-icons";
 interface LobbyMenuProps {
   mode: LobbyMode;
   score: number;
+  rules: number;
+  guessedFlights: string[];
   setLobbyId: (id: string) => void;
   onJoinLobby: (response: ResponseType) => void;
   onCreateLobby: (response: ResponseType) => void;
@@ -18,6 +20,8 @@ interface LobbyMenuProps {
 const LobbyMenu: React.FC<LobbyMenuProps> = ({
   mode,
   score,
+  rules,
+  guessedFlights,
   setLobbyId,
   onJoinLobby,
   onCreateLobby,
@@ -45,7 +49,7 @@ const LobbyMenu: React.FC<LobbyMenuProps> = ({
           mode === LobbyMode.join
             ? `,"lobby_id": "${inputs.lobbyId.value}"`
             : " "
-        }}`,
+        }, "rules": "${rules}", "guessed_flights": "${guessedFlights}"}`,
         mode === LobbyMode.join ? onJoinLobby : onCreateLobby
       );
       onClose();

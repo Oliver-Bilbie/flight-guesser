@@ -4,6 +4,7 @@ import os
 import random
 import string
 import uuid
+from decimal import Decimal
 from datetime import datetime, timedelta
 import numpy as np
 import pandas as pd
@@ -93,7 +94,9 @@ def get_score(flight, origin, destination):
     airport_list = None
 
     guessed_locations = [origin, destination]
-    correct_locations = [flight.origin_airport_name, flight.destination_airport_name]
+    correct_locations = remove_escape_characters(
+        [flight.origin_airport_name, flight.destination_airport_name]
+    )
 
     for index in [0, 1]:
         if guessed_locations[index] != "":
@@ -151,7 +154,7 @@ def evaluate_distance(from_longitude, from_latitude, to_longitude, to_latitude):
     to_longitude *= np.pi / 180
     to_latitude *= np.pi / 180
 
-    distance = radius * np.acos(
+    distance = radius * np.arccos(
         np.cos(to_latitude - from_latitude)
         - np.cos(to_latitude)
         * np.cos(from_latitude)
@@ -214,9 +217,9 @@ def get_player_id(lobby_id, name):
     """
 
     query_response = playerTable.query(
-        KeyConditionExpression=Key("lobby_id").eq(lobby_id),
+        KeyConditionExpression=Key("lobby_id").eq(lobby_id)
+        & Key("player_name").eq(name),
         IndexName="LobbyIndex",
-        FilterExpression=Attr("player_name").eq(name),
     )
 
     result = (
@@ -240,30 +243,32 @@ def get_lobby_rules(lobby_id):
     query_response = lobbyTable.get_item(Key={"lobby_id": lobby_id})
 
     rules = (
-        "" if query_response.get("Item") else query_response.get("Item").get("rules")
+        ""
+        if query_response.get("Item") is None
+        else query_response.get("Item").get("rules")
     )
 
     return rules
 
 
-def get_player_guesses(player_id):
-    """
-    Returns a list of a given player's previously guessed flight IDs.
+# def get_player_guesses(player_id):
+#     """
+#     Returns a list of a given player's previously guessed flight IDs.
 
-    Args:
-        player_id [string]: ID of the player
+#     Args:
+#         player_id [string]: ID of the player
 
-    Returns:
-        string[]: The player's previously guessed flight IDs
-    """
+#     Returns:
+#         string[]: The player's previously guessed flight IDs
+#     """
 
-    guessed_flights = (
-        playerTable.get_item(Key={"player_id": player_id})
-        .get("Item")
-        .get("guessed_flights")
-    )
+#     guessed_flights = (
+#         playerTable.query(KeyConditionExpression=Key("player_id").eq(player_id))
+#         .get("Items")
+#         .get("guessed_flights")
+#     )
 
-    return guessed_flights
+#     return guessed_flights
 
 
 def get_lobby_scores(lobby_id):
@@ -341,7 +346,9 @@ def get_player_data(player_id):
         string: Integer encoded ruleset of the lobby
     """
 
-    playerData = playerTable.get_item(Key={"player_id": player_id}).get("Item")
+    playerData = playerTable.get_item(
+        KeyConditionExpression=Key("player_id").eq(player_id)
+    ).get("Item")
     lobby_id = playerData.get("lobby_id")
     rules = get_lobby_rules(lobby_id)
     guessed_flights = playerData.get("guessed_flights")
@@ -349,7 +356,7 @@ def get_player_data(player_id):
     return guessed_flights, rules
 
 
-def update_player_data(player_id, score, flight_id):
+def update_player_data(player_id, score, flight_id, guessed_flights):
     """
     Adds a given number of points to a player's score and guessed flights in the dynamo table.
 
@@ -359,10 +366,17 @@ def update_player_data(player_id, score, flight_id):
         flight_id [string]: ID of the most recently guessed flight
     """
 
+    updated_guessed_flights = (
+        f"{guessed_flights},{flight_id}" if guessed_flights != "" else flight_id
+    )
+
     playerTable.update_item(
         Key={"player_id": player_id},
-        UpdateExpression="SET score = score + :val, guessed_flights=list_append(guessed_flights, :fid)",
-        ExpressionAttributeValues={":val": score, ":fid": flight_id},
+        UpdateExpression="SET score = score + :val, guessed_flights = :fid",
+        ExpressionAttributeValues={
+            ":val": Decimal(score),
+            ":fid": updated_guessed_flights,
+        },
     )
 
 

@@ -63,11 +63,14 @@ const Game: React.FC = (): React.ReactElement => {
         (guess.destination !== "" || !settingsValues.useDestination)
       ) {
         setLoading(true);
-        navigator.geolocation.getCurrentPosition((location) => {
+        navigator.geolocation.getCurrentPosition(() => {
+          // navigator.geolocation.getCurrentPosition((location) => {
+          // `"longitude": ${location.coords.longitude},` +
+          // `"latitude": ${location.coords.latitude},` +
           const body =
             `{` +
-            `"longitude": ${location.coords.longitude},` +
-            `"latitude": ${location.coords.latitude},` +
+            `"longitude": 8.44,` +
+            `"latitude": 47.41,` +
             `"origin": "${guess.origin}",` +
             `"destination": "${guess.destination}",` +
             `"player_id": "${playerId}"` +
@@ -258,6 +261,8 @@ const Game: React.FC = (): React.ReactElement => {
         <LobbyMenu
           mode={showLobbyMenu}
           score={score}
+          rules={1}
+          guessedFlights={ids}
           setLobbyId={setLobbyId}
           onJoinLobby={handleJoinLobby}
           onCreateLobby={handleCreateLobby}
