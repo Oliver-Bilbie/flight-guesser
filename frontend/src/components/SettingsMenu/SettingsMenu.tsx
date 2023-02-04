@@ -8,13 +8,15 @@ import {
   CheckBox,
   Heading,
   Button,
+  Text,
 } from "grommet";
-import { Close, Globe, Launch } from "grommet-icons";
+import { CircleInformation, Close, Globe, Launch } from "grommet-icons";
 
 import { LobbyMode, SettingsType } from "../../types";
 
 interface SettingsMenuProps {
   settingsValues: SettingsType;
+  locked: boolean;
   setSettingsValues: (values: SettingsType) => void;
   setShowLobbyMenu: (setting: LobbyMode) => void;
   onClose: () => void;
@@ -22,6 +24,7 @@ interface SettingsMenuProps {
 
 const SettingsMenu: React.FC<SettingsMenuProps> = ({
   settingsValues,
+  locked,
   setSettingsValues,
   setShowLobbyMenu,
   onClose,
@@ -31,6 +34,7 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({
       label: "Guess Origin",
       key: "useOrigin",
       value: settingsValues.useOrigin,
+      locked: locked,
       setValue: (value: boolean): void =>
         setSettingsValues({ ...settingsValues, useOrigin: value }),
     },
@@ -38,6 +42,7 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({
       label: "Guess Destination",
       key: "useDestination",
       value: settingsValues.useDestination,
+      locked: locked,
       setValue: (value: boolean): void =>
         setSettingsValues({ ...settingsValues, useDestination: value }),
     },
@@ -45,6 +50,7 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({
       label: "Data Saver",
       key: "dataSaver",
       value: settingsValues.dataSaver,
+      locked: false,
       setValue: (value: boolean): void =>
         setSettingsValues({ ...settingsValues, dataSaver: value }),
     },
@@ -62,12 +68,27 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({
         <Button icon={<Close color="text-strong" />} onClick={onClose} />
       </CardHeader>
       <CardBody pad="small" background="light-2">
+        {locked && (
+          <Box
+            pad={{ horizontal: "small", vertical: "medium" }}
+            direction="column"
+            width="medium"
+            align="center"
+          >
+            <CircleInformation size="medium" />
+            <Text textAlign="center">
+              Some settings have been disabled because you are currently in a
+              multiplayer lobby
+            </Text>
+          </Box>
+        )}
         {settingsItems.map((item) => (
           <Box pad="xsmall" direction="row" key={item.key}>
             <CheckBox
               label={item.label}
               checked={item.value}
               onChange={(event): void => item.setValue(event.target.checked)}
+              disabled={item.locked}
               toggle
               fill
               reverse

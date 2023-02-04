@@ -7,7 +7,7 @@ name = "pypi"
 flightradarapi = "==1.2.1"
 numpy = "~=1.24.1"
 pandas = "~=1.5.3"
-boto3 = "~=1.26.54"
+boto3 = "~=1.26.64"
 
 [dev-packages]
 black = "*"

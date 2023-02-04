@@ -356,9 +356,7 @@ def get_player_data(player_id):
         integer: Integer encoded ruleset of the lobby
     """
 
-    playerData = playerTable.get_item(
-        KeyConditionExpression=Key("player_id").eq(player_id)
-    ).get("Item")
+    playerData = playerTable.get_item(Key={"player_id": player_id}).get("Item")
 
     lobby_id = playerData.get("lobby_id")
     guessed_flights = playerData.get("guessed_flights")

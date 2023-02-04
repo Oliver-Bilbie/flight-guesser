@@ -10,6 +10,7 @@ import PopupMenu from "../PopupMenu/PopupMenu";
 
 import { handleResult } from "../../helpers/handle_turn";
 import { callApi } from "../../helpers/callApi";
+import { settingsToRules, rulesToSettings } from "../../helpers/gameRules";
 import { AIRPORT_ENDPOINT, TURN_ENDPOINT } from "../../config";
 import { LobbyMode, PlayerData } from "../../types";
 
@@ -30,6 +31,7 @@ const Game: React.FC = (): React.ReactElement => {
   const [playerId, setPlayerId] = useState("");
   const [lobbyId, setLobbyId] = useState("");
   const [lobbyData, setLobbyData] = useState([] as PlayerData[]);
+  const [lockSettings, setLockSettings] = useState(false);
   const [refreshScores, setRefreshScores] = useState(false);
 
   useEffect(() => {
@@ -114,6 +116,7 @@ const Game: React.FC = (): React.ReactElement => {
     // Handles the output from the Join Lobby API
     if (response.message) {
       setAlert({ message: response.message, show: true });
+      setLockSettings(false);
     } else {
       setPlayerId(response.body.player_id);
 
@@ -132,6 +135,14 @@ const Game: React.FC = (): React.ReactElement => {
           setScore(playerData.score);
         }
       });
+
+      // Configure settings to match the lobby's rules
+      const newSettings = rulesToSettings(response.body.rules);
+      setSettingsValues({
+        useOrigin: newSettings.useOrigin,
+        useDestination: newSettings.useDestination,
+        dataSaver: settingsValues.dataSaver,
+      });
     }
   };
 
@@ -139,6 +150,7 @@ const Game: React.FC = (): React.ReactElement => {
     // Handles the output from the Create Lobby API
     if (response.message) {
       setAlert({ message: response.message, show: true });
+      setLockSettings(false);
     } else {
       setLobbyId(response.body.lobby_id);
       setPlayerId(response.body.player_id);
@@ -159,6 +171,7 @@ const Game: React.FC = (): React.ReactElement => {
       {showSettings ? (
         <SettingsMenu
           settingsValues={settingsValues}
+          locked={lockSettings}
           setSettingsValues={setSettingsValues}
           setShowLobbyMenu={setShowLobbyMenu}
           onClose={(): void => setShowSettings(false)}
@@ -261,11 +274,15 @@ const Game: React.FC = (): React.ReactElement => {
         <LobbyMenu
           mode={showLobbyMenu}
           score={score}
-          rules={1}
+          rules={settingsToRules(
+            settingsValues.useOrigin,
+            settingsValues.useDestination
+          )}
           guessedFlights={ids}
           setLobbyId={setLobbyId}
           onJoinLobby={handleJoinLobby}
           onCreateLobby={handleCreateLobby}
+          lockSettings={(): void => setLockSettings(true)}
           onClose={(): void => {
             setShowSettings(false);
             setShowLobbyMenu(LobbyMode.hidden);

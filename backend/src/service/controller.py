@@ -28,7 +28,7 @@ def handle_turn(longitude, latitude, origin, destination, player_id):
     Controller for the handle_turn Lambda function, which returns data
     corresponding to the closest flight to a provided longitude-latitude
     pair along with a score based on the proximity of a destination guess.
-    If a player_id is provided, the dynamo table will be updated to reflect
+    If a player_id is provided, the player table will be updated to reflect
     any points scored.
     Args:
         longitude [string]: longitude to search from
@@ -93,7 +93,7 @@ def handle_turn(longitude, latitude, origin, destination, player_id):
         score = service.get_score(flight, origin, destination, rules)
 
         # If the player is a member of a multiplayer lobby, update their score
-        # and guessed flights in the dynamo table
+        # and guessed flights in the player table
         if player_id != "":
             service.update_player_data(player_id, score, flight.id, guessed_flights)
 
@@ -184,7 +184,6 @@ def join_lobby(lobby_id, name, score, guessed_flights):
     Returns a json object with:
         "response": a json object with:
             "player_id": unique ID for the player
-            "guessed_flights": a list of previous guessed flight IDs
             "rules": enum of the ruleset of the lobby
             "lobby_data": [{"name": string, "score": string}, ...]
         "status": request status code
@@ -223,7 +222,11 @@ def join_lobby(lobby_id, name, score, guessed_flights):
 
                 response = json.dumps(
                     {
-                        "response": {"player_id": player_id, "lobby_data": lobby_data},
+                        "response": {
+                            "player_id": player_id,
+                            "lobby_data": lobby_data,
+                            "rules": rules,
+                        },
                         "status": 200,
                     }
                 )

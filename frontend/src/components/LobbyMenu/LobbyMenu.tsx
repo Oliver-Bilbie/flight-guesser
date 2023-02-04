@@ -14,6 +14,7 @@ interface LobbyMenuProps {
   setLobbyId: (id: string) => void;
   onJoinLobby: (response: ResponseType) => void;
   onCreateLobby: (response: ResponseType) => void;
+  lockSettings: () => void;
   onClose: () => void;
 }
 
@@ -25,6 +26,7 @@ const LobbyMenu: React.FC<LobbyMenuProps> = ({
   setLobbyId,
   onJoinLobby,
   onCreateLobby,
+  lockSettings,
   onClose,
 }): React.ReactElement => {
   const [inputs, setInputs] = React.useState({
@@ -41,15 +43,22 @@ const LobbyMenu: React.FC<LobbyMenuProps> = ({
     });
 
     if (nameValidation === "" && idValidation === "") {
+      lockSettings();
       setLobbyId(inputs.lobbyId.value);
       callApi(
         LOBBY_ENDPOINT,
         mode === LobbyMode.join ? "POST" : "PUT",
-        `{"name": "${inputs.name.value}","score": "${score}","rules": "${rules}", "guessed_flights": "${guessedFlights}"` +
+        `{` +
+          `"name": "${inputs.name.value}",` +
+          `"score": ${score},` +
+          `"rules": ${rules},` +
+          `"guessed_flights": "${guessedFlights}"` +
           `${
-            mode === LobbyMode.join && `,"lobby_id": "${inputs.lobbyId.value}"`
+            mode === LobbyMode.join
+              ? `,"lobby_id": "${inputs.lobbyId.value}"`
+              : ""
           }` +
-          "}",
+          `}`,
         mode === LobbyMode.join ? onJoinLobby : onCreateLobby
       );
       onClose();

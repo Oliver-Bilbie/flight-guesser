@@ -50,11 +50,11 @@ frontend-test:
 	@cd frontend && yarn test
 
 deploy-backend:
-	@echo "[INFO] Deploying backend to ${BUILD_ENV} environment"
+	@echo "[INFO] Deploying backend to development environment"
 	@cd backend && pipenv requirements > requirements.txt
-	@cd backend && npx sls deploy -s ${STAGE}
+	@cd backend && npx sls deploy -s dev
 
 build-frontend:
-	@echo "[INFO] Deploying frontend to ${BUILD_ENV} environment"
-	@cd frontend && yarn build:${STAGE}
+	@echo "[INFO] Deploying frontend to development environment"
+	@cd frontend && yarn build:dev
 	
