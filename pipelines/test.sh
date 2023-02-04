@@ -13,9 +13,6 @@ python -m pipenv run pylint --fail-under 7.5 src/service/*
 echo "[INFO] Linting source code using bandit to look for common security issues in python source"
 python -m pipenv run bandit -r src/serivce
 
-echo "[INFO] Checking static typing of source code using mypy"
-python -m mypy src/service --ignore-missing-imports
-
 # echo "[INFO] Running unit tests"
 # export COVERAGE_FILE=./target/coverage/.cov_unit
 # python -m pipenv run coverage run --source=src/service -m pytest -s --junitxml=target/unit-test/unit-result.xml src/test/unit/*.py

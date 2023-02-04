@@ -63,7 +63,7 @@ echo "[INFO] Building frontend"
 yarn build:${STAGE}
 
 echo "[INFO] Writing frontend files to S3"
-aws s3 cp frontend/build $DEPLOY_BUCKET_NAME --recursive
+aws s3 cp build $DEPLOY_BUCKET_NAME --recursive
 
 echo "[INFO] Invalidating Cloudfront cache"
 aws cloudfront create-invalidation --distribution-id $CF_DISTRIBUTION_ID --paths '/*'
