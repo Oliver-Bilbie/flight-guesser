@@ -45,11 +45,11 @@ const LobbyMenu: React.FC<LobbyMenuProps> = ({
       callApi(
         LOBBY_ENDPOINT,
         mode === LobbyMode.join ? "POST" : "PUT",
-        `{"name": "${inputs.name.value}","score": "${score}"${
-          mode === LobbyMode.join
-            ? `,"lobby_id": "${inputs.lobbyId.value}"`
-            : " "
-        }, "rules": "${rules}", "guessed_flights": "${guessedFlights}"}`,
+        `{"name": "${inputs.name.value}","score": "${score}","rules": "${rules}", "guessed_flights": "${guessedFlights}"` +
+          `${
+            mode === LobbyMode.join && `,"lobby_id": "${inputs.lobbyId.value}"`
+          }` +
+          "}",
         mode === LobbyMode.join ? onJoinLobby : onCreateLobby
       );
       onClose();

@@ -50,58 +50,65 @@ def handle_turn(longitude, latitude, origin, destination, player_id):
     """
 
     try:
-        # Validate user inputs
         if not validator.validate_position(longitude, latitude):
-            response = json.dumps({"response": "Invalid position", "status": 400})
+            message = "Invalid position"
+            status = 400
+            raise Exception
+
         elif not validator.validate_airport_names(origin, destination):
-            response = json.dumps({"response": "Invalid airport names", "status": 400})
+            message = "Invalid airport names"
+            status = 400
+            raise Exception
 
-        else:  # If input validation is successful
-            if player_id != "":
-                if not validator.validate_player_id(player_id):
-                    response = json.dumps(
-                        {"response": "Invalid player ID", "status": 400}
-                    )
+        # For players in multiplayer lobbies
+        if player_id != "":
+            if not validator.validate_player_id(player_id):
+                message = "Invalid player ID"
+                status = 400
+                raise Exception
 
-                # If the player is a member of a multiplayer lobby we must also check that
-                # their guess does not violate the lobby rules
-                guessed_flights, rules = service.get_player_data(player_id)
+            guessed_flights, rules = service.get_player_data(player_id)
 
-                # Check that the guess conforms to the rules
-                ### come back to this
-                print(f"Lobby Rules: {rules}")
+        else:
+            rules = None
 
-                # Confirm that a guess has not already been made for this flight
-                # If not handle the turn and then append the guessed flight to the list
-                ### come back to this
-                print(f"Previous Guesses: {guessed_flights}")
+        # Find the nearest flight to the player
+        flight = service.get_closest_flight(float(longitude), float(latitude))
 
-            flight = service.get_closest_flight(float(longitude), float(latitude))
+        # Exit if no flights were found
+        if flight is None:
+            message = "No flights were found"
+            status = 400
+            raise Exception
 
-            if flight is None:
-                response = json.dumps(
-                    {"response": "No flights were found", "status": 400}
-                )
-            else:
-                score = service.get_score(flight, origin, destination)
+        # For players in multiplayer lobbies
+        if player_id != "":
+            # Exit if the player has already made a guess for this flight
+            if flight.id in guessed_flights.split(","):
+                message = "You have already made a guess for this flight"
+                status = 400
+                raise Exception
 
-                if player_id != "":
-                    service.update_player_data(
-                        player_id, score, flight.id, guessed_flights
-                    )
+        # Assign a score to the user's guess based on accuracy
+        score = service.get_score(flight, origin, destination, rules)
 
-                response = json.dumps(
-                    {
-                        "response": {
-                            "id": flight.id,
-                            "origin": flight.origin_airport_name,
-                            "destination": flight.destination_airport_name,
-                            "aircraft": flight.aircraft_code,
-                            "score": score,
-                        },
-                        "status": 200,
-                    }
-                )
+        # If the player is a member of a multiplayer lobby, update their score
+        # and guessed flights in the dynamo table
+        if player_id != "":
+            service.update_player_data(player_id, score, flight.id, guessed_flights)
+
+        response = json.dumps(
+            {
+                "response": {
+                    "id": flight.id,
+                    "origin": flight.origin_airport_name,
+                    "destination": flight.destination_airport_name,
+                    "aircraft": flight.aircraft_code,
+                    "score": score,
+                },
+                "status": 200,
+            }
+        )
 
     except:
         response = json.dumps({"response": "An error has occurred", "status": 500})

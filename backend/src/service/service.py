@@ -77,14 +77,15 @@ def get_closest_flight(longitude, latitude):
     return flight
 
 
-def get_score(flight, origin, destination):
+def get_score(flight, origin, destination, rules):
     """
-    Function to evaluate the points earned from a destination guess
+    Function to evaluate the points earned from a guess
 
     Args:
         flight [FlightRadar24 Flight]: flight to check
         origin [string]: origin airport guess
         destination [string]: destination airport guess
+        rules [integer]: Integer encoded ruleset of the lobby
 
     Returns:
         integer: points awarded
@@ -93,19 +94,28 @@ def get_score(flight, origin, destination):
     score = 0
     airport_list = None
 
-    guessed_locations = [origin, destination]
-    correct_locations = remove_escape_characters(
-        [flight.origin_airport_name, flight.destination_airport_name]
-    )
+    guessed_locations = []
+    correct_locations = []
 
-    for index in [0, 1]:
+    if rules % 2 == 1:
+        guessed_locations.append(origin)
+        correct_locations.append(flight.origin_airport_name)
+
+    if rules // 2 == 1:
+        guessed_locations.append(destination)
+        correct_locations.append(flight.destination_airport_name)
+
+    for index in range(len(guessed_locations)):
         if guessed_locations[index] != "":
             if correct_locations[index] == guessed_locations[index]:
                 # in the case of a perfect match, gain 100 points
                 score += 100
+
             else:
                 # else find the distance between the guess and the correct airport
                 # and convert this into a score
+
+                # avoid reloading the airport list if it has already been fetched
                 if airport_list is None:
                     # Load airport data from the flight radar API
                     airport_list = pd.DataFrame(fr_api.get_airports())
@@ -169,7 +179,7 @@ def create_lobby(rules):
     Generates a unique four-letter code to identify a lobby and creates a corresponding entry in the lobby table.
 
     Args:
-        rules [Integer]: Integer encoded ruleset of the lobby
+        rules [integer]: Integer encoded ruleset of the lobby
 
     Returns:
         string: Lobby ID
@@ -343,15 +353,16 @@ def get_player_data(player_id):
 
     Returns:
         string[]: Flight IDs previously guessed by the player
-        string: Integer encoded ruleset of the lobby
+        integer: Integer encoded ruleset of the lobby
     """
 
     playerData = playerTable.get_item(
         KeyConditionExpression=Key("player_id").eq(player_id)
     ).get("Item")
+
     lobby_id = playerData.get("lobby_id")
-    rules = get_lobby_rules(lobby_id)
     guessed_flights = playerData.get("guessed_flights")
+    rules = int(get_lobby_rules(lobby_id))
 
     return guessed_flights, rules
 

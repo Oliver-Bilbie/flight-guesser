@@ -4,13 +4,13 @@ set -Eeo pipefail
 trap "echo '[FAILED]' && exit 1" ERR
 
 echo "[INFO] Installing terraform"
-sudo yum install -y yum-utils
-sudo yum-config-manager --add-repo https://rpm.releases.hashicorp.com/AmazonLinux/hashicorp.repo
-sudo yum -y install terraform
+yum install -y yum-utils
+yum-config-manager --add-repo https://rpm.releases.hashicorp.com/AmazonLinux/hashicorp.repo
+yum -y install terraform
 
 ### Deploy the terraform
 cd terraform
-# Copy the tfstate and lock file from s3 - a bit of a hack until I get it working properly
+# Copy the tfstate and lock file from s3 - a bit of a hack until I put together something more elegant
 aws s3 cp $TF_BUCKET_PATH"terraform.tfstate" "terraform.tfstate"
 aws s3 cp $TF_BUCKET_PATH".terraform.lock.hcl" ".terraform.lock.hcl"
 make init
