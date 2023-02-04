@@ -255,30 +255,10 @@ def get_lobby_rules(lobby_id):
     rules = (
         ""
         if query_response.get("Item") is None
-        else query_response.get("Item").get("rules")
+        else int(query_response.get("Item").get("rules"))
     )
 
     return rules
-
-
-# def get_player_guesses(player_id):
-#     """
-#     Returns a list of a given player's previously guessed flight IDs.
-
-#     Args:
-#         player_id [string]: ID of the player
-
-#     Returns:
-#         string[]: The player's previously guessed flight IDs
-#     """
-
-#     guessed_flights = (
-#         playerTable.query(KeyConditionExpression=Key("player_id").eq(player_id))
-#         .get("Items")
-#         .get("guessed_flights")
-#     )
-
-#     return guessed_flights
 
 
 def get_lobby_scores(lobby_id):

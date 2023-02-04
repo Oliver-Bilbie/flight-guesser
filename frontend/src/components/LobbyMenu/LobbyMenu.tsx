@@ -51,12 +51,11 @@ const LobbyMenu: React.FC<LobbyMenuProps> = ({
         `{` +
           `"name": "${inputs.name.value}",` +
           `"score": ${score},` +
-          `"rules": ${rules},` +
           `"guessed_flights": "${guessedFlights}"` +
           `${
             mode === LobbyMode.join
               ? `,"lobby_id": "${inputs.lobbyId.value}"`
-              : ""
+              : `,"rules": ${rules}`
           }` +
           `}`,
         mode === LobbyMode.join ? onJoinLobby : onCreateLobby

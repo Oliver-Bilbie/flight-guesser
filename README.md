@@ -38,10 +38,7 @@ The pipelines will build the required DynamoDB table using [Terraform](https://w
 ---
 
 ## To Do
-
--   Set game rules for lobby members to match those of the host
--   Automatically fetch lobby data periodically when data saver is turned off
-
+-   Improve exception handling
 -   Allow aircraft model guesses
 -   Retrieve additional flight data if data saver is turned off
 -   Refactoring and tidying

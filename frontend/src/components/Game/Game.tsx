@@ -243,9 +243,10 @@ const Game: React.FC = (): React.ReactElement => {
           )}
           {lobbyId !== "" && (
             <Scoreboard
-              refresh={refreshScores}
               lobbyId={lobbyId}
               lobbyData={lobbyData}
+              refresh={refreshScores}
+              dataSaver={settingsValues.dataSaver}
               setLobbyData={setLobbyData}
               setAlert={setAlert}
             />

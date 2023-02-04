@@ -6,27 +6,42 @@ import { PlayerData, AlertType } from "../../types";
 import { Refresh } from "grommet-icons";
 
 interface LobbyMenuProps {
-  refresh: boolean;
   lobbyId: string;
   lobbyData: PlayerData[];
+  refresh: boolean;
+  dataSaver: boolean;
   setLobbyData: (data: PlayerData[]) => void;
   setAlert: (alert: AlertType) => void;
 }
 
 const LobbyMenu: React.FC<LobbyMenuProps> = ({
-  refresh,
   lobbyId,
   lobbyData,
+  refresh,
+  dataSaver,
   setLobbyData,
   setAlert,
 }): React.ReactElement => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Load the scores of players in the lobby
+    // Initially load the scores of players in the lobby
+    // Loads again whenever the value of refresh is flipped
     callGetLobbyData();
     setLoading(false);
   }, [refresh]);
+
+  useEffect(() => {
+    // If data-saver is disabled, scores will reload automatically
+    // every thirty seconds
+    const interval = setInterval(() => {
+      if (!dataSaver) {
+        callGetLobbyData();
+      }
+    }, 30000);
+
+    return (): void => clearInterval(interval);
+  }, []);
 
   const callGetLobbyData = (): void => {
     callApi(
