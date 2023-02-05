@@ -1,6 +1,7 @@
 """Controllers for AWS Lambda functions"""
 
 import json
+import traceback
 from src.service import service, validator
 
 
@@ -30,9 +31,11 @@ def handle_exceptions(function):
             response = function(*args)
 
         except ValidationException as exc:
+            print(traceback.format_exc())
             response = json.dumps({"response": str(exc), "status": 400})
 
         except Exception:
+            print(traceback.format_exc())
             response = json.dumps({"response": "An error has occurred", "status": 500})
 
         return response

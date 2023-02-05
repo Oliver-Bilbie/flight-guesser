@@ -44,12 +44,7 @@ const LobbyMenu: React.FC<LobbyMenuProps> = ({
   }, []);
 
   const callGetLobbyData = (): void => {
-    callApi(
-      `${LOBBY_ENDPOINT}?lobby_id=${lobbyId}`,
-      "GET",
-      "",
-      handleGetLobbyData
-    );
+    callApi(`${LOBBY_ENDPOINT}/${lobbyId}`, "GET", "", handleGetLobbyData);
   };
 
   const handleGetLobbyData = (response): void => {

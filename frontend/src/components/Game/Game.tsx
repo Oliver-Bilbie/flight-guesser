@@ -64,21 +64,27 @@ const Game: React.FC = (): React.ReactElement => {
         (guess.origin !== "" || !settingsValues.useOrigin) &&
         (guess.destination !== "" || !settingsValues.useDestination)
       ) {
-        setLoading(true);
-        navigator.geolocation.getCurrentPosition(() => {
-          // navigator.geolocation.getCurrentPosition((location) => {
-          // `"longitude": ${location.coords.longitude},` +
-          // `"latitude": ${location.coords.latitude},` +
-          const body =
-            `{` +
-            `"longitude": 8.44,` +
-            `"latitude": 47.41,` +
-            `"origin": "${guess.origin}",` +
-            `"destination": "${guess.destination}",` +
-            `"player_id": "${playerId}"` +
-            `}`;
-          callApi(TURN_ENDPOINT, "POST", body, handleTurn);
-        });
+        navigator.geolocation.getCurrentPosition(
+          (location) => {
+            setLoading(true);
+            const body =
+              `{` +
+              `"longitude": ${location.coords.longitude},` +
+              `"latitude": ${location.coords.latitude},` +
+              `"origin": "${guess.origin}",` +
+              `"destination": "${guess.destination}",` +
+              `"player_id": "${playerId}"` +
+              `}`;
+            callApi(TURN_ENDPOINT, "POST", body, handleTurn);
+          },
+          (): void => {
+            setAlert({
+              message:
+                "Location services must be enabled to use this application",
+              show: true,
+            });
+          }
+        );
       } else {
         setAlert({
           message: `Please select ${
@@ -91,7 +97,7 @@ const Game: React.FC = (): React.ReactElement => {
       }
     } else {
       setAlert({
-        message: "Location services must be enabled to use this application",
+        message: "Location services are not supported by your browser",
         show: true,
       });
     }

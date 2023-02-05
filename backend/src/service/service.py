@@ -97,13 +97,24 @@ def get_score(flight, origin, destination, rules):
     guessed_locations = []
     correct_locations = []
 
-    if rules % 2 == 1:
-        guessed_locations.append(origin)
-        correct_locations.append(flight.origin_airport_name)
+    # If the player is not in a multiplayer lobby, we will check any provided guesses
+    if rules is None:
+        if origin != "":
+            guessed_locations.append(origin)
+            correct_locations.append(flight.origin_airport_name)
+        if destination != "":
+            guessed_locations.append(destination)
+            correct_locations.append(flight.destination_airport_name)
 
-    if rules // 2 == 1:
-        guessed_locations.append(destination)
-        correct_locations.append(flight.destination_airport_name)
+    # If the player is in a multiplayer lobby, we will only check guesses permitted
+    # by the lobby rules
+    else:
+        if rules % 2 == 1:
+            guessed_locations.append(origin)
+            correct_locations.append(flight.origin_airport_name)
+        if rules // 2 == 1:
+            guessed_locations.append(destination)
+            correct_locations.append(flight.destination_airport_name)
 
     for index in range(len(guessed_locations)):
         if guessed_locations[index] != "":

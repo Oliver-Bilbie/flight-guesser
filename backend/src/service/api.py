@@ -134,9 +134,7 @@ def get_lobby_scores(event, context):
         "status": request status code
     """
 
-    queryStringParameters = event.get("queryStringParameters")
-    lobby_id = queryStringParameters.get("lobby_id")
-
+    lobby_id = event.get("pathParameters").get("lobby_id")
     response = controller.get_lobby_scores(lobby_id)
 
     return response
