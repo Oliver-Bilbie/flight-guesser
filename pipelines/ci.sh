@@ -3,6 +3,21 @@
 set -Eeo pipefail
 
 
+##### Get parameters based on environment. This will be moved to SSM in the next update.
+if [ $STAGE == "prd" ]; then
+    DEPLOY_BUCKET_NAME="s3://flight-guesser.net"
+    TF_BUCKET_PATH="s3://terraform-state-yyq3vrfhye7d/flight-guesser/prd/"
+    CF_DISTRIBUTION_ID="E2G3H6KPNGL3QZ"
+elif [ $STAGE == "dev" ]; then
+    DEPLOY_BUCKET_NAME="s3://dev.flight-guesser.net"
+    TF_BUCKET_PATH="s3://terraform-state-yyq3vrfhye7d/flight-guesser/dev/"
+    CF_DISTRIBUTION_ID="E7XC4KS1I2NH8"
+else
+    echo "[ERROR] Invalid deployment stage ($STAGE)"
+    exit 1
+fi
+
+
 ##### Deploy the terraform #####
 cd terraform
 
@@ -45,7 +60,7 @@ python -m pipenv install
 
 echo "[INFO] Deploying backend to ${BUILD_ENV} environment"
 pipenv requirements > requirements.txt
-npx sls deploy -s ${STAGE}
+npx sls deploy -s $STAGE
 
 cd ..
 
@@ -60,7 +75,7 @@ echo "[INFO] Installing frontend dependencies"
 yarn --prod
 
 echo "[INFO] Building frontend"
-yarn build:${STAGE}
+yarn build:$STAGE
 
 echo "[INFO] Writing frontend files to S3"
 aws s3 cp build $DEPLOY_BUCKET_NAME --recursive
