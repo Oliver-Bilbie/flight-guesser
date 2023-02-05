@@ -38,7 +38,7 @@ The pipelines will build the required DynamoDB table using [Terraform](https://w
 ---
 
 ## To Do
--   Improve exception handling
+-   Remove hard-coded location
 -   Allow aircraft model guesses
 -   Retrieve additional flight data if data saver is turned off
 -   Refactoring and tidying

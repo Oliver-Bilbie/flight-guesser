@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - The host's game settings are now enforced for all players in a multiplayer lobby
 - Previously guessed flight IDs are now stored in the DynamoDB table to prevent duplicated guesses across multiple sessions
 - The dynamoDB configuration have been reworked to store player data and lobby data in seperate tables
+- The scoreboard will now refresh automatically every thirty seconds if data-saver is disabled
 
 ## 1.5.0
 

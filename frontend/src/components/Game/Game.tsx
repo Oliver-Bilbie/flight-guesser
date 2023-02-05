@@ -117,6 +117,7 @@ const Game: React.FC = (): React.ReactElement => {
     if (response.message) {
       setAlert({ message: response.message, show: true });
       setLockSettings(false);
+      setPlayerId("");
     } else {
       setPlayerId(response.body.player_id);
 
@@ -151,6 +152,7 @@ const Game: React.FC = (): React.ReactElement => {
     if (response.message) {
       setAlert({ message: response.message, show: true });
       setLockSettings(false);
+      setPlayerId("");
     } else {
       setLobbyId(response.body.lobby_id);
       setPlayerId(response.body.player_id);

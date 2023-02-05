@@ -155,15 +155,8 @@ functions:
     memorySize: 128
     events:
       - httpApi:
-          path: /lobby
+          path: /lobby/{lobby_id}
           method: get
-          request:
-            parameters:
-              querystrings:
-                lobby_id: true
-              template:
-                application/json: >
-                  {"lobby_id": "$input.params('lobby_id')"}
     timeout: 25
     iamRoleStatementsName: flight-guesser-get-lobby-scores-role-${env:STAGE}
     iamRoleStatements:
