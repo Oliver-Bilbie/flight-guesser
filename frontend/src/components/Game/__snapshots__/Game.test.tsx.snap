@@ -2,23 +2,23 @@
 
 exports[`Matches snapshot 1`] = `
 <div
-  className="StyledStack-sc-ajspsk-0 DIRUt"
+  className="StyledStack-sc-ajspsk-0 RUPca"
 >
   <div
-    className="StyledStack__StyledStackLayer-sc-ajspsk-1 bBReQo"
+    className="StyledStack__StyledStackLayer-sc-ajspsk-1 jvatDH"
   >
     <div
-      className="StyledBox-sc-13pk1d4-0 cGYwol"
+      className="StyledBox-sc-13pk1d4-0 bcLREz"
     >
       <div
-        className="StyledBox-sc-13pk1d4-0 gMLlqj"
+        className="StyledBox-sc-13pk1d4-0 kQWYGB"
       >
         <div
-          className="StyledBox-sc-13pk1d4-0 fsqPOp"
+          className="StyledBox-sc-13pk1d4-0 cCcRCD"
         />
       </div>
       <button
-        className="StyledButton-sc-323bzc-0 hiNAcw"
+        className="StyledButton-sc-323bzc-0 gPymKT"
         onBlur={[Function]}
         onClick={[Function]}
         onFocus={[Function]}
@@ -28,7 +28,7 @@ exports[`Matches snapshot 1`] = `
       >
         <svg
           aria-label="Performance"
-          className="StyledIcon-sc-ofa7kd-0 kKhdEN"
+          className="StyledIcon-sc-ofa7kd-0 jQvEgu"
           viewBox="0 0 24 24"
         >
           <path

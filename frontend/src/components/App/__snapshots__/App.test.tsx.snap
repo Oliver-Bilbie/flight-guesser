@@ -5,37 +5,37 @@ exports[`Matches snapshot 1`] = `
   className="App"
 >
   <div
-    className="StyledGrommet-sc-19lkkz7-0 ctJmrz"
+    className="StyledGrommet-sc-19lkkz7-0 gNIRdc"
   >
     <header
-      className="StyledBox-sc-13pk1d4-0 diNUva"
+      className="StyledBox-sc-13pk1d4-0 bPvFHc"
     >
       <div
-        className="StyledBox-sc-13pk1d4-0 cwefyf"
+        className="StyledBox-sc-13pk1d4-0 exzkbd"
       >
         <h2
-          className="StyledHeading-sc-1rdh4aw-0 bEGvSW"
+          className="StyledHeading-sc-1rdh4aw-0 dvCPQZ"
         >
           Flight Guesser
         </h2>
       </div>
       <div
-        className="StyledBox__StyledBoxGap-sc-13pk1d4-1 gJrKvj"
+        className="StyledBox__StyledBoxGap-sc-13pk1d4-1 iISQcM"
       />
       <nav
-        className="StyledBox-sc-13pk1d4-0 hnvBjD"
+        className="StyledBox-sc-13pk1d4-0 BPjMB"
         color="text-strong"
       >
         <a
           aria-label="email"
-          className="StyledAnchor-sc-1rp7lwl-0 ftyCnn"
+          className="StyledAnchor-sc-1rp7lwl-0 ftDlUk"
           onBlur={[Function]}
           onClick={[Function]}
           onFocus={[Function]}
         >
           <svg
             aria-label="MailOption"
-            className="StyledIcon-sc-ofa7kd-0 dryQLl"
+            className="StyledIcon-sc-ofa7kd-0 blohcu"
             viewBox="0 0 24 24"
           >
             <path
@@ -47,18 +47,18 @@ exports[`Matches snapshot 1`] = `
           </svg>
         </a>
         <div
-          className="StyledBox__StyledBoxGap-sc-13pk1d4-1 gJrKvj"
+          className="StyledBox__StyledBoxGap-sc-13pk1d4-1 iISQcM"
         />
         <a
           aria-label="github"
-          className="StyledAnchor-sc-1rp7lwl-0 ftyCnn"
+          className="StyledAnchor-sc-1rp7lwl-0 ftDlUk"
           onBlur={[Function]}
           onClick={[Function]}
           onFocus={[Function]}
         >
           <svg
             aria-label="Github"
-            className="StyledIcon-sc-ofa7kd-0 dryQLl"
+            className="StyledIcon-sc-ofa7kd-0 blohcu"
             viewBox="0 0 24 24"
           >
             <path
@@ -69,18 +69,18 @@ exports[`Matches snapshot 1`] = `
           </svg>
         </a>
         <div
-          className="StyledBox__StyledBoxGap-sc-13pk1d4-1 gJrKvj"
+          className="StyledBox__StyledBoxGap-sc-13pk1d4-1 iISQcM"
         />
         <a
           aria-label="linkedin"
-          className="StyledAnchor-sc-1rp7lwl-0 ftyCnn"
+          className="StyledAnchor-sc-1rp7lwl-0 ftDlUk"
           onBlur={[Function]}
           onClick={[Function]}
           onFocus={[Function]}
         >
           <svg
             aria-label="Linkedin"
-            className="StyledIcon-sc-ofa7kd-0 dryQLl"
+            className="StyledIcon-sc-ofa7kd-0 blohcu"
             viewBox="0 0 24 24"
           >
             <path
@@ -93,26 +93,26 @@ exports[`Matches snapshot 1`] = `
       </nav>
     </header>
     <div
-      className="StyledBox-sc-13pk1d4-0 cieDSK"
+      className="StyledBox-sc-13pk1d4-0 vYUEo"
     >
       <div
-        className="StyledStack-sc-ajspsk-0 DIRUt"
+        className="StyledStack-sc-ajspsk-0 RUPca"
       >
         <div
-          className="StyledStack__StyledStackLayer-sc-ajspsk-1 bBReQo"
+          className="StyledStack__StyledStackLayer-sc-ajspsk-1 jvatDH"
         >
           <div
-            className="StyledBox-sc-13pk1d4-0 ghdHjm"
+            className="StyledBox-sc-13pk1d4-0 eCzPCY"
           >
             <div
-              className="StyledBox-sc-13pk1d4-0 gMLlqj"
+              className="StyledBox-sc-13pk1d4-0 kQWYGB"
             >
               <div
-                className="StyledBox-sc-13pk1d4-0 gUjkbR"
+                className="StyledBox-sc-13pk1d4-0 gaHiVX"
               />
             </div>
             <button
-              className="StyledButton-sc-323bzc-0 hiNAcw"
+              className="StyledButton-sc-323bzc-0 gPymKT"
               onBlur={[Function]}
               onClick={[Function]}
               onFocus={[Function]}
@@ -122,7 +122,7 @@ exports[`Matches snapshot 1`] = `
             >
               <svg
                 aria-label="Performance"
-                className="StyledIcon-sc-ofa7kd-0 kKhdEN"
+                className="StyledIcon-sc-ofa7kd-0 jQvEgu"
                 viewBox="0 0 24 24"
               >
                 <path
@@ -140,16 +140,16 @@ exports[`Matches snapshot 1`] = `
       </div>
     </div>
     <div
-      className="StyledBox-sc-13pk1d4-0 TLnlm"
+      className="StyledBox-sc-13pk1d4-0 hbIWsY"
     >
       <span
-        className="StyledText-sc-1sadyjn-0 hpCRgD"
+        className="StyledText-sc-1sadyjn-0 jbJJSg"
       >
         Version: 
       </span>
       <a
         aria-label="changelog"
-        className="StyledAnchor-sc-1rp7lwl-0 iWqnkY"
+        className="StyledAnchor-sc-1rp7lwl-0 cQsqtn"
         onBlur={[Function]}
         onClick={[Function]}
         onFocus={[Function]}

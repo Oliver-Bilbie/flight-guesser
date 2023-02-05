@@ -2,22 +2,22 @@
 
 exports[`Matches snapshot 1`] = `
 <div
-  className="StyledBox-sc-13pk1d4-0 bHlnZn"
+  className="StyledBox-sc-13pk1d4-0 hvyjMt"
 >
   <span
-    className="StyledText-sc-1sadyjn-0 hpCRgD"
+    className="StyledText-sc-1sadyjn-0 jbJJSg"
   >
     Label
   </span>
   <div
-    className="StyledBox__StyledBoxGap-sc-13pk1d4-1 qdAYv"
+    className="StyledBox__StyledBoxGap-sc-13pk1d4-1 drdMXk"
   />
   <div
-    className="StyledBox-sc-13pk1d4-0 hyMQBH"
+    className="StyledBox-sc-13pk1d4-0 cZCVYN"
   >
     <div
       aria-label="loading"
-      className="StyledBox-sc-13pk1d4-0 fySZpJ"
+      className="StyledBox-sc-13pk1d4-0 bFLiNX"
     />
   </div>
 </div>

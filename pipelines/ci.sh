@@ -57,7 +57,7 @@ sed -i 's/VERSION_NUMBER/'$VERSION'/g' ./frontend/package.json
 cd frontend
 
 echo "[INFO] Installing frontend dependencies"
-yarn
+yarn --prod
 
 echo "[INFO] Building frontend"
 yarn build:${STAGE}

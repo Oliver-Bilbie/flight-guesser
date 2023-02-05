@@ -36,7 +36,7 @@ yarn
 echo "[INFO] Linting frontend source code using eslint"
 yarn lint
 
-# echo "[INFO] Running frontend tests"
-# yarn test
+echo "[INFO] Running frontend tests"
+yarn test
 
 echo "[INFO] Testing completed successfully"

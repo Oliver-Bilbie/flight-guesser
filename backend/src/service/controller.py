@@ -36,7 +36,12 @@ def handle_exceptions(function):
 
         except Exception:
             print(traceback.format_exc())
-            response = json.dumps({"response": "An error has occurred", "status": 500})
+            response = json.dumps(
+                {
+                    "response": "The server was unable to process your request",
+                    "status": 500,
+                }
+            )
 
         return response
 
