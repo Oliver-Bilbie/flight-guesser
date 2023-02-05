@@ -4,16 +4,15 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-flightradarapi = "~=1.2.1"
-numpy = "~=1.23.4"
-pandas = "~=1.5.1"
-boto3 = "~=1.24.93"
+flightradarapi = "==1.2.1"
+numpy = "~=1.24.1"
+pandas = "~=1.5.3"
+boto3 = "~=1.26.64"
 
 [dev-packages]
 black = "*"
 pylint = "*"
 bandit = "*"
-mypy = "*"
 coverage = "*"
 pytest = "*"
 pytest-mock = "*"

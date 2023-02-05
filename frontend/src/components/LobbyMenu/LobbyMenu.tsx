@@ -9,18 +9,24 @@ import { Group, LinkPrevious } from "grommet-icons";
 interface LobbyMenuProps {
   mode: LobbyMode;
   score: number;
+  rules: number;
+  guessedFlights: string[];
   setLobbyId: (id: string) => void;
   onJoinLobby: (response: ResponseType) => void;
   onCreateLobby: (response: ResponseType) => void;
+  lockSettings: () => void;
   onClose: () => void;
 }
 
 const LobbyMenu: React.FC<LobbyMenuProps> = ({
   mode,
   score,
+  rules,
+  guessedFlights,
   setLobbyId,
   onJoinLobby,
   onCreateLobby,
+  lockSettings,
   onClose,
 }): React.ReactElement => {
   const [inputs, setInputs] = React.useState({
@@ -37,15 +43,21 @@ const LobbyMenu: React.FC<LobbyMenuProps> = ({
     });
 
     if (nameValidation === "" && idValidation === "") {
+      lockSettings();
       setLobbyId(inputs.lobbyId.value);
       callApi(
         LOBBY_ENDPOINT,
         mode === LobbyMode.join ? "POST" : "PUT",
-        `{"name": "${inputs.name.value}","score": "${score}"${
-          mode === LobbyMode.join
-            ? `,"lobby_id": "${inputs.lobbyId.value}"`
-            : " "
-        }}`,
+        `{` +
+          `"name": "${inputs.name.value}",` +
+          `"score": ${score},` +
+          `"guessed_flights": "${guessedFlights}"` +
+          `${
+            mode === LobbyMode.join
+              ? `,"lobby_id": "${inputs.lobbyId.value}"`
+              : `,"rules": ${rules}`
+          }` +
+          `}`,
         mode === LobbyMode.join ? onJoinLobby : onCreateLobby
       );
       onClose();

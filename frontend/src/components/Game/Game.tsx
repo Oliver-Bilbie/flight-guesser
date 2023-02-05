@@ -10,6 +10,7 @@ import PopupMenu from "../PopupMenu/PopupMenu";
 
 import { handleResult } from "../../helpers/handle_turn";
 import { callApi } from "../../helpers/callApi";
+import { settingsToRules, rulesToSettings } from "../../helpers/gameRules";
 import { AIRPORT_ENDPOINT, TURN_ENDPOINT } from "../../config";
 import { LobbyMode, PlayerData } from "../../types";
 
@@ -30,6 +31,7 @@ const Game: React.FC = (): React.ReactElement => {
   const [playerId, setPlayerId] = useState("");
   const [lobbyId, setLobbyId] = useState("");
   const [lobbyData, setLobbyData] = useState([] as PlayerData[]);
+  const [lockSettings, setLockSettings] = useState(false);
   const [refreshScores, setRefreshScores] = useState(false);
 
   useEffect(() => {
@@ -62,18 +64,27 @@ const Game: React.FC = (): React.ReactElement => {
         (guess.origin !== "" || !settingsValues.useOrigin) &&
         (guess.destination !== "" || !settingsValues.useDestination)
       ) {
-        setLoading(true);
-        navigator.geolocation.getCurrentPosition((location) => {
-          const body =
-            `{` +
-            `"longitude": ${location.coords.longitude},` +
-            `"latitude": ${location.coords.latitude},` +
-            `"origin": "${guess.origin}",` +
-            `"destination": "${guess.destination}",` +
-            `"player_id": "${playerId}"` +
-            `}`;
-          callApi(TURN_ENDPOINT, "POST", body, handleTurn);
-        });
+        navigator.geolocation.getCurrentPosition(
+          (location) => {
+            setLoading(true);
+            const body =
+              `{` +
+              `"longitude": ${location.coords.longitude},` +
+              `"latitude": ${location.coords.latitude},` +
+              `"origin": "${guess.origin}",` +
+              `"destination": "${guess.destination}",` +
+              `"player_id": "${playerId}"` +
+              `}`;
+            callApi(TURN_ENDPOINT, "POST", body, handleTurn);
+          },
+          (): void => {
+            setAlert({
+              message:
+                "Location services must be enabled to use this application",
+              show: true,
+            });
+          }
+        );
       } else {
         setAlert({
           message: `Please select ${
@@ -86,7 +97,7 @@ const Game: React.FC = (): React.ReactElement => {
       }
     } else {
       setAlert({
-        message: "Location services must be enabled to use this application",
+        message: "Location services are not supported by your browser",
         show: true,
       });
     }
@@ -111,6 +122,8 @@ const Game: React.FC = (): React.ReactElement => {
     // Handles the output from the Join Lobby API
     if (response.message) {
       setAlert({ message: response.message, show: true });
+      setLockSettings(false);
+      setPlayerId("");
     } else {
       setPlayerId(response.body.player_id);
 
@@ -129,6 +142,14 @@ const Game: React.FC = (): React.ReactElement => {
           setScore(playerData.score);
         }
       });
+
+      // Configure settings to match the lobby's rules
+      const newSettings = rulesToSettings(response.body.rules);
+      setSettingsValues({
+        useOrigin: newSettings.useOrigin,
+        useDestination: newSettings.useDestination,
+        dataSaver: settingsValues.dataSaver,
+      });
     }
   };
 
@@ -136,6 +157,8 @@ const Game: React.FC = (): React.ReactElement => {
     // Handles the output from the Create Lobby API
     if (response.message) {
       setAlert({ message: response.message, show: true });
+      setLockSettings(false);
+      setPlayerId("");
     } else {
       setLobbyId(response.body.lobby_id);
       setPlayerId(response.body.player_id);
@@ -156,6 +179,7 @@ const Game: React.FC = (): React.ReactElement => {
       {showSettings ? (
         <SettingsMenu
           settingsValues={settingsValues}
+          locked={lockSettings}
           setSettingsValues={setSettingsValues}
           setShowLobbyMenu={setShowLobbyMenu}
           onClose={(): void => setShowSettings(false)}
@@ -227,9 +251,10 @@ const Game: React.FC = (): React.ReactElement => {
           )}
           {lobbyId !== "" && (
             <Scoreboard
-              refresh={refreshScores}
               lobbyId={lobbyId}
               lobbyData={lobbyData}
+              refresh={refreshScores}
+              dataSaver={settingsValues.dataSaver}
               setLobbyData={setLobbyData}
               setAlert={setAlert}
             />
@@ -258,9 +283,15 @@ const Game: React.FC = (): React.ReactElement => {
         <LobbyMenu
           mode={showLobbyMenu}
           score={score}
+          rules={settingsToRules(
+            settingsValues.useOrigin,
+            settingsValues.useDestination
+          )}
+          guessedFlights={ids}
           setLobbyId={setLobbyId}
           onJoinLobby={handleJoinLobby}
           onCreateLobby={handleCreateLobby}
+          lockSettings={(): void => setLockSettings(true)}
           onClose={(): void => {
             setShowSettings(false);
             setShowLobbyMenu(LobbyMode.hidden);

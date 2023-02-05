@@ -4,23 +4,29 @@ import os
 import random
 import string
 import uuid
+from decimal import Decimal
 from datetime import datetime, timedelta
 import numpy as np
 import pandas as pd
 import boto3
-from boto3.dynamodb.conditions import Attr
+from boto3.dynamodb.conditions import Attr, Key
 from FlightRadar24.api import FlightRadar24API
+from src.service.exceptions import ValidationException
 
 fr_api = FlightRadar24API()
 
-table_name = os.getenv("GAME_DATA_TABLE", None)
+lobbyTableName = os.getenv("LOBBY_DATA_TABLE", None)
+playerTableName = os.getenv("PLAYER_DATA_TABLE", None)
+
 dynamoResource = boto3.resource("dynamodb")
-lobbyTable = dynamoResource.Table(table_name) if table_name != None else None
+lobbyTable = dynamoResource.Table(lobbyTableName) if lobbyTableName else None
+playerTable = dynamoResource.Table(playerTableName) if playerTableName else None
 
 
 def get_airports():
     """
     Function to get a complete list of airports
+
     Returns:
         string[]: Airport names
     """
@@ -43,9 +49,11 @@ def get_airports():
 def get_closest_flight(longitude, latitude):
     """
     Function to get the details of the closest flight to a given location
+
     Args:
         longitude [float]: longitude to search from
         latitude [float]: latitude to search from
+
     Returns:
         FlightRadar24 Flight: closest flight
     """
@@ -70,13 +78,16 @@ def get_closest_flight(longitude, latitude):
     return flight
 
 
-def get_score(flight, origin, destination):
+def get_score(flight, origin, destination, rules):
     """
-    Function to evaluate the points earned from a destination guess
+    Function to evaluate the points earned from a guess
+
     Args:
         flight [FlightRadar24 Flight]: flight to check
         origin [string]: origin airport guess
         destination [string]: destination airport guess
+        rules [integer]: Integer encoded ruleset of the lobby
+
     Returns:
         integer: points awarded
     """
@@ -84,62 +95,108 @@ def get_score(flight, origin, destination):
     score = 0
     airport_list = None
 
-    # Origin Guess
-    if origin != "":
-        if flight.origin_airport_name == origin:
-            # in the case of a perfect match, gain 100 points
-            score += 100
-        else:
-            # else find the distance between the guess and the correct airport
-            # and convert this into a score
-            if airport_list is None:
-                airport_list = pd.DataFrame(fr_api.get_airports())
-                # Remove any escape characters
-                airport_list["name"] = remove_escape_characters(
-                    airport_list.loc[:, "name"].to_list()
+    guessed_locations = []
+    correct_locations = []
+
+    # If the player is not in a multiplayer lobby, we will check any provided guesses
+    if rules is None:
+        if origin != "":
+            guessed_locations.append(origin)
+            correct_locations.append(flight.origin_airport_name)
+        if destination != "":
+            guessed_locations.append(destination)
+            correct_locations.append(flight.destination_airport_name)
+
+    # If the player is in a multiplayer lobby, we will only check guesses permitted
+    # by the lobby rules
+    else:
+        if rules % 2 == 1:
+            guessed_locations.append(origin)
+            correct_locations.append(flight.origin_airport_name)
+        if rules // 2 == 1:
+            guessed_locations.append(destination)
+            correct_locations.append(flight.destination_airport_name)
+
+    for index in range(len(guessed_locations)):
+        if guessed_locations[index] != "":
+            if correct_locations[index] == guessed_locations[index]:
+                # in the case of a perfect match, gain 100 points
+                score += 100
+
+            else:
+                # else find the distance between the guess and the correct airport
+                # and convert this into a score
+
+                # avoid reloading the airport list if it has already been fetched
+                if airport_list is None:
+                    # Load airport data from the flight radar API
+                    airport_list = pd.DataFrame(fr_api.get_airports())
+                    # Remove any escape characters
+                    airport_list["name"] = remove_escape_characters(
+                        airport_list.loc[:, "name"].to_list()
+                    )
+
+                airport_data = airport_list[
+                    (airport_list["name"] == guessed_locations[index])
+                    | (airport_list["name"] == correct_locations[index])
+                ]
+
+                # Check the integrity of the flight data
+                if len(airport_data["lon"]) != 2:
+                    raise ValidationException("Data is unavailable for this flight")
+
+                distance = evaluate_distance(
+                    airport_data["lon"].iloc[0],
+                    airport_data["lat"].iloc[0],
+                    airport_data["lon"].iloc[1],
+                    airport_data["lat"].iloc[1],
                 )
 
-            airport_data = airport_list[
-                (airport_list["name"] == origin)
-                | (airport_list["name"] == flight.origin_airport_name)
-            ]
-            distance = np.sqrt(
-                pow(airport_data["lat"].iloc[0] - airport_data["lat"].iloc[1], 2)
-                + pow(airport_data["lon"].iloc[0] - airport_data["lon"].iloc[1], 2)
-            )
-            score += max(np.floor(100 - 4 * pow(distance, 3)), 0)
-
-    # Destination Guess
-    if destination != "":
-        if flight.destination_airport_name == destination:
-            # in the case of a perfect match, gain 100 points
-            score += 100
-        else:
-            # else find the distance between the guess and the correct airport
-            # and convert this into a score
-            if airport_list is None:
-                airport_list = pd.DataFrame(fr_api.get_airports())
-                # Remove any escape characters
-                airport_list["name"] = remove_escape_characters(
-                    airport_list.loc[:, "name"].to_list()
-                )
-
-            airport_data = airport_list[
-                (airport_list["name"] == destination)
-                | (airport_list["name"] == flight.destination_airport_name)
-            ]
-            distance = np.sqrt(
-                pow(airport_data["lat"].iloc[0] - airport_data["lat"].iloc[1], 2)
-                + pow(airport_data["lon"].iloc[0] - airport_data["lon"].iloc[1], 2)
-            )
-            score += max(np.floor(100 - 4 * pow(distance, 3)), 0)
+                score += np.floor(100 * np.exp(-distance / 250))
 
     return score
 
 
-def get_unique_lobby_id():
+def evaluate_distance(from_longitude, from_latitude, to_longitude, to_latitude):
     """
-    Generates a unique four-letter code to identify a lobby.
+    Calcuates the distance between two locations defined using longitude and latitude pairs.
+    For simplicity it is assumed that the Earth is a perfect sphere.
+
+    Args:
+        from_longitude [Float]: Longitude value of the first coordinate in degrees
+        from_latitude [Float]: Latitude value of the first coordinate in degrees
+        to_longitude [Float]: Longitude value of the second coordinate in degrees
+        to_latitude [Float]: Latitude value of the second coordinate in degrees
+
+    Returns:
+        Float: Separation distance in km
+    """
+
+    radius = 6378.137  # Equatorial radius of the Earth in km (source: NASA)
+
+    # Convert angles from degrees to radians
+    from_longitude *= np.pi / 180
+    from_latitude *= np.pi / 180
+    to_longitude *= np.pi / 180
+    to_latitude *= np.pi / 180
+
+    distance = radius * np.arccos(
+        np.cos(to_latitude - from_latitude)
+        - np.cos(to_latitude)
+        * np.cos(from_latitude)
+        * (1 - np.cos(to_longitude - from_longitude))
+    )
+
+    return distance
+
+
+def create_lobby(rules):
+    """
+    Generates a unique four-letter code to identify a lobby and creates a corresponding entry in the lobby table.
+
+    Args:
+        rules [integer]: Integer encoded ruleset of the lobby
+
     Returns:
         string: Lobby ID
     """
@@ -147,37 +204,27 @@ def get_unique_lobby_id():
     unique = False
 
     while not unique:
+        # Generate a random four-letter string
         lobby_id = "".join(random.choice(string.ascii_uppercase) for i in range(4))
+
+        # Confirm that this lobby ID is not already in use
         if (
-            lobbyTable.scan(FilterExpression=Attr("lobby_id").eq(lobby_id))["Count"]
+            lobbyTable.query(KeyConditionExpression=Key("lobby_id").eq(lobby_id))[
+                "Count"
+            ]
             == 0
         ):
             unique = True
 
-    return lobby_id
-
-
-def create_player_data(lobby_id, name, score):
-    """
-    Generates a unique ID to identify a player, and creates a record in the
-    dynamo table corresponding to the player.
-    Returns:
-        string: Player ID
-    """
-
-    player_id = str(uuid.uuid4())
-
     lobbyTable.put_item(
         Item={
-            "player_id": player_id,
             "lobby_id": lobby_id,
-            "player_name": name,
-            "score": int(score),
+            "rules": rules,
             "last_interaction": datetime.now().strftime("%Y-%m-%d %H:%M"),
         },
     )
 
-    return player_id
+    return lobby_id
 
 
 def get_player_id(lobby_id, name):
@@ -185,37 +232,69 @@ def get_player_id(lobby_id, name):
     Checks by name whether a player exists within a given lobby.
     If so, the function will return their existing player_id.
     Otherwise the function will generate a player_id for the player.
+
+    Args:
+        lobby_id [string]: ID of the lobby
+        name [string]: Name of the player
+
     Returns:
         string: If the player already exists, this will be their Unique
                 Player ID, otherwise this will be an empty string.
     """
 
-    scan_response = lobbyTable.scan(
-        FilterExpression=Attr("lobby_id").eq(lobby_id) & Attr("player_name").eq(name),
+    query_response = playerTable.query(
+        KeyConditionExpression=Key("lobby_id").eq(lobby_id)
+        & Key("player_name").eq(name),
+        IndexName="LobbyIndex",
     )
+
     result = (
-        "" if scan_response["Count"] == 0 else scan_response["Items"][0]["player_id"]
+        "" if query_response["Count"] == 0 else query_response["Items"][0]["player_id"]
     )
 
     return result
+
+
+def get_lobby_rules(lobby_id):
+    """
+    Returns an integer corresponding to the specified lobby's rules.
+
+    Args:
+        lobby_id [string]: ID of the lobby
+
+    Returns:
+        string: Integer-encoded lobby rules, or an empty string if the lobby does not exist
+    """
+
+    query_response = lobbyTable.get_item(Key={"lobby_id": lobby_id})
+
+    rules = (
+        ""
+        if query_response.get("Item") is None
+        else int(query_response.get("Item").get("rules"))
+    )
+
+    return rules
 
 
 def get_lobby_scores(lobby_id):
     """
     Returns the a list containing the names and scores of all members of
     a given lobby.
+
     Args:
         lobby_id [string]: ID of the lobby
+
     Returns:
         string: [{"name": string, "score": string}, ...]
     """
 
     lobby_data = []
-    scan_response = lobbyTable.scan(FilterExpression=Attr("lobby_id").eq(lobby_id))[
-        "Items"
-    ]
+    query_response = playerTable.query(
+        KeyConditionExpression=Key("lobby_id").eq(lobby_id), IndexName="LobbyIndex"
+    )["Items"]
 
-    for entry in scan_response:
+    for entry in query_response:
         lobby_data = np.append(
             lobby_data,
             {
@@ -230,46 +309,110 @@ def get_lobby_scores(lobby_id):
     return lobby_data
 
 
-def update_player_score(player_id, score):
+def create_player_data(lobby_id, name, score, guessed_flights):
     """
-    Adds a given number of points to a player's score in the dynamo table.
+    Generates a unique ID to identify a player, and creates a record in the
+    dynamo table corresponding to the player.
+
+    Args:
+        lobby_id [string]: ID of the lobby
+        name [string]: Name of the player
+        score [string]: Score of the player
+        guessed_flights [string[]]: Flight IDs previously guessed by the player
+
+    Returns:
+        string: Player ID
+    """
+
+    player_id = str(uuid.uuid4())
+
+    playerTable.put_item(
+        Item={
+            "player_id": player_id,
+            "lobby_id": lobby_id,
+            "player_name": name,
+            "score": int(score),
+            "guessed_flights": guessed_flights,
+            "last_interaction": datetime.now().strftime("%Y-%m-%d %H:%M"),
+        },
+    )
+
+    return player_id
+
+
+def get_player_data(player_id):
+    """
+    Retrieves the player data required for input validation from the dynamo tables.
+
+    Args:
+        player_id [string]: ID of the player
+
+    Returns:
+        string[]: Flight IDs previously guessed by the player
+        integer: Integer encoded ruleset of the lobby
+    """
+
+    playerData = playerTable.get_item(Key={"player_id": player_id}).get("Item")
+
+    lobby_id = playerData.get("lobby_id")
+    guessed_flights = playerData.get("guessed_flights")
+    rules = int(get_lobby_rules(lobby_id))
+
+    return guessed_flights, rules
+
+
+def update_player_data(player_id, score, flight_id, guessed_flights):
+    """
+    Adds a given number of points to a player's score and guessed flights in the dynamo table.
+
     Args:
         player_id [string]: ID of the player
         score [integer]: Points to add to the player's score
+        flight_id [string]: ID of the most recently guessed flight
     """
 
-    lobbyTable.update_item(
+    updated_guessed_flights = (
+        f"{guessed_flights},{flight_id}" if guessed_flights != "" else flight_id
+    )
+
+    playerTable.update_item(
         Key={"player_id": player_id},
-        UpdateExpression="SET score = score + :val",
-        ExpressionAttributeValues={":val": score},
+        UpdateExpression="SET score = score + :val, guessed_flights = :fid",
+        ExpressionAttributeValues={
+            ":val": Decimal(score),
+            ":fid": updated_guessed_flights,
+        },
     )
 
 
-def delete_lobby():
+def delete_old_data():
     """
-    Deletes data older than one day from the dynamo table.
+    Deletes data older than one day from the dynamo tables.
     """
 
-    scan_response = lobbyTable.scan()["Items"]
+    for table in [playerTable, lobbyTable]:
+        scan_response = table.scan()["Items"]
 
-    for entry in scan_response:
-        date = datetime(
-            year=int(entry["last_interaction"][:4]),
-            month=int(entry["last_interaction"][5:7]),
-            day=int(entry["last_interaction"][8:10]),
-            hour=int(entry["last_interaction"][11:13]),
-            minute=int(entry["last_interaction"][14:]),
-        )
+        for entry in scan_response:
+            date = datetime(
+                year=int(entry["last_interaction"][:4]),
+                month=int(entry["last_interaction"][5:7]),
+                day=int(entry["last_interaction"][8:10]),
+                hour=int(entry["last_interaction"][11:13]),
+                minute=int(entry["last_interaction"][14:]),
+            )
 
-        if date < datetime.now() - timedelta(days=1):
-            lobbyTable.delete_item(Key={"player_id": entry["player_id"]})
+            if date < datetime.now() - timedelta(days=1):
+                playerTable.delete_item(Key={"player_id": entry["player_id"]})
 
 
 def remove_escape_characters(items):
     """
     Removes escape characters from a list of strings
+
     Args:
         items (string[]): Items to be cleaned
+
     Returns:
         string[]: Cleaned items
     """
