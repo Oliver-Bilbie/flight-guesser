@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Updated
 
-- Refactoring
+- Reworked pipelines as IaC (see [Pipelines](https://github.com/Oliver-Bilbie/pipelines))
 
 ## 1.6.0
 
