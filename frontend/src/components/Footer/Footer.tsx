@@ -9,7 +9,7 @@ const Footer: React.FC = (): React.ReactElement => {
         label="What's new?"
         onClick={(): void => {
           window.open(
-            "https://github.com/Oliver-Bilbie/flight-guesser/blob/main/CHANGELOG.MD",
+            "https://github.com/Oliver-Bilbie/flight-guesser/blob/main/CHANGELOG.md",
             "_blank"
           );
         }}
