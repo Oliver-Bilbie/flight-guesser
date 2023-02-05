@@ -3,13 +3,7 @@
 import json
 import traceback
 from src.service import service, validator
-
-
-class ValidationException(Exception):
-    """
-    This class is used to handle exceptions raised due to input validaiton.
-    It behaves identially to the Exception class.
-    """
+from src.service.exceptions import ValidationException
 
 
 def handle_exceptions(function):
@@ -94,18 +88,13 @@ def handle_turn(longitude, latitude, origin, destination, player_id):
         "status": request status code
     """
 
-    if not validator.validate_position(longitude, latitude):
-        raise ValidationException("Invalid position")
-    if not validator.validate_airport_names(origin, destination):
-        raise ValidationException("Invalid airport names")
+    validator.validate_position(longitude, latitude)
+    validator.validate_airport_names(origin, destination)
 
-    # For players in multiplayer lobbies
     if player_id != "":
-        if not validator.validate_player_id(player_id):
-            raise ValidationException("Invalid player ID")
-
+        # For players in multiplayer lobbies
+        validator.validate_player_id(player_id)
         guessed_flights, rules = service.get_player_data(player_id)
-
     else:
         rules = None
 
@@ -167,10 +156,8 @@ def create_lobby(name, score, guessed_flights, rules):
     """
 
     # Validate user inputs
-    if not validator.validate_player_name(name):
-        raise ValidationException("Invalid name")
-    if not validator.validate_score(score):
-        raise ValidationException("Invalid score")
+    validator.validate_player_name(name)
+    validator.validate_score(score)
 
     lobby_id = service.create_lobby(rules)
     player_id = service.create_player_data(lobby_id, name, score, guessed_flights)
@@ -219,12 +206,9 @@ def join_lobby(lobby_id, name, score, guessed_flights):
     """
 
     # Validate user inputs
-    if not validator.validate_lobby_id(lobby_id):
-        raise ValidationException("Invalid lobby ID")
-    if not validator.validate_player_name(name):
-        raise ValidationException("Invalid name")
-    if not validator.validate_score(score):
-        raise ValidationException("Invalid score")
+    validator.validate_lobby_id(lobby_id)
+    validator.validate_player_name(name)
+    validator.validate_score(score)
 
     rules = service.get_lobby_rules(lobby_id)
     if rules == "":  # if the lobby does not exist
@@ -268,8 +252,7 @@ def get_lobby_scores(lobby_id):
     """
 
     # Validate user inputs
-    if not validator.validate_lobby_id(lobby_id):
-        raise ValidationException("Invalid lobby ID")
+    validator.validate_lobby_id(lobby_id)
 
     lobby_data = service.get_lobby_scores(lobby_id)
 

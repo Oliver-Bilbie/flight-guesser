@@ -11,6 +11,7 @@ import pandas as pd
 import boto3
 from boto3.dynamodb.conditions import Attr, Key
 from FlightRadar24.api import FlightRadar24API
+from src.service.exceptions import ValidationException
 
 fr_api = FlightRadar24API()
 
@@ -139,6 +140,10 @@ def get_score(flight, origin, destination, rules):
                     (airport_list["name"] == guessed_locations[index])
                     | (airport_list["name"] == correct_locations[index])
                 ]
+
+                # Check the integrity of the flight data
+                if len(airport_data["lon"]) != 2:
+                    raise ValidationException("Data is unavailable for this flight")
 
                 distance = evaluate_distance(
                     airport_data["lon"].iloc[0],
