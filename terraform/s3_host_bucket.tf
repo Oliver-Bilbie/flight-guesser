@@ -2,6 +2,12 @@ resource "aws_s3_bucket" "host-bucket" {
   bucket = var.deployment_bucket
 }
 
+resource "aws_s3_bucket_public_access_block" "host-bucket-public-access" {
+  bucket              = aws_s3_bucket.host-bucket.id
+  block_public_acls   = false
+  block_public_policy = false
+}
+
 resource "aws_s3_bucket_policy" "allow_access" {
   bucket = aws_s3_bucket.host-bucket.id
   policy = jsonencode({
@@ -18,7 +24,7 @@ resource "aws_s3_bucket_policy" "allow_access" {
   })
 }
 
-resource "aws_s3_bucket_cors_configuration" "example" {
+resource "aws_s3_bucket_cors_configuration" "host-bucket-cors" {
   bucket = aws_s3_bucket.host-bucket.id
 
   cors_rule {
@@ -28,7 +34,7 @@ resource "aws_s3_bucket_cors_configuration" "example" {
   }
 }
 
-resource "aws_s3_bucket_website_configuration" "website-config" {
+resource "aws_s3_bucket_website_configuration" "host-bucket-hosting-config" {
   bucket = aws_s3_bucket.host-bucket.id
   index_document {
     suffix = "index.html"
