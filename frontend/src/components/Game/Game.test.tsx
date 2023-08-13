@@ -53,4 +53,4 @@ test("Test with no guess", () => {
   expect(screen.getByText("Close")).toBeInTheDocument();
 });
 
-// ToDo: Write tests where an airport is selected
+// TODO: Write tests where an airport is selected
