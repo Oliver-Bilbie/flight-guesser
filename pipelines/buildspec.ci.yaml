@@ -1,5 +1,10 @@
 version: 0.2
 
+env:
+  parameter-store:
+    DEPLOY_BUCKET_NAME: "flight-guesser-${STAGE}-host-bucket"
+    CF_DISTRIBUTION_ID: "flight-guesser-${STAGE}-cf-dist"
+
 phases:
   pre_build:
     commands:
