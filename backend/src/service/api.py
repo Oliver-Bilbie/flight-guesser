@@ -1,4 +1,10 @@
-"""Handlers for AWS Lambda functions"""
+"""
+Handlers for AWS Lambda functions
+
+Some of these functions are sinkholes which are here to fit the project pattern
+of API, controller, and service layers. This pattern is not ideal now that the
+project has grown and may be refactored in the future.
+"""
 
 import json
 from src.service import service, controller
@@ -160,4 +166,4 @@ def delete_lobby(_event, _context):
         context: AWS Lambda context
     """
 
-    service.delete_lobby()
+    service.delete_old_data()
