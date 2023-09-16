@@ -1,6 +1,10 @@
 version: 0.2
 
 phases:
+  install:
+    commands:
+      - make -j2 install-dev-deps
+
   build:
     commands:
-      - bash pipelines/test.sh
+      - make -j4 test-all
