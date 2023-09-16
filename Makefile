@@ -73,5 +73,5 @@ deploy-backend:
 deploy-frontend:
 	@echo "[INFO] Deploying frontend to ${STAGE} environment"
 	@cd frontend && yarn build:${STAGE}
-	@aws s3 cp build ${DEPLOY_BUCKET_NAME} --recursive
+	@cd frontend && aws s3 cp build "s3://${DEPLOY_BUCKET_NAME}" --recursive
 	@aws cloudfront create-invalidation --distribution-id ${CF_DISTRIBUTION_ID} --paths "/*"
