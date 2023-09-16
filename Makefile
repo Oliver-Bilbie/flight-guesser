@@ -10,7 +10,7 @@ install-node-deps:
 	@cd frontend && yarn --production
 
 install-serverless:
-	@yarn
+	@cd backend && yarn
 
 install-terraform:
 	@yum install -y yum-utils
