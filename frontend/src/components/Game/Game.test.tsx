@@ -1,5 +1,4 @@
 import React from "react";
-import renderer from "react-test-renderer";
 import "@testing-library/jest-dom";
 import { render, screen, cleanup, fireEvent } from "@testing-library/react";
 import Game from "./Game";
