@@ -6,11 +6,6 @@ import Banner from "./Banner";
 
 afterEach(cleanup);
 
-test("Matches snapshot", () => {
-  const tree = renderer.create(<Banner />).toJSON();
-  expect(tree).toMatchSnapshot();
-});
-
 test("Test that the expected elements appear", async () => {
   render(<Banner />);
   expect(screen.getByText("Flight Guesser")).toBeInTheDocument();

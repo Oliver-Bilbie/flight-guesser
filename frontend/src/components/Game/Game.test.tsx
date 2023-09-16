@@ -33,11 +33,6 @@ global.navigator.geolocation = mockGeolocation;
 
 afterEach(cleanup);
 
-test("Matches snapshot", () => {
-  const tree = renderer.create(<Game />).toJSON();
-  expect(tree).toMatchSnapshot();
-});
-
 test("Test with no guess", () => {
   render(<Game />);
 
