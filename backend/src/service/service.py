@@ -110,6 +110,7 @@ def get_score(flight, origin, destination, rules):
     # If the player is in a multiplayer lobby, we will only check guesses permitted
     # by the lobby rules
     else:
+        # TODO: Refactor this into a more readable format
         if rules % 2 == 1:
             guessed_locations.append(origin)
             correct_locations.append(flight.origin_airport_name)
@@ -349,7 +350,7 @@ def get_player_data(player_id):
         player_id [string]: ID of the player
 
     Returns:
-        string[]: Flight IDs previously guessed by the player
+        string: Comma-Separated Flight IDs previously guessed by the player
         integer: Integer encoded ruleset of the lobby
     """
 
