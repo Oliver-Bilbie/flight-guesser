@@ -1,7 +1,7 @@
 """Validation functions for user inputs"""
 
 import re
-from src.service.exceptions import ValidationException
+from src.service.error_handling import ValidationException
 
 
 def validate_position(longitude, latitude):
@@ -22,8 +22,8 @@ def validate_position(longitude, latitude):
         if abs(longitude_float) > 180 or abs(latitude_float) > 90:
             raise ValidationException("Invalid position")
 
-    except:
-        raise ValidationException("Invalid position")
+    except ValueError as exc:
+        raise ValidationException("Invalid position") from exc
 
 
 def validate_airport_names(origin, destination):
@@ -42,7 +42,7 @@ def validate_airport_names(origin, destination):
 
         # Check for special characters
         regex = re.compile("[@_!#$%^&*()<>?/|}{~:=]")
-        if regex.search(airport_name) != None:
+        if regex.search(airport_name) is not None:
             raise ValidationException("Invalid airport names")
 
 
@@ -60,7 +60,7 @@ def validate_player_id(player_id):
 
     # Check for special characters
     regex = re.compile("[@_!#$%^&*()<>?/|}{~:=]")
-    if regex.search(player_id) != None:
+    if regex.search(player_id) is not None:
         raise ValidationException("Invalid player ID")
 
 
@@ -78,7 +78,7 @@ def validate_player_name(name):
 
     # Check for special characters
     regex = re.compile("[@_!#$%^&*()<>?/|}{~:=]")
-    if regex.search(name) != None:
+    if regex.search(name) is not None:
         raise ValidationException("Invalid name")
 
 
@@ -98,8 +98,8 @@ def validate_score(score):
         if score_int < 0:
             raise ValidationException("Invalid score")
 
-    except:
-        raise ValidationException("Invalid score")
+    except ValueError as exc:
+        raise ValidationException("Invalid score") from exc
 
 
 def validate_lobby_id(lobby_id):
@@ -116,5 +116,5 @@ def validate_lobby_id(lobby_id):
 
     # Check for forbidden characters
     regex = re.compile("[@_!#$%^&*()<>?/|}{~:=a-z0-9]")
-    if regex.search(lobby_id) != None:
+    if regex.search(lobby_id) is not None:
         raise ValidationException("Invalid lobby ID")

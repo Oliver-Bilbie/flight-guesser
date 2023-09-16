@@ -1,186 +1,184 @@
 """unit tests for the validator functions"""
 
+import pytest
+from contextlib import nullcontext as does_not_raise
 from src.service import validator
 
 
-def test_validate_position_london():
-    latitude = "51.507"
-    longitude = "-0.1278"
-    assert validator.validate_position(longitude, latitude)
-
-
-def test_validate_position_tokyo():
-    latitude = "35.689"
-    longitude = "139.69"
-    assert validator.validate_position(longitude, latitude)
-
-
-def test_validate_position_north_pole():
-    latitude = "90.000"
-    longitude = "0"
-    assert validator.validate_position(longitude, latitude)
-
-
-def test_validate_position_antarctica():
-    latitude = "-90.000"
-    longitude = "0"
-    assert validator.validate_position(longitude, latitude)
-
-
-def test_validate_position_pacific():
-    latitude = "0"
-    longitude = "180"
-    assert validator.validate_position(longitude, latitude)
-
-
-def test_validate_position_big_longitude():
-    latitude = "0"
-    longitude = "200"
-    assert not validator.validate_position(longitude, latitude)
-
-
-def test_validate_position_small_longitude():
-    latitude = "0"
-    longitude = "-200"
-    assert not validator.validate_position(longitude, latitude)
-
-
-def test_validate_position_big_latitude():
-    latitude = "100"
-    longitude = "0"
-    assert not validator.validate_position(longitude, latitude)
-
-
-def test_validate_position_small_latitude():
-    latitude = "-100"
-    longitude = "0"
-    assert not validator.validate_position(longitude, latitude)
-
-
-def test_validate_position_not_numeric_longitude():
-    latitude = "0"
-    longitude = "this should fail"
-    assert not validator.validate_position(longitude, latitude)
-
-
-def test_validate_position_not_numeric_latitude():
-    latitude = "this should fail"
-    longitude = "0"
-    assert not validator.validate_position(longitude, latitude)
-
-
-def test_validate_position_not_numeric_both():
-    latitude = "this should fail"
-    longitude = "and so should this"
-    assert not validator.validate_position(longitude, latitude)
-
-
-def test_validate_airport_names_zurich_to_berlin():
-    origin = "Zurich Airport"
-    destination = "Berlin Brandenburg Airport"
-    assert validator.validate_airport_names(origin, destination)
-
-
-def test_validate_airport_names_origin_too_long():
-    origin = "SELECT * FROM PlayerData WHERE UserId = 105 OR 1=1;"
-    destination = "Berlin Brandenburg Airport"
-    assert not validator.validate_airport_names(origin, destination)
-
-
-def test_validate_airport_names_origin_too_long():
-    origin = "Zurich Airport"
-    destination = "SELECT * FROM PlayerData WHERE UserId = 105 OR 1=1;"
-    assert not validator.validate_airport_names(origin, destination)
-
-
-def test_validate_airport_names_invalid_origin():
-    origin = "@@@@@"
-    destination = "Berlin Brandenburg Airport"
-    assert not validator.validate_airport_names(origin, destination)
-
-
-def test_validate_airport_names_invalid_destination():
-    origin = "Zurich Airport"
-    destination = "???"
-    assert not validator.validate_airport_names(origin, destination)
-
-
-def test_validate_airport_names_both_invalid():
-    origin = "<Zurich Airport>"
-    destination = "SELECT * FROM Users WHERE UserId = 105 OR 1=1;"
-    assert not validator.validate_airport_names(origin, destination)
-
-
-def test_validate_player_id_valid():
-    player_id = "d86bc44d-6e8a-40cb-8784-1331685faaa2"
-    assert validator.validate_player_id(player_id)
-
-
-def test_validate_player_id_invalid_length():
-    player_id = "d86bc44d-6e8a-40cb-8784-1331685faaa21"
-    assert not validator.validate_player_id(player_id)
-
-
-def test_validate_player_id_invalid_characters():
-    player_id = "SELECT * FROM Users WHERE UserId = 1"
-    assert not validator.validate_player_id(player_id)
-
-
-def test_validate_player_name_valid():
-    name = "Michael Scott"
-    assert validator.validate_player_name(name)
-
-
-def test_validate_player_name_too_long():
-    name = "Michael Scott of Dunder Mifflin Paper Company"
-    assert not validator.validate_player_name(name)
-
-
-def test_validate_player_name_invalid_characters():
-    name = "Michael $cott"
-    assert not validator.validate_player_name(name)
-
-
-def test_validate_score_valid():
-    score = "100"
-    assert validator.validate_score(score)
-
-
-def test_validate_score_less_than_zero():
-    score = "-1"
-    assert not validator.validate_score(score)
-
-
-def test_validate_score_not_numeric():
-    score = "not a number"
-    assert not validator.validate_score(score)
-
-
-def test_validate_lobby_id_valid():
-    lobby_id = "ABCD"
-    assert validator.validate_lobby_id(lobby_id)
-
-
-def test_validate_lobby_too_long():
-    lobby_id = "ABCDE"
-    assert not validator.validate_lobby_id(lobby_id)
-
-
-def test_validate_lobby_too_short():
-    lobby_id = "ABC"
-    assert not validator.validate_lobby_id(lobby_id)
-
-
-def test_validate_lobby_special_characters():
-    lobby_id = "$@!%"
-    assert not validator.validate_lobby_id(lobby_id)
-
-
-def test_validate_lobby_numeric_characters():
-    lobby_id = "ABC1"
-    assert not validator.validate_lobby_id(lobby_id)
-
-
-def test_validate_lobby_lowercase_characters():
-    lobby_id = "abcd"
-    assert not validator.validate_lobby_id(lobby_id)
+@pytest.mark.parametrize(
+    "latitude,longitude,expectation",
+    [
+        # London
+        (51.507, -0.1278, does_not_raise()),
+        # Tokyo
+        (35.689, 129.69, does_not_raise()),
+        # North Pole
+        (90.000, 0, does_not_raise()),
+        # Antarctica
+        (-90.000, 0, does_not_raise()),
+        # Pacific
+        (0, 180, does_not_raise()),
+        # Invalid longitude (big)
+        (0, 200, pytest.raises(validator.ValidationException)),
+        # Invalid longitude (small)
+        (0, -200, pytest.raises(validator.ValidationException)),
+        # Invalid latitude (big)
+        (100, 0, pytest.raises(validator.ValidationException)),
+        # Invalid latitude (small)
+        (-100, 0, pytest.raises(validator.ValidationException)),
+        # Invalid longitude (not numeric)
+        ("this should fail", 0, pytest.raises(validator.ValidationException)),
+        # Invalid latitude (not numeric)
+        (0, "this should fail", pytest.raises(validator.ValidationException)),
+        # Invalid longitude and latitude (not numeric)
+        (
+            "this should fail",
+            "and so should this",
+            pytest.raises(validator.ValidationException),
+        ),
+    ],
+)
+def test_validate_position(latitude, longitude, expectation):
+    """
+    Test that the position validator does nothing with valid inputs and raises
+    a ValidationException with invalid inputs.
+    """
+    with expectation:
+        validator.validate_position(longitude, latitude)
+
+
+@pytest.mark.parametrize(
+    "origin,destination,expectation",
+    [
+        # Zurich to Berlin
+        ("Zurich Airport", "Berlin Brandenburg Airport", does_not_raise()),
+        # Invalid origin (too long)
+        (
+            "SELECT * FROM PlayerData WHERE UserId = 105 OR 1=1;",
+            "Berlin Brandenburg Airport",
+            pytest.raises(validator.ValidationException),
+        ),
+        # Invalid destination (too long)
+        (
+            "Zurich Airport",
+            "SELECT * FROM PlayerData WHERE UserId = 105 OR 1=1;",
+            pytest.raises(validator.ValidationException),
+        ),
+        # Invalid origin (special characters)
+        (
+            "@@@@@",
+            "Berlin Brandenburg Airport",
+            pytest.raises(validator.ValidationException),
+        ),
+        # Invalid destination (special characters)
+        ("Zurich Airport", "???", pytest.raises(validator.ValidationException)),
+        # Invalid origin and destination (special characters)
+        (
+            "<Zurich Airport>",
+            "SELECT * FROM Users WHERE UserId = 105 OR 1=1;",
+            pytest.raises(validator.ValidationException),
+        ),
+    ],
+)
+def test_validate_airport_names(origin, destination, expectation):
+    """
+    Test that the airport name validator does nothing with valid inputs and
+    raises a ValidationException with invalid inputs.
+    """
+    with expectation:
+        validator.validate_airport_names(origin, destination)
+
+
+@pytest.mark.parametrize(
+    "player_id,expectation",
+    [
+        # Valid player ID
+        ("d86bc44d-6e8a-40cb-8784-1331685faaa2", does_not_raise()),
+        # Invalid player ID (too long)
+        (
+            "d86bc44d-6e8a-40cb-8784-1331685faaa21",
+            pytest.raises(validator.ValidationException),
+        ),
+        # Invalid player ID (special characters)
+        (
+            "SELECT * FROM Users WHERE UserId = 1",
+            pytest.raises(validator.ValidationException),
+        ),
+    ],
+)
+def test_validate_player_id(player_id, expectation):
+    """
+    Test that the player ID validator does nothing with valid inputs and
+    raises a ValidationException with invalid inputs.
+    """
+    with expectation:
+        validator.validate_player_id(player_id)
+
+
+@pytest.mark.parametrize(
+    "name,expectation",
+    [
+        # Valid name
+        ("Michael Scott", does_not_raise()),
+        # Invalid name (too long)
+        (
+            "Michael Scott of Dunder Mifflin Paper Company",
+            pytest.raises(validator.ValidationException),
+        ),
+        # Invalid name (special characters)
+        ("Michael $cott", pytest.raises(validator.ValidationException)),
+    ],
+)
+def test_validate_player_name(name, expectation):
+    """
+    Test that the player name validator does nothing with valid inputs and
+    raises a ValidationException with invalid inputs.
+    """
+    with expectation:
+        validator.validate_player_name(name)
+
+
+@pytest.mark.parametrize(
+    "score,expectation",
+    [
+        # Valid score
+        ("100", does_not_raise()),
+        # Invalid score (negative)
+        ("-1", pytest.raises(validator.ValidationException)),
+        # Invalid score (not numeric)
+        ("not a number", pytest.raises(validator.ValidationException)),
+    ],
+)
+def test_validate_score(score, expectation):
+    """
+    Test that the score validator does nothing with valid inputs and
+    raises a ValidationException with invalid inputs.
+    """
+    with expectation:
+        validator.validate_score(score)
+
+
+@pytest.mark.parametrize(
+    "lobby_id,expectation",
+    [
+        # Valid lobby ID
+        ("ABCD", does_not_raise()),
+        # Invalid lobby ID (too long)
+        ("ABCDE", pytest.raises(validator.ValidationException)),
+        # Invalid lobby ID (too short)
+        ("ABC", pytest.raises(validator.ValidationException)),
+        # Invalid lobby ID (special characters)
+        ("$@!%", pytest.raises(validator.ValidationException)),
+        # Invalid lobby ID (numeric characters)
+        ("ABC1", pytest.raises(validator.ValidationException)),
+        # Invalid lobby ID (lowercase characters)
+        ("abcd", pytest.raises(validator.ValidationException)),
+    ],
+)
+def test_validate_lobby_id(lobby_id, expectation):
+    """
+    Test that the lobby ID validator does nothing with valid inputs and
+    raises a ValidationException with invalid inputs.
+    """
+    with expectation:
+        validator.validate_lobby_id(lobby_id)

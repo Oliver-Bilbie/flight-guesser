@@ -1,24 +1,25 @@
 service: flight-guesser
+
 plugins:
   - serverless-iam-roles-per-function
   - serverless-python-requirements
+
 custom:
-  appName: flight-guesser
-  serviceName: flight-guesser-backend
   pythonRequirements:
     slim: true
     useDownloadCache: false
     useStaticCache: false
     usePipenv: false
     layer:
-      name: requirements-layer
-      description: "Python requirements lambda layer"
+      name: flight-guesser-requirements-layer
+      description: "Python dependencies for flight guesser services"
       compatibleRuntimes:
-        - python3.9
+        - python3.11
+
 provider:
   name: aws
   region: eu-west-1
-  runtime: python3.9
+  runtime: python3.11
   httpApi:
     cors:
       allowedOrigins:
@@ -29,6 +30,7 @@ provider:
         - GET
         - POST
         - PUT
+
 functions:
   get_airports:
     handler: src/service/api.get_airports
@@ -46,6 +48,7 @@ functions:
     timeout: 10
     layers:
       - { Ref: PythonRequirementsLambdaLayer }
+
   handle_turn:
     handler: src/service/api.handle_turn
     environment:
@@ -77,6 +80,7 @@ functions:
         Resource: arn:aws:dynamodb:eu-west-1:082862148481:table/flight-guesser-lobby-table-${env:STAGE}
     layers:
       - { Ref: PythonRequirementsLambdaLayer }
+
   create_lobby:
     handler: src/service/api.create_lobby
     environment:
@@ -107,6 +111,7 @@ functions:
         Resource: arn:aws:dynamodb:eu-west-1:082862148481:table/flight-guesser-lobby-table-${env:STAGE}
     layers:
       - { Ref: PythonRequirementsLambdaLayer }
+
   join_lobby:
     handler: src/service/api.join_lobby
     environment:
@@ -141,6 +146,7 @@ functions:
         Resource: arn:aws:dynamodb:eu-west-1:082862148481:table/flight-guesser-lobby-table-${env:STAGE}
     layers:
       - { Ref: PythonRequirementsLambdaLayer }
+
   get_lobby_scores:
     handler: src/service/api.get_lobby_scores
     environment:
@@ -170,6 +176,7 @@ functions:
         Resource: arn:aws:dynamodb:eu-west-1:082862148481:table/flight-guesser-lobby-table-${env:STAGE}
     layers:
       - { Ref: PythonRequirementsLambdaLayer }
+
   delete_old_data:
     handler: src/service/api.delete_old_data
     environment:

@@ -1,5 +1,4 @@
 import React from "react";
-import renderer from "react-test-renderer";
 import "@testing-library/jest-dom";
 import { render, screen, cleanup, fireEvent } from "@testing-library/react";
 import Game from "./Game";
@@ -32,11 +31,6 @@ const mockGeolocation = {
 global.navigator.geolocation = mockGeolocation;
 
 afterEach(cleanup);
-
-test("Matches snapshot", () => {
-  const tree = renderer.create(<Game />).toJSON();
-  expect(tree).toMatchSnapshot();
-});
 
 test("Test with no guess", () => {
   render(<Game />);

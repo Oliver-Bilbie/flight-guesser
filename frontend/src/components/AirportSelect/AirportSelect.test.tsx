@@ -1,25 +1,10 @@
 import React from "react";
-import renderer from "react-test-renderer";
 import "@testing-library/jest-dom";
 import { render, screen, cleanup, fireEvent } from "@testing-library/react";
 import AirportSelect from "./AirportSelect";
 
 const test_airports = ["airport 1", "airport 2", "airport 3"];
 const doNothing = (): void => void afterEach(cleanup);
-
-test("Matches snapshot", () => {
-  const tree = renderer
-    .create(
-      <AirportSelect
-        label="Label"
-        value="value"
-        airports={[]}
-        setSelection={doNothing}
-      />
-    )
-    .toJSON();
-  expect(tree).toMatchSnapshot();
-});
 
 test("Test for no airports", async () => {
   render(

@@ -1,45 +1,8 @@
 """Controllers for AWS Lambda functions"""
 
 import json
-import traceback
 from src.service import service, validator
-from src.service.exceptions import ValidationException
-
-
-def handle_exceptions(function):
-    """
-    Decorator function to handle runtime errors.
-    Any errors handled within the code should be raised as "ValidationException"
-    types, in which case the error message will be passed to the API.
-    Any other error class will return a generic error message.
-
-    Args:
-        function [Python function]: The function to be executed
-
-    Returns:
-        [json]: Json-encoded API response
-    """
-
-    def inner(*args):
-        try:
-            response = function(*args)
-
-        except ValidationException as exc:
-            print(traceback.format_exc())
-            response = json.dumps({"response": str(exc), "status": 400})
-
-        except Exception:
-            print(traceback.format_exc())
-            response = json.dumps(
-                {
-                    "response": "The server was unable to process your request",
-                    "status": 500,
-                }
-            )
-
-        return response
-
-    return inner
+from src.service.error_handling import ValidationException, handle_exceptions
 
 
 @handle_exceptions
@@ -91,32 +54,25 @@ def handle_turn(longitude, latitude, origin, destination, player_id):
     validator.validate_position(longitude, latitude)
     validator.validate_airport_names(origin, destination)
 
-    if player_id != "":
-        # For players in multiplayer lobbies
+    player_is_in_lobby = player_id != ""
+    if player_is_in_lobby:
         validator.validate_player_id(player_id)
         guessed_flights, rules = service.get_player_data(player_id)
     else:
         rules = None
 
-    # Find the nearest flight to the player
     flight = service.get_closest_flight(float(longitude), float(latitude))
-
-    # Exit if no flights were found
     if flight is None:
         raise ValidationException("No flights were found")
 
-    # For players in multiplayer lobbies
-    if player_id != "":
-        # Exit if the player has already made a guess for this flight
-        if flight.id in guessed_flights.split(","):
+    if player_is_in_lobby:
+        flight_already_guessed = flight.id in guessed_flights.split(",")
+        if flight_already_guessed:
             raise ValidationException("You have already made a guess for this flight")
 
-    # Assign a score to the user's guess based on accuracy
     score = service.get_score(flight, origin, destination, rules)
 
-    # If the player is a member of a multiplayer lobby, update their score
-    # and guessed flights in the player table
-    if player_id != "":
+    if player_is_in_lobby:
         service.update_player_data(player_id, score, flight.id, guessed_flights)
 
     response = json.dumps(

@@ -11,7 +11,7 @@ import pandas as pd
 import boto3
 from boto3.dynamodb.conditions import Attr, Key
 from FlightRadar24.api import FlightRadar24API
-from src.service.exceptions import ValidationException
+from src.service.error_handling import ValidationException
 
 fr_api = FlightRadar24API()
 
@@ -19,8 +19,8 @@ lobbyTableName = os.getenv("LOBBY_DATA_TABLE", None)
 playerTableName = os.getenv("PLAYER_DATA_TABLE", None)
 
 dynamoResource = boto3.resource("dynamodb")
-lobbyTable = dynamoResource.Table(lobbyTableName) if lobbyTableName else None
-playerTable = dynamoResource.Table(playerTableName) if playerTableName else None
+lobby_table = dynamoResource.Table(lobbyTableName) if lobbyTableName else None
+player_table = dynamoResource.Table(playerTableName) if playerTableName else None
 
 
 def get_airports():
@@ -110,6 +110,7 @@ def get_score(flight, origin, destination, rules):
     # If the player is in a multiplayer lobby, we will only check guesses permitted
     # by the lobby rules
     else:
+        # TODO: Refactor this into a more readable format
         if rules % 2 == 1:
             guessed_locations.append(origin)
             correct_locations.append(flight.origin_airport_name)
@@ -117,9 +118,9 @@ def get_score(flight, origin, destination, rules):
             guessed_locations.append(destination)
             correct_locations.append(flight.destination_airport_name)
 
-    for index in range(len(guessed_locations)):
-        if guessed_locations[index] != "":
-            if correct_locations[index] == guessed_locations[index]:
+    for index, guessed_location in enumerate(guessed_locations):
+        if guessed_location != "":
+            if correct_locations[index] == guessed_location:
                 # in the case of a perfect match, gain 100 points
                 score += 100
 
@@ -137,7 +138,7 @@ def get_score(flight, origin, destination, rules):
                     )
 
                 airport_data = airport_list[
-                    (airport_list["name"] == guessed_locations[index])
+                    (airport_list["name"] == guessed_location)
                     | (airport_list["name"] == correct_locations[index])
                 ]
 
@@ -192,7 +193,8 @@ def evaluate_distance(from_longitude, from_latitude, to_longitude, to_latitude):
 
 def create_lobby(rules):
     """
-    Generates a unique four-letter code to identify a lobby and creates a corresponding entry in the lobby table.
+    Generates a unique four-letter code to identify a lobby and creates a
+    corresponding entry in the lobby table.
 
     Args:
         rules [integer]: Integer encoded ruleset of the lobby
@@ -209,14 +211,14 @@ def create_lobby(rules):
 
         # Confirm that this lobby ID is not already in use
         if (
-            lobbyTable.query(KeyConditionExpression=Key("lobby_id").eq(lobby_id))[
+            lobby_table.query(KeyConditionExpression=Key("lobby_id").eq(lobby_id))[
                 "Count"
             ]
             == 0
         ):
             unique = True
 
-    lobbyTable.put_item(
+    lobby_table.put_item(
         Item={
             "lobby_id": lobby_id,
             "rules": rules,
@@ -242,7 +244,7 @@ def get_player_id(lobby_id, name):
                 Player ID, otherwise this will be an empty string.
     """
 
-    query_response = playerTable.query(
+    query_response = player_table.query(
         KeyConditionExpression=Key("lobby_id").eq(lobby_id)
         & Key("player_name").eq(name),
         IndexName="LobbyIndex",
@@ -266,7 +268,7 @@ def get_lobby_rules(lobby_id):
         string: Integer-encoded lobby rules, or an empty string if the lobby does not exist
     """
 
-    query_response = lobbyTable.get_item(Key={"lobby_id": lobby_id})
+    query_response = lobby_table.get_item(Key={"lobby_id": lobby_id})
 
     rules = (
         ""
@@ -290,7 +292,7 @@ def get_lobby_scores(lobby_id):
     """
 
     lobby_data = []
-    query_response = playerTable.query(
+    query_response = player_table.query(
         KeyConditionExpression=Key("lobby_id").eq(lobby_id), IndexName="LobbyIndex"
     )["Items"]
 
@@ -326,7 +328,7 @@ def create_player_data(lobby_id, name, score, guessed_flights):
 
     player_id = str(uuid.uuid4())
 
-    playerTable.put_item(
+    player_table.put_item(
         Item={
             "player_id": player_id,
             "lobby_id": lobby_id,
@@ -348,14 +350,14 @@ def get_player_data(player_id):
         player_id [string]: ID of the player
 
     Returns:
-        string[]: Flight IDs previously guessed by the player
+        string: Comma-Separated Flight IDs previously guessed by the player
         integer: Integer encoded ruleset of the lobby
     """
 
-    playerData = playerTable.get_item(Key={"player_id": player_id}).get("Item")
+    player_data = player_table.get_item(Key={"player_id": player_id}).get("Item")
 
-    lobby_id = playerData.get("lobby_id")
-    guessed_flights = playerData.get("guessed_flights")
+    lobby_id = player_data.get("lobby_id")
+    guessed_flights = player_data.get("guessed_flights")
     rules = int(get_lobby_rules(lobby_id))
 
     return guessed_flights, rules
@@ -363,7 +365,8 @@ def get_player_data(player_id):
 
 def update_player_data(player_id, score, flight_id, guessed_flights):
     """
-    Adds a given number of points to a player's score and guessed flights in the dynamo table.
+    Adds a given number of points to a player's score and guessed flights in the
+    dynamo table.
 
     Args:
         player_id [string]: ID of the player
@@ -375,7 +378,7 @@ def update_player_data(player_id, score, flight_id, guessed_flights):
         f"{guessed_flights},{flight_id}" if guessed_flights != "" else flight_id
     )
 
-    playerTable.update_item(
+    player_table.update_item(
         Key={"player_id": player_id},
         UpdateExpression="SET score = score + :val, guessed_flights = :fid",
         ExpressionAttributeValues={
@@ -390,7 +393,7 @@ def delete_old_data():
     Deletes data older than one day from the dynamo tables.
     """
 
-    for table in [playerTable, lobbyTable]:
+    for table in [player_table, lobby_table]:
         scan_response = table.scan()["Items"]
 
         for entry in scan_response:
@@ -403,7 +406,7 @@ def delete_old_data():
             )
 
             if date < datetime.now() - timedelta(days=1):
-                playerTable.delete_item(Key={"player_id": entry["player_id"]})
+                player_table.delete_item(Key={"player_id": entry["player_id"]})
 
 
 def remove_escape_characters(items):

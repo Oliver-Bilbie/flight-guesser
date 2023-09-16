@@ -6,20 +6,24 @@ env:
     CF_DISTRIBUTION_ID: "flight-guesser-${STAGE}-cf-dist"
 
 phases:
+  install:
+    commands:
+      - make -j4 install-pipeline-deps
+
   pre_build:
     commands:
-      # Create build in progress badge
       - |
-        if [ $STAGE == "prd" ]; then
-            curl -s "https://img.shields.io/badge/build-in%20progress-blue" > "build-status.svg"
-            aws s3 cp "build-status.svg" "s3://flight-guesser.net/build-status.svg" --cache-control no-cache
-        fi
+        VERSION=$(sed 's/.*"version": "\(.*\)".*/\1/;t;d' ./package.json)
+        sed -i 's/VERSION_NUMBER/'$VERSION'/g' ./frontend/package.json
+
   build:
     commands:
-      - bash pipelines/ci.sh
+      - make deploy-terraform STAGE=$STAGE
+      - make deploy-backend STAGE=$STAGE
+      - make deploy-frontend STAGE=$STAGE DEPLOY_BUCKET_NAME=$DEPLOY_BUCKET_NAME CF_DISTRIBUTION_ID=$CF_DISTRIBUTION_ID
+
   post_build:
     finally:
-      # Create build status badge
       - |
         if [ $STAGE == "prd" ]; then
             if [ "$1" -ne 0 ]; then
