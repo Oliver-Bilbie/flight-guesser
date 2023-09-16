@@ -19,7 +19,7 @@ lobbyTableName = os.getenv("LOBBY_DATA_TABLE", None)
 playerTableName = os.getenv("PLAYER_DATA_TABLE", None)
 
 dynamoResource = boto3.resource("dynamodb")
-lobbyTable = dynamoResource.Table(lobbyTableName) if lobbyTableName else None
+lobby_table = dynamoResource.Table(lobbyTableName) if lobbyTableName else None
 player_table = dynamoResource.Table(playerTableName) if playerTableName else None
 
 
@@ -211,14 +211,14 @@ def create_lobby(rules):
 
         # Confirm that this lobby ID is not already in use
         if (
-            lobbyTable.query(KeyConditionExpression=Key("lobby_id").eq(lobby_id))[
+            lobby_table.query(KeyConditionExpression=Key("lobby_id").eq(lobby_id))[
                 "Count"
             ]
             == 0
         ):
             unique = True
 
-    lobbyTable.put_item(
+    lobby_table.put_item(
         Item={
             "lobby_id": lobby_id,
             "rules": rules,
@@ -268,7 +268,7 @@ def get_lobby_rules(lobby_id):
         string: Integer-encoded lobby rules, or an empty string if the lobby does not exist
     """
 
-    query_response = lobbyTable.get_item(Key={"lobby_id": lobby_id})
+    query_response = lobby_table.get_item(Key={"lobby_id": lobby_id})
 
     rules = (
         ""
@@ -393,7 +393,7 @@ def delete_old_data():
     Deletes data older than one day from the dynamo tables.
     """
 
-    for table in [player_table, lobbyTable]:
+    for table in [player_table, lobby_table]:
         scan_response = table.scan()["Items"]
 
         for entry in scan_response:
