@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { Box, Button, Heading, Text, Spinner, Stack } from "grommet";
+import {
+  Box,
+  Button as GrommetButton,
+  Text,
+  Spinner,
+  Stack,
+} from "grommet";
 import { Close, Location, Performance } from "grommet-icons";
 
 import AirportSelect from "../AirportSelect/AirportSelect";
@@ -208,7 +214,7 @@ const Game: React.FC = (): React.ReactElement => {
             <Box gap="medium" align="center" margin={{ horizontal: "large" }}>
               <Box width="300px" />
               {lobbyId === "" && (
-                <Heading textAlign="center">Score: {score}</Heading>
+                <h2>Score: {score}</h2>
               )}
               {settingsValues.useOrigin && (
                 <AirportSelect
@@ -241,11 +247,11 @@ const Game: React.FC = (): React.ReactElement => {
                 alignSelf="center"
                 pad={{ vertical: "medium" }}
               >
-                <Button
-                  label="Make Guess"
-                  icon={<Location />}
-                  onClick={handleSubmit}
-                />
+                <button className="custom-button" onClick={handleSubmit}>
+                  <Location color="text" />
+                  <div className="pad" />
+                  <h4>Make Guess</h4>
+                </button>
               </Box>
             </Box>
           )}
@@ -259,7 +265,7 @@ const Game: React.FC = (): React.ReactElement => {
               setAlert={setAlert}
             />
           )}
-          <Button
+          <GrommetButton
             icon={<Performance />}
             onClick={(): void => setShowSettings(!showSettings)}
             alignSelf="end"
@@ -273,7 +279,7 @@ const Game: React.FC = (): React.ReactElement => {
           buttons={[
             {
               label: "Close",
-              icon: <Close />,
+              icon: <Close color="text" />,
               onClick: (): void => setAlert({ ...alert, show: false }),
             },
           ]}
