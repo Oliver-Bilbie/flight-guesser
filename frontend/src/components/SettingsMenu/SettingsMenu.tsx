@@ -97,16 +97,22 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({
         ))}
       </CardBody>
       <CardFooter pad="small" background="light-2">
-        <Button
-          label="Create Lobby"
-          icon={<Launch />}
+        <button
+          className="custom-button"
           onClick={(): void => setShowLobbyMenu(LobbyMode.create)}
-        />
-        <Button
-          label="Join Lobby"
-          icon={<Globe />}
+        >
+          <Launch color="text" />
+          <div className="pad" />
+          <h4>Create Lobby</h4>
+        </button>
+        <button
+          className="custom-button"
           onClick={(): void => setShowLobbyMenu(LobbyMode.join)}
-        />
+        >
+          <Globe color="text" />
+          <div className="pad" />
+          <h4>Join Lobby</h4>
+        </button>
       </CardFooter>
     </Card>
   );

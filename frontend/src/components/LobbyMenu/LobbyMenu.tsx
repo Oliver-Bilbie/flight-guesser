@@ -127,12 +127,12 @@ const LobbyMenu: React.FC<LobbyMenuProps> = ({
       buttons={[
         {
           label: mode === LobbyMode.join ? "Join" : "Create",
-          icon: <Group />,
+          icon: <Group color="text" />,
           onClick: handleSubmit,
         },
         {
           label: "Back",
-          icon: <LinkPrevious />,
+          icon: <LinkPrevious color="text" />,
           onClick: onClose,
         },
       ]}

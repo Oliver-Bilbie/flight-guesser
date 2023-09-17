@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Button, Layer } from "grommet";
+import { Box,  Layer } from "grommet";
 import { ButtonType } from "../../types";
 
 interface PopupMenuProps {
@@ -7,7 +7,7 @@ interface PopupMenuProps {
   buttons: ButtonType[];
 }
 
-const Game: React.FC<PopupMenuProps> = ({
+const PopupMenu: React.FC<PopupMenuProps> = ({
   body,
   buttons,
 }): React.ReactElement => {
@@ -24,12 +24,15 @@ const Game: React.FC<PopupMenuProps> = ({
         <Box direction="row" justify="center" gap="medium">
           {buttons.map((button: ButtonType) => {
             return (
-              <Button
-                label={button.label}
-                icon={button.icon}
+              <button
+                className="custom-button"
                 onClick={button.onClick}
                 key={button.label}
-              />
+              >
+                {button.icon}
+                <div className="pad" />
+                <h4>{button.label}</h4>
+              </button>
             );
           })}
         </Box>
@@ -38,4 +41,4 @@ const Game: React.FC<PopupMenuProps> = ({
   );
 };
 
-export default Game;
+export default PopupMenu;
