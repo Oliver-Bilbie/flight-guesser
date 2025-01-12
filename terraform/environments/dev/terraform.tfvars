@@ -1,4 +1,5 @@
 region = "eu-west-1"
 service = "flight-guesser"
 environment = "dev"
-deployment_bucket = "dev.flight-guesser.net"
+base_domain = "oliver-bilbie.co.uk"
+full_domain = "dev-flights.oliver-bilbie.co.uk"
