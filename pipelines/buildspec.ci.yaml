@@ -34,5 +34,5 @@ phases:
                 badge_colour=green
             fi
             curl -s "https://img.shields.io/badge/build-$badge_status-$badge_colour.svg" > "build-status.svg"
-            aws s3 cp "build-status.svg" "s3://flight-guesser/build-status.svg" --cache-control no-cache
+            aws s3 cp "build-status.svg" "s3://flight-guesser-prd/build-status.svg" --cache-control no-cache
         fi
