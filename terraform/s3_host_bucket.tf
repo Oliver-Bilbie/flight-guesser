@@ -1,5 +1,5 @@
 resource "aws_s3_bucket" "host-bucket" {
-  bucket = var.deployment_bucket
+  bucket = "${var.service}-${var.environment}"
 }
 
 resource "aws_s3_bucket_public_access_block" "host-bucket-public-access" {
@@ -24,6 +24,7 @@ resource "aws_s3_bucket_policy" "allow_access" {
       }
     ]
   })
+  depends_on = [aws_s3_bucket_public_access_block.host-bucket-public-access]
 }
 
 resource "aws_s3_bucket_cors_configuration" "host-bucket-cors" {
