@@ -1,5 +1,5 @@
 import React from "react";
-import { Box,  Layer } from "grommet";
+import { Box, Layer } from "grommet";
 import { ButtonType } from "../../types";
 
 interface PopupMenuProps {

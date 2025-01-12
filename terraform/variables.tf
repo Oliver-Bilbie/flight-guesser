@@ -13,7 +13,17 @@ variable "environment" {
   description = "Name of the deployment environment"
 }
 
-variable "deployment_bucket" {
+variable "base_domain" {
   type        = string
-  description = "Name of the S3 bucket where the frontend code will be deployed"
+  description = "Name of the Route53 hosted zone domain"
+}
+
+variable "full_domain" {
+  type        = string
+  description = "Name of the domain to host the webapp"
+}
+
+variable "cert_arn" {
+  type        = string
+  description = "ARN of the ACM certificate for full_domain"
 }

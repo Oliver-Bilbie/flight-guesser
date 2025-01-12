@@ -23,9 +23,7 @@ provider:
   httpApi:
     cors:
       allowedOrigins:
-        - https://flight-guesser.net
-        - https://www.flight-guesser.net
-        - https://dev.flight-guesser.net
+        - "*"
       allowedMethods:
         - GET
         - POST
