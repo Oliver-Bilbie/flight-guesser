@@ -1,6 +1,6 @@
 # Flight Guesser
 
-[![Site-Up](https://img.shields.io/website?url=https%3A%2F%2Fflight-guesser.net%2F)](https://flight-guesser.net)
+[![Site-Up](https://img.shields.io/website?url=https%3A%2F%2Fflights.oliver-bilbie.co.uk%2F)](https://flights.oliver-bilbie.co.uk)
 ![Build-Status](https://s3.eu-west-1.amazonaws.com/flight-guesser.net/build-status.svg?)
 [![Last-Commit](https://img.shields.io/github/last-commit/Oliver-Bilbie/flight-guesser)](https://github.com/Oliver-Bilbie/flight-guesser/blob/main/CHANGELOG.md)
 
@@ -11,7 +11,7 @@
 When you see an aircraft overhead, you may use the flight-guesser application to guess the destination of the aircraft.
 You will score points based on accuracy. Data is sourced from FlightRadar24 using [FlightRadarAPI](https://github.com/JeanExtreme002/FlightRadarAPI).
 
-### [Hosted here](https://flight-guesser.net)
+### [Hosted here](https://flights.oliver-bilbie.co.uk)
 
 ---
 
@@ -34,12 +34,3 @@ When a PR is created or updated, a [CodeBuild](https://aws.amazon.com/codebuild/
 For this project I have decided to use one of AWS's default build images, since I do not have the time to consistently maintain my own. As a result, the dependencies are installed each time a build is run which is not ideal, but this works well enough for now.
 
 The pipelines will build the required DynamoDB table using [Terraform](https://www.terraform.io/), deploy the backend using [Serverless Framework](https://www.serverless.com/framework/), and then finally build the frontend and copy the files to [AWS S3](https://aws.amazon.com/s3/).
-
----
-
-## To Do
--   Allow aircraft model guesses
--   Retrieve additional flight data if data saver is turned off
--   Refactoring and tidying
--   Write and update tests
--   Update Documentation
