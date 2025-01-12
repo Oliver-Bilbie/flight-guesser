@@ -1,11 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  Box,
-  Button as GrommetButton,
-  Text,
-  Spinner,
-  Stack,
-} from "grommet";
+import { Box, Button as GrommetButton, Text, Spinner, Stack } from "grommet";
 import { Close, Location, Performance } from "grommet-icons";
 
 import AirportSelect from "../AirportSelect/AirportSelect";
@@ -213,9 +207,7 @@ const Game: React.FC = (): React.ReactElement => {
           ) : (
             <Box gap="medium" align="center" margin={{ horizontal: "large" }}>
               <Box width="300px" />
-              {lobbyId === "" && (
-                <h2>Score: {score}</h2>
-              )}
+              {lobbyId === "" && <h2>Score: {score}</h2>}
               {settingsValues.useOrigin && (
                 <AirportSelect
                   label="Origin:"
