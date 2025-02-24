@@ -1,9 +1,7 @@
 resource "aws_dynamodb_table" "player-table" {
-  name           = "flight-guesser-player-table-${var.environment}"
-  billing_mode   = "PROVISIONED"
-  read_capacity  = 5
-  write_capacity = 5
-  hash_key       = "player_id"
+  name         = "flight-guesser-player-table-${var.environment}"
+  billing_mode = "PAY_PER_REQUEST"
+  hash_key     = "player_id"
 
   attribute {
     name = "player_id"
@@ -21,12 +19,10 @@ resource "aws_dynamodb_table" "player-table" {
   }
 
   global_secondary_index {
-    name               = "LobbyIndex"
-    hash_key           = "lobby_id"
-    range_key          = "player_name"
-    write_capacity     = 5
-    read_capacity      = 5
-    projection_type    = "ALL"
+    name            = "LobbyIndex"
+    hash_key        = "lobby_id"
+    range_key       = "player_name"
+    projection_type = "ALL"
   }
 
   tags = {
@@ -38,11 +34,9 @@ resource "aws_dynamodb_table" "player-table" {
 
 
 resource "aws_dynamodb_table" "lobby-table" {
-  name           = "flight-guesser-lobby-table-${var.environment}"
-  billing_mode   = "PROVISIONED"
-  read_capacity  = 5
-  write_capacity = 5
-  hash_key       = "lobby_id"
+  name         = "flight-guesser-lobby-table-${var.environment}"
+  billing_mode = "PAY_PER_REQUEST"
+  hash_key     = "lobby_id"
 
   attribute {
     name = "lobby_id"
