@@ -1,5 +1,4 @@
 import React from "react";
-import { Box, Layer } from "grommet";
 import { ButtonType } from "../../types";
 
 interface PopupMenuProps {
@@ -12,32 +11,24 @@ const PopupMenu: React.FC<PopupMenuProps> = ({
   buttons,
 }): React.ReactElement => {
   return (
-    <Layer>
-      <Box
-        width="medium"
-        pad="small"
-        gap="medium"
-        align="center"
-        justify="center"
-      >
+    <div className="popup-overlay">
+      <div className="popup-container">
         {body}
-        <Box direction="row" justify="center" gap="medium">
-          {buttons.map((button: ButtonType) => {
-            return (
-              <button
-                className="custom-button"
-                onClick={button.onClick}
-                key={button.label}
-              >
-                {button.icon}
-                <div className="pad" />
-                <h4>{button.label}</h4>
-              </button>
-            );
-          })}
-        </Box>
-      </Box>
-    </Layer>
+        <div className="popup-buttons">
+          {buttons.map((button: ButtonType) => (
+            <button
+              className="custom-button"
+              onClick={button.onClick}
+              key={button.label}
+            >
+              {button.icon}
+              <div className="pad" />
+              <h4>{button.label}</h4>
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
   );
 };
 

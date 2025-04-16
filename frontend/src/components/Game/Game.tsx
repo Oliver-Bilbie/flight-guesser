@@ -83,7 +83,7 @@ const Game: React.FC = (): React.ReactElement => {
                 "Location services must be enabled to use this application",
               show: true,
             });
-          }
+          },
         );
       } else {
         setAlert({
@@ -132,7 +132,7 @@ const Game: React.FC = (): React.ReactElement => {
         response.body.lobby_data
           .replace(/'/g, '"')
           .replace(/}/g, "},")
-          .replace(/,]/g, "]")
+          .replace(/,]/g, "]"),
       );
       setLobbyData(newLobbyData);
 
@@ -168,103 +168,105 @@ const Game: React.FC = (): React.ReactElement => {
         response.body.lobby_data
           .replace(/'/g, '"')
           .replace(/}/g, "},")
-          .replace(/,]/g, "]")
+          .replace(/,]/g, "]"),
       );
       setLobbyData(newLobbyData);
     }
   };
 
   return (
-    <Stack anchor="center">
-      {showSettings ? (
-        <SettingsMenu
-          settingsValues={settingsValues}
-          locked={lockSettings}
-          setSettingsValues={setSettingsValues}
-          setShowLobbyMenu={setShowLobbyMenu}
-          onClose={(): void => setShowSettings(false)}
-        />
-      ) : (
-        <Box
-          direction="column"
-          align="center"
-          background="light-2"
-          elevation="small"
-          margin="small"
-          round
-        >
-          {loading ? (
-            <Box
-              width="300px"
-              height="361px"
-              align="center"
-              justify="center"
-              gap="medium"
-              margin={{ horizontal: "large" }}
-            >
-              <Spinner size="large" pad="small" />
-            </Box>
-          ) : (
-            <Box gap="medium" align="center" margin={{ horizontal: "large" }}>
-              <Box width="300px" />
-              {lobbyId === "" && <h2>Score: {score}</h2>}
-              {settingsValues.useOrigin && (
-                <AirportSelect
-                  label="Origin:"
-                  value={guess.origin}
-                  airports={airports}
-                  setSelection={(selection: string): void =>
-                    setGuess({
-                      ...guess,
-                      origin: selection,
-                    })
-                  }
-                />
-              )}
-              {settingsValues.useDestination && (
-                <AirportSelect
-                  label="Destination:"
-                  value={guess.destination}
-                  airports={airports}
-                  setSelection={(selection: string): void =>
-                    setGuess({
-                      ...guess,
-                      destination: selection,
-                    })
-                  }
-                />
-              )}
-              <Box
-                width="190px"
-                alignSelf="center"
-                pad={{ vertical: "medium" }}
-              >
-                <button className="custom-button" onClick={handleSubmit}>
-                  <Location color="text" />
-                  <div className="pad" />
-                  <h4>Make Guess</h4>
-                </button>
-              </Box>
-            </Box>
-          )}
-          {lobbyId !== "" && (
-            <Scoreboard
-              lobbyId={lobbyId}
-              lobbyData={lobbyData}
-              refresh={refreshScores}
-              dataSaver={settingsValues.dataSaver}
-              setLobbyData={setLobbyData}
-              setAlert={setAlert}
-            />
-          )}
-          <GrommetButton
-            icon={<Performance />}
-            onClick={(): void => setShowSettings(!showSettings)}
-            alignSelf="end"
-            hoverIndicator
+    <>
+      <Stack anchor="center">
+        {showSettings ? (
+          <SettingsMenu
+            settingsValues={settingsValues}
+            locked={lockSettings}
+            setSettingsValues={setSettingsValues}
+            setShowLobbyMenu={setShowLobbyMenu}
+            onClose={(): void => setShowSettings(false)}
           />
-        </Box>
-      )}
+        ) : (
+          <Box
+            direction="column"
+            align="center"
+            background="light-2"
+            elevation="small"
+            margin="small"
+            round
+          >
+            {loading ? (
+              <Box
+                width="300px"
+                height="361px"
+                align="center"
+                justify="center"
+                gap="medium"
+                margin={{ horizontal: "large" }}
+              >
+                <Spinner size="large" pad="small" />
+              </Box>
+            ) : (
+              <Box gap="medium" align="center" margin={{ horizontal: "large" }}>
+                <Box width="300px" />
+                {lobbyId === "" && <h2>Score: {score}</h2>}
+                {settingsValues.useOrigin && (
+                  <AirportSelect
+                    label="Origin:"
+                    value={guess.origin}
+                    airports={airports}
+                    setSelection={(selection: string): void =>
+                      setGuess({
+                        ...guess,
+                        origin: selection,
+                      })
+                    }
+                  />
+                )}
+                {settingsValues.useDestination && (
+                  <AirportSelect
+                    label="Destination:"
+                    value={guess.destination}
+                    airports={airports}
+                    setSelection={(selection: string): void =>
+                      setGuess({
+                        ...guess,
+                        destination: selection,
+                      })
+                    }
+                  />
+                )}
+                <Box
+                  width="190px"
+                  alignSelf="center"
+                  pad={{ vertical: "medium" }}
+                >
+                  <button className="custom-button" onClick={handleSubmit}>
+                    <Location color="text" />
+                    <div className="pad" />
+                    <h4>Make Guess</h4>
+                  </button>
+                </Box>
+              </Box>
+            )}
+            {lobbyId !== "" && (
+              <Scoreboard
+                lobbyId={lobbyId}
+                lobbyData={lobbyData}
+                refresh={refreshScores}
+                dataSaver={settingsValues.dataSaver}
+                setLobbyData={setLobbyData}
+                setAlert={setAlert}
+              />
+            )}
+            <GrommetButton
+              icon={<Performance />}
+              onClick={(): void => setShowSettings(!showSettings)}
+              alignSelf="end"
+              hoverIndicator
+            />
+          </Box>
+        )}
+      </Stack>
       {alert.show && (
         <PopupMenu
           body={<Text>{alert.message}</Text>}
@@ -283,7 +285,7 @@ const Game: React.FC = (): React.ReactElement => {
           score={score}
           rules={settingsToRules(
             settingsValues.useOrigin,
-            settingsValues.useDestination
+            settingsValues.useDestination,
           )}
           guessedFlights={ids}
           setLobbyId={setLobbyId}
@@ -296,7 +298,7 @@ const Game: React.FC = (): React.ReactElement => {
           }}
         />
       )}
-    </Stack>
+    </>
   );
 };
 
