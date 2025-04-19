@@ -1,3 +1,4 @@
+import traceback
 import json
 from dataclasses import asdict
 from data_types import Position, AirportGuess
@@ -6,10 +7,9 @@ from make_guess import make_guess
 
 def lambda_handler(event, context):
     try:
-        print(f"Received event: {event}")
         input_body = json.loads(event.get("body"))
-
         print(f"Body: {input_body}")
+
         player_position = Position(
             lon=input_body.get("player").get("lon"),
             lat=input_body.get("player").get("lat"),
@@ -43,4 +43,9 @@ def lambda_handler(event, context):
         }
 
     except Exception as exc:
-        return {"statusCode": 500, "body": json.dumps({"error": str(exc)})}
+        print(f"[ERROR] {str(exc)}")
+        print(traceback.format_exc())
+        return {
+            "statusCode": 500,
+            "body": "The server was unable to process your request",
+        }
