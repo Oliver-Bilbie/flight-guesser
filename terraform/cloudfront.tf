@@ -6,7 +6,7 @@ resource "aws_cloudfront_distribution" "cdn" {
 
   origin {
     domain_name = aws_s3_bucket_website_configuration.host-bucket-hosting-config.website_endpoint
-    origin_id   = "${var.service}-cloudfront"
+    origin_id   = "${var.app-name}-cloudfront"
     custom_origin_config {
       http_port              = 80
       https_port             = 443
@@ -16,7 +16,7 @@ resource "aws_cloudfront_distribution" "cdn" {
   }
 
   default_cache_behavior {
-    target_origin_id       = "${var.service}-cloudfront"
+    target_origin_id       = "${var.app-name}-cloudfront"
     allowed_methods        = ["GET", "HEAD"]
     cached_methods         = ["GET", "HEAD"]
     compress               = false
@@ -36,13 +36,13 @@ resource "aws_cloudfront_distribution" "cdn" {
   }
 
   tags = {
-    Name = "${var.service}-cloudfront"
+    Name = "${var.app-name}-cloudfront"
   }
 }
 
 resource "aws_cloudfront_cache_policy" "cf_cache_policy" {
-  name        = "${var.service}-${var.environment}-cf"
-  comment     = "Cache policy for the ${var.service} application"
+  name        = "${var.app-name}-${var.environment}-cf"
+  comment     = "Cache policy for the ${var.app-name} application"
   default_ttl = 86400
   max_ttl     = 604800
   min_ttl     = 21600

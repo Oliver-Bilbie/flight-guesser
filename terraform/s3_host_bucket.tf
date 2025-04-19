@@ -1,5 +1,5 @@
 resource "aws_s3_bucket" "host-bucket" {
-  bucket = "${var.service}-${var.environment}"
+  bucket = "${var.app-name}-${var.environment}"
 }
 
 resource "aws_s3_bucket_public_access_block" "host-bucket-public-access" {

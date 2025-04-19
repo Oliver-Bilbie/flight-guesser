@@ -3,9 +3,9 @@ variable "region" {
   description = "Name of the AWS region all AWS resources will be provisioned in"
 }
 
-variable "service" {
+variable "app-name" {
   type        = string
-  description = "Name of the service"
+  description = "Name of the application"
 }
 
 variable "environment" {
