@@ -43,3 +43,7 @@ resource "aws_s3_bucket_website_configuration" "host-bucket-hosting-config" {
     suffix = "index.html"
   }
 }
+
+output "host_bucket" {
+  value = "${var.app-name}-${var.environment}"
+}
