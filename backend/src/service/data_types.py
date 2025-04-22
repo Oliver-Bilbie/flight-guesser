@@ -42,3 +42,9 @@ class GuessResult:
     score: Optional[int]
     flight: Optional[Flight]
     message: Optional[str]
+
+
+@dataclass
+class GameRules:
+    use_origin: bool
+    use_destination: bool
