@@ -11,12 +11,20 @@ echo "Building backend for $STAGE environment"
 
 # Create a fresh build directory
 rm -rf ./build
-mkdir -p ./build
+mkdir -p ./build ./build/singleplayer_src ./build/multiplayer_src
 
-# Zip lambda files
-pushd src/service > /dev/null || exit 1
-rm -rf __pycache__
-zip -r ../../build/server.zip .
+# Build singleplayer server
+cp -r ./src/service/* ./build/singleplayer_src
+pushd ./build/singleplayer_src > /dev/null || exit 1
+rm -rf ./multiplayer_server.py ./multiplayer_helpers ./__pycache__
+zip -r ../singleplayer_server.zip .
+popd > /dev/null
+
+# Build multiplayer server
+cp -r ./src/service/* ./build/multiplayer_src
+pushd ./build/multiplayer_src > /dev/null || exit 1
+rm -rf ./singleplayer_server.py ./__pycache__
+zip -r ../multiplayer_server.zip .
 popd > /dev/null
 
 # Deploy Terraform
