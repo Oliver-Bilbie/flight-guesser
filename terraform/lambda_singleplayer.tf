@@ -1,5 +1,5 @@
 resource "aws_iam_role" "singleplayer_execution_role" {
-  name = "${var.app-name}_singleplayer_execution_role"
+  name = "${var.app-name}_singleplayer_execution_role_${var.environment}"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -16,7 +16,7 @@ resource "aws_iam_role" "singleplayer_execution_role" {
 }
 
 resource "aws_iam_policy" "singleplayer_execution_policy" {
-  name = "singleplayer-lambda-execution-policy"
+  name = "${var.app-name}_singleplayer-lambda-execution-policy_${var.environment}"
 
   policy = jsonencode({
     Version = "2012-10-17"
@@ -29,30 +29,6 @@ resource "aws_iam_policy" "singleplayer_execution_policy" {
           "logs:PutLogEvents"
         ]
         Resource = "arn:aws:logs:*:*:*"
-      },
-      {
-        Effect = "Allow"
-        Action = [
-          "dynamodb:Query",
-          "dynamodb:Scan",
-          "dynamodb:GetItem",
-          "dynamodb:PutItem",
-          "dynamodb:UpdateItem",
-          "dynamodb:DeleteItem"
-        ]
-        Resource = aws_dynamodb_table.player-table.arn
-      },
-      {
-        Effect = "Allow"
-        Action = [
-          "dynamodb:Query",
-          "dynamodb:Scan",
-          "dynamodb:GetItem",
-          "dynamodb:PutItem",
-          "dynamodb:UpdateItem",
-          "dynamodb:DeleteItem"
-        ]
-        Resource = aws_dynamodb_table.lobby-table.arn
       }
     ]
   })
@@ -70,13 +46,6 @@ resource "aws_lambda_function" "singleplayer" {
   handler          = "singleplayer_server.lambda_handler"
   timeout          = 10
   memory_size      = 256
-  filename         = "${path.module}/../backend/build/server.zip"
-  source_code_hash = filebase64sha256("${path.module}/../backend/build/server.zip")
-
-  environment {
-    variables = {
-      PLAYER_TABLE_NAME = aws_dynamodb_table.player-table.name
-      LOBBY_TABLE_NAME  = aws_dynamodb_table.lobby-table.name
-    }
-  }
+  filename         = "${path.module}/../backend/build/singleplayer_server.zip"
+  source_code_hash = filebase64sha256("${path.module}/../backend/build/singleplayer_server.zip")
 }

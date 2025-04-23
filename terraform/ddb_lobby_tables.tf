@@ -28,7 +28,7 @@ resource "aws_dynamodb_table" "player-table" {
   tags = {
     Name        = "flight-guesser-player-table-${var.environment}"
     Description = "DynamoDB table to store player data for the flight-guesser application"
-    Environment = "${var.environment}"
+    Environment = var.environment
   }
 }
 
@@ -46,6 +46,6 @@ resource "aws_dynamodb_table" "lobby-table" {
   tags = {
     Name        = "flight-guesser-lobby-table-${var.environment}"
     Description = "DynamoDB table to store lobby data for the flight-guesser application"
-    Environment = "${var.environment}"
+    Environment = var.environment
   }
 }

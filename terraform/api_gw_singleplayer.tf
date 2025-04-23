@@ -1,11 +1,11 @@
 resource "aws_apigatewayv2_api" "singleplayer_api" {
-  name          = "${var.app-name}-singleplayer-api"
+  name                       = "${var.app-name} singleplayer (${var.environment})"
   protocol_type = "HTTP"
 }
 
 resource "aws_apigatewayv2_stage" "singleplayer_stage" {
   api_id      = aws_apigatewayv2_api.singleplayer_api.id
-  name        = "prod"
+  name        = var.environment
   auto_deploy = true
 }
 
