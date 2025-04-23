@@ -73,6 +73,6 @@ class Lobby:
             IndexName="LobbyIndex",
         ).get("Items")
 
-        players = map(Player.from_dict, items)
+        players = list(map(Player.from_dict, items))
 
         return players

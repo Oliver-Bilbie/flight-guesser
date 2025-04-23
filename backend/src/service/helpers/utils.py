@@ -8,7 +8,7 @@ class HandledException(Exception):
         self.status_code = status_code
 
     def to_response(self):
-        return {"statusCode": self.status_code, "body": self.message}
+        return {"statusCode": self.status_code, "message": self.message}
 
 
 def read_position(item: dict, item_name: str, allow_missing: bool = False) -> Position:

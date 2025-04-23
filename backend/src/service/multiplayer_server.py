@@ -10,65 +10,87 @@ from multiplayer_helpers.lobby_type import Lobby
 import boto3
 
 
-WEBSOCKET_ENDPOINT = os.getenv("WEBSOCKET_ENDPOINT").replace("wss", "https", 1)
+MULTIPLAYER_ENDPOINT = os.getenv("MULTIPLAYER_ENDPOINT").replace("wss", "https", 1)
 API_CLIENT = boto3.client(
     "apigatewaymanagementapi",
-    endpoint_url=WEBSOCKET_ENDPOINT,
+    endpoint_url=MULTIPLAYER_ENDPOINT,
 )
 
 
 def lambda_handler(event, context):
     connection_id = event["requestContext"]["connectionId"]
     route_key = event["requestContext"]["routeKey"]
-    input_body = json.loads(event.get("body"))
-
-    print(f"Body: {input_body}")
 
     if route_key == "$connect":
-        return connect_client(connection_id, input_body)
+        return {"statusCode": 200}
 
     if route_key == "$disconnect":
-        return disconnect_client(connection_id)
+        return {"statusCode": 200}
+
+    input_body = json.loads(event.get("body"))
+    print(f"Body: {input_body}")
+
+    if route_key == "create_lobby":
+        return create_lobby(connection_id, input_body)
+
+    if route_key == "join_lobby":
+        return join_lobby(connection_id, input_body)
 
     if route_key == "handle_guess":
         return handle_guess(connection_id, input_body)
 
-    return {"statusCode": 400, "body": "Unsupported route"}
+    return {"statusCode": 400, "message": "Unsupported route"}
 
 
-def connect_client(connection_id, input_body):
-    is_new_lobby = input_body.get("is_new_lobby")
+def create_lobby(connection_id, input_body):
     player_name = sanitize_player_name(input_body.get("player_name"))
+    rules_input = input_body.get("rules")
+    rules = GameRules(
+        use_origin=rules_input.get("use_origin"),
+        use_destination=rules_input.get("use_destination"),
+    )
 
-    if is_new_lobby:
-        rules_input = input_body.get("rules")
-        rules = GameRules(
-            use_origin=rules_input.get("use_origin"),
-            use_destination=rules_input.get("use_destination"),
-        )
-        lobby = Lobby.create(rules)
+    lobby = Lobby.create(rules)
+    Player.create(player_name, lobby.id, connection_id)
 
-    else:
-        lobby_id = input_body.get("lobby_id")
-        lobby = Lobby.read(lobby_id)
-
-    player = Player.from_db(player_name, lobby.id, connection_id)
-    if player is None:
-        player = Player.create(player_name, lobby.id, connection_id)
-
-    # Push lobby players data to the connecting client
     player_data = list(map(lambda p: p.to_dict(), lobby.get_players()))
 
-    API_CLIENT.post_to_connection(
-        ConnectionId=connection_id,
-        Data=json.dumps(player_data),
+    post_to_connection(
+        connection_id,
+        {
+            "statusCode": 200,
+            "lobby": lobby.id,
+            "rules": asdict(lobby.rules),
+            "players": player_data,
+        },
     )
 
     return {"statusCode": 200}
 
 
-def disconnect_client(connection_id):
-    # Connection is managed by API Gateway, so there is nothing to do here
+def join_lobby(connection_id, input_body):
+    player_name = sanitize_player_name(input_body.get("player_name"))
+    lobby_id = input_body.get("lobby_id")
+
+    lobby = Lobby.read(lobby_id)
+
+    player = Player.from_db(player_name, lobby.id, connection_id)
+    if player is None:
+        Player.create(player_name, lobby.id, connection_id)
+
+    player_data = list(map(lambda p: p.to_dict(), lobby.get_players()))
+
+    post_to_connection(
+        connection_id,
+        {
+            "event": "lobby_join",
+            "statusCode": 200,
+            "lobby": lobby.id,
+            "rules": asdict(lobby.rules),
+            "players": player_data,
+        },
+    )
+
     return {"statusCode": 200}
 
 
@@ -118,34 +140,49 @@ def handle_guess(connection_id, input_body):
 
         # Push lobby players data to the connecting client
         lobby_players = lobby.get_players()
-        lobby_data = json.dumps(list(map(lambda p: p.to_dict(), lobby_players)))
-
-        for lobby_player in lobby_players:
-            try:
-                API_CLIENT.post_to_connection(
-                    ConnectionId=lobby_player.connection_id,
-                    Data=lobby_data,
-                )
-            except Exception as e:
-                print(
-                    f"[WARN] Failed to send to connection {lobby_player.connection_id}: {e}"
-                )
-
-        return {
+        lobby_data = {
+            "event": "lobby_update",
             "statusCode": 200,
-            "body": json.dumps(asdict(guess_result)),
+            "lobby_data": list(map(lambda p: p.to_dict(), lobby_players)),
         }
 
+        print(f"Updating the following players in the lobby: {lobby_players}")
+        for lobby_player in lobby_players:
+            try:
+                post_to_connection(lobby_player.connection_id, lobby_data)
+            except Exception as e:
+                print(
+                    f"[WARNING] Failed to send to connection {lobby_player.connection_id}: {e}"
+                )
+
+        post_to_connection(
+            connection_id,
+            {
+                "event": "flight_details",
+                "statusCode": 200,
+                **asdict(guess_result),
+            },
+        )
+
     except HandledException as exc:
-        return exc.to_response()
+        post_to_connection(
+            connection_id,
+            {"event": "flight_details", **exc.to_response()},
+        )
 
     except Exception as exc:
         print(f"[ERROR] {str(exc)}")
         print(traceback.format_exc())
-        return {
-            "statusCode": 500,
-            "body": "The server was unable to process your request",
-        }
+        post_to_connection(
+            connection_id,
+            {
+                "event": "flight_details",
+                "statusCode": 500,
+                "message": "The server was unable to process your request",
+            },
+        )
+
+    return {"statusCode": 200}
 
 
 def sanitize_player_name(name: str) -> str:
@@ -158,3 +195,12 @@ def sanitize_player_name(name: str) -> str:
         raise HandledException("Name may not include special characters", 400)
 
     return name
+
+
+def post_to_connection(connection_id, body):
+    print(f"Sending {body} to client: {connection_id}")
+
+    API_CLIENT.post_to_connection(
+        ConnectionId=connection_id,
+        Data=json.dumps(body).encode("utf-8"),
+    )

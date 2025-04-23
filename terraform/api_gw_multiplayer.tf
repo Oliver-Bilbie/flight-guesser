@@ -20,15 +20,26 @@ resource "aws_apigatewayv2_route" "connect_route" {
 resource "aws_apigatewayv2_route" "disconnect_route" {
   api_id    = aws_apigatewayv2_api.multiplayer_api.id
   route_key = "$disconnect"
-
-  target = "integrations/${aws_apigatewayv2_integration.disconnect_integration.id}"
+  target    = "integrations/${aws_apigatewayv2_integration.disconnect_integration.id}"
 }
+
+resource "aws_apigatewayv2_route" "create_lobby_route" {
+  api_id    = aws_apigatewayv2_api.multiplayer_api.id
+  route_key = "create_lobby"
+  target    = "integrations/${aws_apigatewayv2_integration.create_lobby_integration.id}"
+}
+
+resource "aws_apigatewayv2_route" "join_lobby_route" {
+  api_id    = aws_apigatewayv2_api.multiplayer_api.id
+  route_key = "join_lobby"
+  target    = "integrations/${aws_apigatewayv2_integration.join_lobby_integration.id}"
+}
+
 
 resource "aws_apigatewayv2_route" "handle_guess_route" {
   api_id    = aws_apigatewayv2_api.multiplayer_api.id
   route_key = "handle_guess"
-
-  target = "integrations/${aws_apigatewayv2_integration.handle_guess_integration.id}"
+  target    = "integrations/${aws_apigatewayv2_integration.handle_guess_integration.id}"
 }
 
 resource "aws_apigatewayv2_integration" "connect_integration" {
@@ -39,6 +50,20 @@ resource "aws_apigatewayv2_integration" "connect_integration" {
 }
 
 resource "aws_apigatewayv2_integration" "disconnect_integration" {
+  api_id             = aws_apigatewayv2_api.multiplayer_api.id
+  integration_type   = "AWS_PROXY"
+  integration_uri    = aws_lambda_function.multiplayer_server.arn
+  integration_method = "POST"
+}
+
+resource "aws_apigatewayv2_integration" "create_lobby_integration" {
+  api_id             = aws_apigatewayv2_api.multiplayer_api.id
+  integration_type   = "AWS_PROXY"
+  integration_uri    = aws_lambda_function.multiplayer_server.arn
+  integration_method = "POST"
+}
+
+resource "aws_apigatewayv2_integration" "join_lobby_integration" {
   api_id             = aws_apigatewayv2_api.multiplayer_api.id
   integration_type   = "AWS_PROXY"
   integration_uri    = aws_lambda_function.multiplayer_server.arn
@@ -68,8 +93,24 @@ resource "aws_lambda_permission" "disconnect_permission" {
   source_arn    = "${aws_apigatewayv2_api.multiplayer_api.execution_arn}/*"
 }
 
+resource "aws_lambda_permission" "create_lobby_permission" {
+  statement_id  = "AllowAPIGatewayCreateLobby"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.multiplayer_server.arn
+  principal     = "apigateway.amazonaws.com"
+  source_arn    = "${aws_apigatewayv2_api.multiplayer_api.execution_arn}/*"
+}
+
+resource "aws_lambda_permission" "join_lobby_permission" {
+  statement_id  = "AllowAPIGatewayJoinLobby"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.multiplayer_server.arn
+  principal     = "apigateway.amazonaws.com"
+  source_arn    = "${aws_apigatewayv2_api.multiplayer_api.execution_arn}/*"
+}
+
 resource "aws_lambda_permission" "handle_guess_permission" {
-  statement_id  = "AllowAPIGatewayResetTime"
+  statement_id  = "AllowAPIGatewayHandleGuess"
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.multiplayer_server.arn
   principal     = "apigateway.amazonaws.com"

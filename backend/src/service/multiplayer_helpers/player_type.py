@@ -18,7 +18,7 @@ class Player:
         self._lobby = lobby
         self._name = name
         self._connection_id = connection_id
-        self.score = 0
+        self.score = int(0)
         self.guessed_flights = []
 
     @property
@@ -63,7 +63,7 @@ class Player:
             return None
 
         player = cls(name, lobby, connection_id)
-        player.score = player_record.get("score")
+        player.score = int(player_record.get("score"))
         player.guessed_flights = player_record.get("guessed_flights")
 
         # Update connection_id if it has changed
@@ -78,14 +78,14 @@ class Player:
 
     @classmethod
     def from_dict(cls, player_data: dict):
-        name = player_data.get("name")
-        lobby = player_data.get("lobby")
+        name = player_data.get("player_name")
+        lobby = player_data.get("lobby_id")
         connection_id = player_data.get("connection_id")
         score = player_data.get("score")
         guessed_flights = player_data.get("guessed_flights")
 
         player = cls(name, lobby, connection_id)
-        player.score = score
+        player.score = int(score)
         player.guessed_flights = guessed_flights
 
         return player
@@ -119,7 +119,7 @@ class Player:
         return None
 
     def handle_guess(self, result: GuessResult):
-        self.score += result.score
+        self.score += int(result.score)
         self.guessed_flights.append(result.flight.flight_number)
         self.update()
 

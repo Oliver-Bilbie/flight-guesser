@@ -40,7 +40,7 @@ resource "aws_iam_role_policy_attachment" "singleplayer_execution_policy_attachm
 }
 
 resource "aws_lambda_function" "singleplayer" {
-  function_name    = "${var.app-name}-singleplayer"
+  function_name    = "${var.app-name}-singleplayer-server-${var.environment}"
   runtime          = "python3.13"
   role             = aws_iam_role.singleplayer_execution_role.arn
   handler          = "singleplayer_server.lambda_handler"

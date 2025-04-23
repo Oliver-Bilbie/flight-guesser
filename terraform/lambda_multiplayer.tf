@@ -33,9 +33,8 @@ resource "aws_iam_policy" "multiplayer_execution_policy" {
       {
         Effect = "Allow"
         Action = [
-          "dynamodb:Query",
-          "dynamodb:Scan",
           "dynamodb:GetItem",
+          "dynamodb:Query",
           "dynamodb:PutItem",
           "dynamodb:UpdateItem",
           "dynamodb:DeleteItem"
@@ -43,10 +42,13 @@ resource "aws_iam_policy" "multiplayer_execution_policy" {
         Resource = aws_dynamodb_table.player-table.arn
       },
       {
+        Effect   = "Allow"
+        Action   = ["dynamodb:Query"]
+        Resource = "${aws_dynamodb_table.player-table.arn}/index/LobbyIndex"
+      },
+      {
         Effect = "Allow"
         Action = [
-          "dynamodb:Query",
-          "dynamodb:Scan",
           "dynamodb:GetItem",
           "dynamodb:PutItem",
           "dynamodb:UpdateItem",
@@ -69,10 +71,10 @@ resource "aws_iam_role_policy_attachment" "multiplayer_execution_policy_attachme
 }
 
 resource "aws_lambda_function" "multiplayer_server" {
-  function_name    = "${var.app-name}-server-${var.environment}"
+  function_name    = "${var.app-name}-multiplayer-server-${var.environment}"
   runtime          = "python3.13"
   role             = aws_iam_role.multiplayer_execution_role.arn
-  handler          = "server.lambda_handler"
+  handler          = "multiplayer_server.lambda_handler"
   timeout          = 25
   memory_size      = 512
   filename         = "${path.module}/../backend/build/multiplayer_server.zip"
