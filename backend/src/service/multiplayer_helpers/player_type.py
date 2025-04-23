@@ -1,5 +1,6 @@
 from datetime import datetime, timezone
-from db import PLAYER_TABLE
+from helpers.data_types import GuessResult
+from multiplayer_helpers.db import PLAYER_TABLE
 
 
 class Player:
@@ -59,7 +60,7 @@ class Player:
         player_record = response.get("Item")
 
         if player_record is None:
-            raise ValueError(f"No player found with id {player_id}")
+            return None
 
         player = cls(name, lobby, connection_id)
         player.score = player_record.get("score")
@@ -104,9 +105,23 @@ class Player:
             },
         )
 
+    @classmethod
+    def disconnect(cls, name: str, lobby: str):
+        player_id = Player.get_id(name, lobby)
+        PLAYER_TABLE.update_item(
+            Key={"player_id": player_id},
+            UpdateExpression="SET connection_id = :c",
+            ExpressionAttributeValues={":c": ""},
+        )
+
     def delete(self):
         PLAYER_TABLE.delete_item(Key={"player_id": self.id})
         return None
+
+    def handle_guess(self, result: GuessResult):
+        self.score += result.score
+        self.guessed_flights.append(result.flight.flight_number)
+        self.update()
 
     def to_dict(self):
         return {

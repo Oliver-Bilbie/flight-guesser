@@ -1,28 +1,32 @@
 import math
 from typing import Optional
-from fr24_api import get_all_flights, get_flight_details
-from data_types import Position, AirportGuess, AirportInfo, Flight, GuessResult
+from helpers.fr24_api import get_all_flights, get_flight_details
+from helpers.data_types import Position, GameRules, AirportInfo, Flight, GuessResult
+from helpers.utils import HandledException
 
 
 def make_guess(
-    player: Position, origin: AirportGuess, destination: AirportGuess
+    player_pos: Position,
+    origin_guess_pos: Position,
+    destination_guess_pos: Position,
+    rules: GameRules,
 ) -> GuessResult:
-    flight = find_closest_flight(player)
+    flight = find_closest_flight(player_pos)
+
     if flight is None:
-        return GuessResult(
-            success=False,
-            message="No flights were found in your location",
-            score=None,
-            flight=None,
+        raise HandledException(
+            "No flights were found in your location", status_code=404
         )
 
     score = 0
-    if origin.enabled:
-        score += calculate_score(flight.origin.position, origin.position)
-    if destination.enabled:
-        score += calculate_score(flight.destination.position, destination.position)
 
-    return GuessResult(success=True, score=score, flight=flight, message=None)
+    if rules.use_origin:
+        score += calculate_score(flight.origin.position, origin_guess_pos)
+
+    if rules.use_destination:
+        score += calculate_score(flight.destination.position, destination_guess_pos)
+
+    return GuessResult(score=score, flight=flight)
 
 
 def read_flight_details(raw: dict) -> Flight:

@@ -38,10 +38,8 @@ class Flight:
 
 @dataclass
 class GuessResult:
-    success: bool
-    score: Optional[int]
-    flight: Optional[Flight]
-    message: Optional[str]
+    score: int
+    flight: Flight
 
 
 @dataclass

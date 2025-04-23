@@ -1,8 +1,8 @@
 import traceback
 import json
 from dataclasses import asdict
-from data_types import Position, AirportGuess
-from make_guess import make_guess
+from helpers.make_guess import make_guess
+from helpers.utils import HandledException, read_position, read_rules
 
 
 def lambda_handler(event, context):
@@ -10,37 +10,37 @@ def lambda_handler(event, context):
         input_body = json.loads(event.get("body"))
         print(f"Body: {input_body}")
 
-        player_position = Position(
-            lon=input_body.get("player").get("lon"),
-            lat=input_body.get("player").get("lat"),
+        player_position = read_position(
+            input_body.get("player"),
+            "player",
+            allow_missing=False,
         )
-        origin = AirportGuess(
-            position=Position(
-                lon=input_body.get("origin").get("lon"),
-                lat=input_body.get("origin").get("lat"),
-            ),
-            enabled=input_body.get("origin").get("enabled"),
+        origin_guess_pos = read_position(
+            input_body.get("origin"),
+            "origin airport",
+            allow_missing=True,
         )
-        destination = AirportGuess(
-            position=Position(
-                lon=input_body.get("destination").get("lon"),
-                lat=input_body.get("destination").get("lat"),
-            ),
-            enabled=input_body.get("destination").get("enabled"),
+        destination_guess_pos = read_position(
+            input_body.get("destination"),
+            "destination airport",
+            allow_missing=True,
         )
+        rules = read_rules(input_body.get("rules"))
 
-        guess_result = make_guess(player_position, origin, destination)
-
-        if guess_result.success:
-            return {
-                "statusCode": 200,
-                "body": json.dumps(asdict(guess_result)),
-            }
+        guess_result = make_guess(
+            player_position,
+            origin_guess_pos,
+            destination_guess_pos,
+            rules,
+        )
 
         return {
-            "statusCode": 404,
+            "statusCode": 200,
             "body": json.dumps(asdict(guess_result)),
         }
+
+    except HandledException as exc:
+        return exc.to_response()
 
     except Exception as exc:
         print(f"[ERROR] {str(exc)}")

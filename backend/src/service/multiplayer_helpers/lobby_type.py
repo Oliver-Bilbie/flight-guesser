@@ -2,9 +2,9 @@ import random
 import string
 from datetime import datetime, timezone
 from dataclasses import asdict
-from data_types import GameRules
-from db import LOBBY_TABLE, PLAYER_TABLE
-from player_type import Player
+from helpers.data_types import GameRules
+from multiplayer_helpers.db import LOBBY_TABLE, PLAYER_TABLE
+from multiplayer_helpers.player_type import Player
 from boto3.dynamodb.conditions import Key
 
 
@@ -73,9 +73,6 @@ class Lobby:
             IndexName="LobbyIndex",
         ).get("Items")
 
-        players = map(
-            lambda item: Player.from_dict(item).to_dict(),
-            items,
-        )
+        players = map(Player.from_dict, items)
 
         return players
