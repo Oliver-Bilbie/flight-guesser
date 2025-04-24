@@ -14,14 +14,14 @@ rm -rf ./build
 mkdir -p ./build ./build/singleplayer_src ./build/multiplayer_src
 
 # Build singleplayer server
-cp -r ./src/service/* ./build/singleplayer_src
+cp -r ./src/* ./build/singleplayer_src
 pushd ./build/singleplayer_src > /dev/null || exit 1
 rm -rf ./multiplayer_server.py ./multiplayer_helpers ./__pycache__
 zip -r ../singleplayer_server.zip .
 popd > /dev/null
 
 # Build multiplayer server
-cp -r ./src/service/* ./build/multiplayer_src
+cp -r ./src/* ./build/multiplayer_src
 pushd ./build/multiplayer_src > /dev/null || exit 1
 rm -rf ./singleplayer_server.py ./__pycache__
 zip -r ../multiplayer_server.zip .
