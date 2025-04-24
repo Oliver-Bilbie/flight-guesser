@@ -1,11 +1,14 @@
 import { useState } from "react";
 import logo from "/favicon.ico";
+import Header from "./components/Header/Header";
 
 function App() {
   const [count, setCount] = useState(0);
 
   return (
     <>
+      <Header />
+
       <div>
         <a href="https://vite.dev" target="_blank">
           <img src={logo} className="logo" alt="Vite logo" />
