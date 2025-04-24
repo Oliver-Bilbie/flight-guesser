@@ -1,0 +1,11 @@
+.footer {
+  padding: 2rem;
+}
+
+.footer h4 {
+  margin: 0.5rem;
+}
+
+.footer-changelog {
+  height: 60vh;
+}

@@ -1,0 +1,9 @@
+.changelog-container h4,
+ul,
+ol {
+  text-align: start;
+}
+
+.changelog-container h1 {
+  margin-top: 0;
+}
