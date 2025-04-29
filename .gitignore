@@ -14,3 +14,4 @@ build-status.svg
 **/.mypy_cache
 **/.pytest_cache
 backend/target
+frontend/src/assets/CHANGELOG.md

@@ -1,108 +1,114 @@
 # Changelog
 
-All notable changes to this project will be documented in this file.
-
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/).
-
 ## 1.10.0
 
-- Improved pop-up menu styling
+### Changed
+
+- Refined pop-up menu styling for improved visual clarity and consistency
 
 ## 1.9.0
 
-- UI theme rework
+### Changed
+
+- Major UI theme overhaul to modernize the visual identity
 
 ## 1.8.0
 
-- Added and improved existing backend unit and integration tests
-- Improved linting
-- Optimized the build and test scripts
+### Added
+
+- Introduced and expanded backend unit and integration test coverage
+
+### Changed
+
+- Enhanced linting rules for code quality
+- Optimized build and test workflows for better performance
 
 ## 1.7.0
 
-- Tidied the deployment pipelines
+### Changed
+
+- Cleaned and streamlined deployment pipeline definitions
 
 ## 1.6.1
 
-### Updated
+### Changed
 
-- Reworked pipelines as IaC (see [Pipelines](https://github.com/Oliver-Bilbie/pipelines))
+- Refactored deployment pipelines to use Infrastructure as Code (see [Pipelines](https://github.com/Oliver-Bilbie/pipelines))
 
 ## 1.6.0
 
 ### Added
 
-- Scoring has been reworked to follow an exponential decay, making it slightly more generous for further away guesses
-- The host's game settings are now enforced for all players in a multiplayer lobby
-- Previously guessed flight IDs are now stored in the DynamoDB table to prevent duplicated guesses across multiple sessions
-- The dynamoDB configuration have been reworked to store player data and lobby data in seperate tables
-- The scoreboard will now refresh automatically every thirty seconds if data-saver is disabled
+- Scoring system updated to use exponential decay, making results more forgiving over longer distances
+- Game rules defined by the host are now enforced across multiplayer lobbies
+- Previously guessed flight IDs are stored in DynamoDB to avoid duplicate guesses across sessions
+- DynamoDB restructured to use separate tables for player and lobby data
+- Scoreboard now refreshes every 30 seconds automatically (if data saver mode is off)
 
 ## 1.5.0
 
 ### Added
 
-- The backend will now validate user inputs to reduce the potential for code-injection attacks
+- Backend now validates user input to help mitigate injection attacks
 
 ### Fixed
 
-- The ci script will now invalidate the CloudFront cache once the new frontend has been deployed to S3
+- CI pipeline now invalidates CloudFront cache after frontend deployment
 
 ## 1.4.2
 
 ### Updated
 
-- Updated README
-- Added a badge to README to indicate pipeline status
-- Updated dependencies
+- Improved README content
+- Added pipeline status badge to README
+- Updated project dependencies
 
 ## 1.4.1
 
-### Updated
+### Changed
 
-- Migrated to a new domain name
+- Migrated application to a new domain
 - Updated dependencies
 
 ## 1.4.0
 
 ### Added
 
-- Added CI/CD Pipelines to automatically deploy the application
-  - Added terraform modules to build the DynamoDB table
-  - Added build scripts for use by corresponding AWS CodeBuild projects
-  - CodeBuild will now deploy the terraform, frontend, and backend into a development environment upon creating a pull request
-  - CodeBuild will now run tests upon creating a pull request
-  - CodeBuild will now deploy the terraform, frontend, and backend into a production environment upon merge into main
+- CI/CD pipelines for automated deployment
+  - Terraform modules for provisioning DynamoDB
+  - Build scripts for frontend, backend, and infrastructure components
+  - Development environment auto-deployment on pull request
+  - Automated testing pipeline for PRs
+  - Production deployment pipeline triggered on merge to `main`
 
 ## 1.3.1
 
 ### Security
 
-- Updated backend from Python 3.7 to 3.9
-- Updated frontend dependencies
+- Upgraded backend runtime from Python 3.7 to 3.9
+- Updated frontend package dependencies
 
 ## 1.3.0
 
 ### Added
 
-- Added support for multiplayer lobbies using DynamoDB
-  - Players may now create or join a lobby from the settings menu.
-  - Whilst a player is a member of a lobby, a leaderboard will be displayed for all players in the same lobby.
-  - Players may re-join a lobby using the same name to assume their previous score.
-  - Inactive players will be removed from lobbies after 24 hours.
+- Support for multiplayer lobbies via DynamoDB
+  - Players can now create and join lobbies from the settings menu
+  - Lobby leaderboard displays scores for all current members
+  - Rejoining with the same name restores the player’s previous state
+  - Inactive players are automatically removed after 24 hours
 
 ## 1.2.2
 
 ### Changed
 
-- Added a backend function to remove escape characters from airport names
+- Backend now strips escape characters from airport names
 
 ## 1.2.1
 
 ### Changed
 
-- Improved UI on small displays
+- Improved responsiveness and layout for smaller screens
 
 ## 1.2.0
 
@@ -110,56 +116,54 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 #### Frontend
 
-- Added SettingsMenu component
-- Added inputs for guessing an origin, destination, or both
+- New `SettingsMenu` component
+- Inputs for guessing origin, destination, or both
 
 #### Backend
 
-- Added handling for origin guesses
-- Changed naming convention for destination airports from "airport" to "destination"
+- Support for handling origin-based guesses
+- Renamed `airport` fields to `destination` for clarity
 
 ## 1.1.5
 
 ### Fixed
 
-- Fixed API response handling
+- Resolved API response handling issues
 
 ## 1.1.4
 
-### Changed
+### Added
 
-- Added frontend tests
+- Initial frontend test suite
 
 ## 1.1.3
 
 ### Changed
 
-- Converted frontend from JavaScript into TypeScript
+- Migrated frontend from JavaScript to TypeScript
 
 ## 1.1.2
 
-### Added
+### Changed
 
-- Refactored backend
-- 100% backend unit test coverage
-- 100% backend integration test coverage
-- Refactored frontend
-- Frontend now makes fewer API calls
+- Refactored backend for modularity
+- Achieved 100% unit and integration test coverage for the backend
+- Frontend now performs fewer API requests
 
 ## 1.1.1
 
 ### Changed
 
-- UI Tidying
+- UI layout and styling improvements
 
 ## 1.1.0
 
 ### Added
 
-- Added the ability to guess which airport a plane is travelling to, and score points based on proximity to the true location.
+- Ability to guess the flight’s destination airport and receive score based on proximity
 
 ## 1.0.0
 
 ### Added
 
-- Initial build
+- Initial public release

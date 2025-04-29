@@ -7,6 +7,8 @@
   --color-text: #1b1b1b;
   --color-text-strong: #fcfcfd;
   --color-highlight: #d767bd;
+  --color-text-error: #ff0033;
+  --color-background-error: #ffcccc;
 
   --font-main: "Play", sans-serif;
   --font-alt: "Chakra Petch", sans-serif;
@@ -65,7 +67,7 @@ button {
 }
 
 button:hover {
-  background-color: #e5e5e5;
+  background-color: var(--color-brand);
 }
 
 .text-button {
