@@ -35,16 +35,18 @@ def read_flight_details(raw: dict) -> Flight:
     destination = airport["destination"]
 
     def parse_airport(data):
-        return AirportInfo(
-            name=data["name"],
-            city=data["position"]["region"].get("city"),
-            iata=data["code"]["iata"],
-            icao=data["code"]["icao"],
-            position=Position(
-                lat=data["position"]["latitude"],
-                lon=data["position"]["longitude"],
-            ),
-        )
+        if data is not None:
+            return AirportInfo(
+                name=data["name"],
+                city=data["position"]["region"].get("city"),
+                iata=data["code"]["iata"],
+                icao=data["code"]["icao"],
+                position=Position(
+                    lat=data["position"]["latitude"],
+                    lon=data["position"]["longitude"],
+                ),
+            )
+        return None
 
     def pick_first_image(images):
         try:

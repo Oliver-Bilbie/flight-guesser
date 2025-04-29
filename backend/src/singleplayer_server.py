@@ -37,6 +37,10 @@ def lambda_handler(event, context):
         return {
             "statusCode": 200,
             "body": json.dumps(asdict(guess_result)),
+            "headers": {
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Credentials": False,
+            },
         }
 
     except HandledException as exc:
@@ -48,4 +52,8 @@ def lambda_handler(event, context):
         return {
             "statusCode": 500,
             "body": "The server was unable to process your request",
+            "headers": {
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Credentials": False,
+            },
         }
