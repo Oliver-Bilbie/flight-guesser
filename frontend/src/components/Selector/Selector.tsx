@@ -4,12 +4,14 @@ import "./Selector.css";
 interface SelectorProps<T> {
   items: T[];
   charsBeforeSearch?: number;
+  displayItem?: (item: T) => string;
   onSelect: (item: T) => void;
 }
 
 const Selector = <T,>({
   items,
   charsBeforeSearch = 3,
+  displayItem = (item) => String(item),
   onSelect,
 }: SelectorProps<T>): ReactElement => {
   const [inputText, setInputText] = useState<string>("");
@@ -22,14 +24,14 @@ const Selector = <T,>({
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputText(e.target.value);
     setSelected(false);
+    onSelect(undefined as T);
   };
 
   const handleItemClick = (item: T) => {
-    const displayText = String(item);
-    setInputText(displayText);
+    setInputText(displayItem(item));
     setSelected(true);
-    setShowDropdown(false);
     onSelect(item);
+    setShowDropdown(false);
     inputRef.current?.blur();
   };
 
@@ -46,7 +48,7 @@ const Selector = <T,>({
   const filteredItems =
     inputText.length >= charsBeforeSearch
       ? items.filter((item) =>
-          String(item).toLowerCase().includes(inputText.toLowerCase()),
+          displayItem(item).toLowerCase().includes(inputText.toLowerCase()),
         )
       : [];
 
@@ -67,7 +69,6 @@ const Selector = <T,>({
       {inputText.length > 0 && showDropdown && (
         <div className="selector-content">
           {filteredItems.map((item, index) => {
-            const displayText = String(item);
             return (
               <button
                 type="button"
@@ -78,7 +79,7 @@ const Selector = <T,>({
                   handleItemClick(item);
                 }}
               >
-                {displayText}
+                {displayItem(item)}
               </button>
             );
           })}

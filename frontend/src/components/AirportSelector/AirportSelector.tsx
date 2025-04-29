@@ -5,18 +5,21 @@ import AirportContext from "../AirportProvider/AirportContext";
 import { Airport } from "../../utils/types";
 
 interface AirportSelectorProps {
-  onSelect: (airportName: string) => void;
+  onSelect: (airport: Airport) => void;
 }
 
 const AirportSelector: FC<AirportSelectorProps> = ({
   onSelect,
 }): ReactElement => {
   const airports = useContext(AirportContext);
-  const airportNames = airports.map((airport) => airport.name);
 
   return (
     <div className="airport-selector">
-      <Selector items={airportNames} onSelect={onSelect} />
+      <Selector
+        items={airports}
+        displayItem={(airport) => airport.name}
+        onSelect={onSelect}
+      />
     </div>
   );
 };
