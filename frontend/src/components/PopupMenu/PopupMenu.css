@@ -12,7 +12,7 @@
 }
 
 .popup-container {
-  background: var(--color-background-front);
+  background: var(--color-background-strong);
   padding: 2rem;
   border-radius: 8px;
   max-width: 90vw;

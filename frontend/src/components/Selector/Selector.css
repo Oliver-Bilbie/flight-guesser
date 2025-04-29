@@ -53,5 +53,5 @@
 }
 
 .selector-option:hover {
-  background-color: var(--color-background-front);
+  background-color: var(--color-background-strong);
 }
