@@ -4,6 +4,7 @@
   --color-brand: #67bdd7;
   --color-background: #dce1e1;
   --color-background-strong: #c1ccd0;
+  --color-background-transparent: rgba(252, 252, 253, 0.5);
   --color-text: #1b1b1b;
   --color-text-strong: #fcfcfd;
   --color-highlight: #d767bd;
@@ -37,12 +38,12 @@ body {
   min-height: 100vh;
 }
 
-h1,
-h3 {
+h1 {
   font-family: var(--font-accent);
 }
 
-h2 {
+h2,
+h3 {
   font-family: var(--font-main);
 }
 
