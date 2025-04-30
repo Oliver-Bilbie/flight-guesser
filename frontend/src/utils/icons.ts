@@ -1,10 +1,10 @@
 import L from "leaflet";
-import flightIconUrl from "../assets/flight_icon.webp";
+import aircraftIconUrl from "../assets/aircraft_icon.webp";
 import originIconUrl from "../assets/origin_icon.webp";
 import destinationIconUrl from "../assets/destination_icon.webp";
 
-export const flightIcon = new L.Icon({
-  iconUrl: flightIconUrl,
+export const aircraftIcon = new L.Icon({
+  iconUrl: aircraftIconUrl,
   iconSize: [50, 50],
   iconAnchor: [25, 25],
   popupAnchor: [0, -32],

@@ -2,7 +2,7 @@ import React, { ReactElement } from "react";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import "./MapDisplay.css";
-import { destinationIcon, flightIcon, originIcon } from "../../utils/icons";
+import { destinationIcon, aircraftIcon, originIcon } from "../../utils/icons";
 import { Airport, MapMarker, Flight } from "../../utils/types";
 
 interface MapDisplayProps {
@@ -33,7 +33,7 @@ const MapDisplay: React.FC<MapDisplayProps> = ({ flight }): ReactElement => {
         `${flight.aircraft_type} (${flight.callsign})`,
       ),
       position: flight.position,
-      icon: flightIcon,
+      icon: aircraftIcon,
     });
   }
 
