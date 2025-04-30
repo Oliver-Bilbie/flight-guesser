@@ -1,9 +1,9 @@
 import { FC, ReactElement } from "react";
 import "./ScoreDisplay.css";
-import { useSingleplayerStore } from "../../utils/singleplayerStore";
+import { useGameStore } from "../../utils/gameStore";
 
 const ScoreDisplay: FC = (): ReactElement => {
-  const score = useSingleplayerStore((state) => state.score);
+  const score = useGameStore((state) => state.score);
   return <h1 className="scoreText">Score: {score}</h1>;
 };
 

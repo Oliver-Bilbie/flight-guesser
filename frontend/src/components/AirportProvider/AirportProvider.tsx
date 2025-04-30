@@ -1,6 +1,7 @@
 import { FC, ReactElement, ReactNode, useEffect, useState } from "react";
 import AirportContext from "./AirportContext";
-import { Airport } from "./types";
+import LoadingSpinner from "../LoadingSpinner/LoadingSpinner";
+import { Airport, AirportApiResponse } from "../../utils/types";
 import { AIRPORTS_ENDPOINT } from "../../utils/endpoints";
 
 interface AirportProviderProps {
@@ -18,12 +19,14 @@ const AirportProvider: FC<AirportProviderProps> = ({
     try {
       const response = await fetch(AIRPORTS_ENDPOINT);
       const body = await response.json();
-      const airports = body.map((airport: Airport) => {
+      const airports = body.map((airport: AirportApiResponse) => {
         return {
           name: airport.name,
           iata: airport.iata,
-          lat: airport.lat,
-          lon: airport.lon,
+          position: {
+            lat: airport.lat,
+            lon: airport.lon,
+          },
         };
       });
       setAirports(airports);
@@ -39,7 +42,7 @@ const AirportProvider: FC<AirportProviderProps> = ({
   }, []);
 
   if (isLoading) {
-    return <h1>Loading airports...</h1>;
+    return <LoadingSpinner />;
   } else if (errorMessage.length > 0) {
     return <h1>{errorMessage}</h1>;
   } else {
