@@ -12,11 +12,9 @@
 }
 
 .popup-container {
-  background: var(--color-background-strong);
+  background: transparent;
   padding: 2rem;
   border-radius: 8px;
-  max-width: 90vw;
-  width: 400px;
   text-align: center;
 }
 

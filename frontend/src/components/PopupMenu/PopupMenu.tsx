@@ -3,7 +3,7 @@ import "./PopupMenu.css";
 
 interface PopupMenuProps {
   title?: string;
-  onClose: () => void;
+  onClose?: () => void;
   children?: ReactNode;
 }
 
@@ -17,9 +17,11 @@ const PopupMenu: FC<PopupMenuProps> = ({
       <div className="popup-container">
         {title != null && <h2 className="popup-title">{title}</h2>}
         <div className="popup-content">{children}</div>
-        <button className="popup-button" onClick={onClose}>
-          Close
-        </button>
+        {onClose && (
+          <button className="popup-button" onClick={onClose}>
+            Close
+          </button>
+        )}
       </div>
     </div>
   );
