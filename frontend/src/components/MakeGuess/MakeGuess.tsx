@@ -14,19 +14,23 @@ import {
 } from "../../utils/types";
 import { SINGLEPLAYER_ENDPOINT } from "../../utils/endpoints";
 
+const zeroPoints = {
+  origin: 0,
+  destination: 0,
+  total: 0,
+};
+
 const MakeGuess: FC = (): ReactElement => {
   const [origin, setOrigin] = useState<Airport>();
   const [destination, setDestination] = useState<Airport>();
   const [isLoading, setIsLoading] = useState(false);
-  const [points, setPoints] = useState<Points>({
-    origin: 0,
-    destination: 0,
-    total: 0,
-  });
+  const [alreadyGuessed, setAlreadyGuessed] = useState(true);
+  const [points, setPoints] = useState<Points>(zeroPoints);
   const [flight, setFlight] = useState<Flight>();
 
   const rules = useGameStore((state) => state.rules);
   const handleGuessResult = useGameStore((state) => state.handleGuessResult);
+  const checkIfGuessed = useGameStore((state) => state.checkIfGuessed);
 
   async function makeGuessRequest(
     location: GeolocationPosition,
@@ -34,12 +38,15 @@ const MakeGuess: FC = (): ReactElement => {
     origin?: Airport,
     destination?: Airport,
   ) {
-    console.log(origin);
-    console.log(destination);
     try {
+      // TODO: Remove debugging
+      // const player = {
+      //   lon: location.coords.longitude,
+      //   lat: location.coords.latitude,
+      // };
       const player = {
-        lon: location.coords.longitude,
-        lat: location.coords.latitude,
+        lon: 8.541694,
+        lat: 47.376888,
       };
       const response = await fetch(SINGLEPLAYER_ENDPOINT, {
         method: "POST",
@@ -51,6 +58,7 @@ const MakeGuess: FC = (): ReactElement => {
         }),
       });
       const body: FlightApiResponse = await response.json();
+      setAlreadyGuessed(checkIfGuessed(body.flight.id));
       setPoints(body.points);
       setFlight(body.flight);
       handleGuessResult(body.points.total, body.flight.id);
@@ -71,13 +79,18 @@ const MakeGuess: FC = (): ReactElement => {
     navigator.geolocation.getCurrentPosition(
       (location) => makeGuessRequest(location, rules, origin, destination),
       () => setIsLoading(false),
+      {
+        enableHighAccuracy: true,
+        timeout: 60000,
+        maximumAge: 60000,
+      },
     );
   }
 
   function clearGuess() {
     setOrigin(undefined);
     setDestination(undefined);
-    setPoints({ origin: 0, destination: 0, total: 0 });
+    setPoints(zeroPoints);
     setFlight(undefined);
     setIsLoading(false);
   }
@@ -107,6 +120,7 @@ const MakeGuess: FC = (): ReactElement => {
             <FlightDisplay
               flight={flight}
               points={points}
+              alreadyGuessed={alreadyGuessed}
               onClose={() => clearGuess()}
             />
           )}
