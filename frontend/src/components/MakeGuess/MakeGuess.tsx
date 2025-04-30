@@ -18,7 +18,11 @@ const MakeGuess: FC = (): ReactElement => {
   const [origin, setOrigin] = useState<Airport>();
   const [destination, setDestination] = useState<Airport>();
   const [isLoading, setIsLoading] = useState(false);
-  const [points, setPoints] = useState<Points>();
+  const [points, setPoints] = useState<Points>({
+    origin: 0,
+    destination: 0,
+    total: 0,
+  });
   const [flight, setFlight] = useState<Flight>();
 
   const rules = useGameStore((state) => state.rules);
@@ -73,7 +77,7 @@ const MakeGuess: FC = (): ReactElement => {
   function clearGuess() {
     setOrigin(undefined);
     setDestination(undefined);
-    setPoints(undefined);
+    setPoints({ origin: 0, destination: 0, total: 0 });
     setFlight(undefined);
     setIsLoading(false);
   }
