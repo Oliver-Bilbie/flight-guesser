@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { Rules } from "./types";
 
-type SingleplayerStore = {
+type GameStore = {
   score: number;
   guessedFlights: string[];
   rules: Rules;
@@ -9,10 +9,10 @@ type SingleplayerStore = {
   setRules: (rules: Rules) => void;
 };
 
-export const useSingleplayerStore = create<SingleplayerStore>((set) => ({
+export const useGameStore = create<GameStore>((set) => ({
   score: 0,
   guessedFlights: [],
-  rules: { useOrigin: false, useDestination: true },
+  rules: { useOrigin: true, useDestination: true },
 
   handleGuessResult: (points, flightId) =>
     set((state) => ({
