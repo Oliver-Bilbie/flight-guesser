@@ -7,5 +7,9 @@
 }
 
 .footer-changelog {
-  height: 60vh;
+  height: min(70vh, 800px);
+  background: var(--color-background);
+  border-radius: 1rem;
+  overflow: scroll;
+  padding: 2rem;
 }
