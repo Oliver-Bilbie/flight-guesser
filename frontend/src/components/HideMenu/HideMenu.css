@@ -1,0 +1,11 @@
+.hide-menu.visible {
+  opacity: 100;
+  position: relative;
+  pointer-events: all;
+}
+
+.hide-menu.hidden {
+  opacity: 0;
+  position: absolute;
+  pointer-events: none;
+}
