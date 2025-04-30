@@ -1,3 +1,4 @@
+from typing import Any, Union
 from helpers.data_types import Position, GameRules
 
 
@@ -8,7 +9,14 @@ class HandledException(Exception):
         self.status_code = status_code
 
     def to_response(self):
-        return {"statusCode": self.status_code, "message": self.message}
+        return {
+            "statusCode": self.status_code,
+            "message": self.message,
+            "headers": {
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Credentials": False,
+            },
+        }
 
 
 def read_position(item: dict, item_name: str, allow_missing: bool = False) -> Position:
@@ -17,16 +25,25 @@ def read_position(item: dict, item_name: str, allow_missing: bool = False) -> Po
     except Exception as exc:
         if allow_missing:
             return None
-        raise ValueError(
-            f"Unable to read the position values of the {item_name}"
-        ) from exc
+        raise HandledException(f"The provided {item_name} position is invalid") from exc
 
 
 def read_rules(rules_input: dict) -> GameRules:
     try:
         return GameRules(
-            use_origin=rules_input.get("use_origin"),
-            use_destination=rules_input.get("use_destination"),
+            use_origin=rules_input.get("useOrigin"),
+            use_destination=rules_input.get("useDestination"),
         )
     except Exception as exc:
-        raise ValueError("Unable to read the game rules") from exc
+        raise HandledException("The provided rules are invalid") from exc
+
+
+def get_nested(data: Union[dict, list], *path) -> Any:
+    """Safely get a nested value from a dict or list, or return None if any key/index is missing."""
+    for key in path:
+        try:
+            data = data[key]
+        except:
+            return None
+
+    return data

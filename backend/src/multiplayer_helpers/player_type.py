@@ -18,7 +18,7 @@ class Player:
         self._lobby = lobby
         self._name = name
         self._connection_id = connection_id
-        self.score = int(0)
+        self.points = int(0)
         self.guessed_flights = []
 
     @property
@@ -46,7 +46,7 @@ class Player:
                 "lobby_id": player.lobby,
                 "player_name": player.name,
                 "connection_id": player.connection_id,
-                "score": player.score,
+                "points": player.points,
                 "guessed_flights": player.guessed_flights,
                 "last_interaction": datetime.now(timezone.utc).isoformat(),
             }
@@ -63,7 +63,7 @@ class Player:
             return None
 
         player = cls(name, lobby, connection_id)
-        player.score = int(player_record.get("score"))
+        player.points = int(player_record.get("points"))
         player.guessed_flights = player_record.get("guessed_flights")
 
         # Update connection_id if it has changed
@@ -81,11 +81,11 @@ class Player:
         name = player_data.get("player_name")
         lobby = player_data.get("lobby_id")
         connection_id = player_data.get("connection_id")
-        score = player_data.get("score")
+        points = player_data.get("points")
         guessed_flights = player_data.get("guessed_flights")
 
         player = cls(name, lobby, connection_id)
-        player.score = int(score)
+        player.points = int(points)
         player.guessed_flights = guessed_flights
 
         return player
@@ -94,11 +94,11 @@ class Player:
         PLAYER_TABLE.update_item(
             Key={"player_id": self.id},
             UpdateExpression=(
-                "SET score = :s, guessed_flights = :g, "
+                "SET points = :p, guessed_flights = :g, "
                 "last_interaction = :t, connection_id = :c"
             ),
             ExpressionAttributeValues={
-                ":s": self.score,
+                ":p": self.points,
                 ":g": self.guessed_flights,
                 ":t": datetime.now(timezone.utc).isoformat(),
                 ":c": self.connection_id,
@@ -119,7 +119,7 @@ class Player:
         return None
 
     def handle_guess(self, result: GuessResult):
-        self.score += int(result.score)
+        self.points += int(result.points)
         self.guessed_flights.append(result.flight.flight_number)
         self.update()
 
@@ -127,6 +127,6 @@ class Player:
         return {
             "lobby_id": self.lobby,
             "player_name": self.name,
-            "score": self.score,
+            "points": self.points,
             "guess_count": len(self.guessed_flights),
         }

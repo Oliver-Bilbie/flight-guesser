@@ -10,6 +10,7 @@ def lambda_handler(event, context):
         input_body = json.loads(event.get("body"))
         print(f"Body: {input_body}")
 
+        rules = read_rules(input_body.get("rules"))
         player_position = read_position(
             input_body.get("player"),
             "player",
@@ -18,14 +19,13 @@ def lambda_handler(event, context):
         origin_guess_pos = read_position(
             input_body.get("origin"),
             "origin airport",
-            allow_missing=True,
+            allow_missing=(not rules.use_origin),
         )
         destination_guess_pos = read_position(
             input_body.get("destination"),
             "destination airport",
-            allow_missing=True,
+            allow_missing=(not rules.use_destination),
         )
-        rules = read_rules(input_body.get("rules"))
 
         guess_result = make_guess(
             player_position,

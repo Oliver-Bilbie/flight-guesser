@@ -25,6 +25,7 @@ class AirportInfo:
 
 @dataclass
 class Flight:
+    id: str
     flight_number: str
     callsign: str
     airline: str
@@ -37,8 +38,15 @@ class Flight:
 
 
 @dataclass
+class Points:
+    origin: int
+    destination: int
+    total: int
+
+
+@dataclass
 class GuessResult:
-    score: int
+    points: Points
     flight: Flight
 
 
