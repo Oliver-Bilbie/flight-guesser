@@ -4,6 +4,7 @@ import AirportProvider from "../AirportProvider/AirportProvider";
 import AirportSelector from "../AirportSelector/AirportSelector";
 import FlightDisplay from "../FlightDisplay/FlightDisplay";
 import LoadingSpinner from "../LoadingSpinner/LoadingSpinner";
+import MessageDisplay from "../MessageDisplay/MessageDisplay";
 import { useGameStore } from "../../utils/gameStore";
 import {
   Rules,
@@ -17,7 +18,6 @@ import {
   emptyError,
 } from "../../utils/types";
 import { SINGLEPLAYER_ENDPOINT } from "../../utils/endpoints";
-import MessageDisplay from "../MessageDisplay/MessageDisplay";
 
 const MakeGuess: FC = (): ReactElement => {
   const [origin, setOrigin] = useState<Airport>();
@@ -157,13 +157,30 @@ const MakeGuess: FC = (): ReactElement => {
           ) : (
             <>
               <div className="make-guess">
-                <h4 className="make-guess-label">Origin:</h4>
-                <AirportSelector onSelect={(airport) => setOrigin(airport)} />
+                {rules.useOrigin && (
+                  <>
+                    <h4 className="make-guess-label">Origin:</h4>
+                    <AirportSelector
+                      onSelect={(airport) => setOrigin(airport)}
+                    />
+                  </>
+                )}
 
-                <h4 className="make-guess-label">Destination:</h4>
-                <AirportSelector
-                  onSelect={(airport) => setDestination(airport)}
-                />
+                {rules.useDestination && (
+                  <>
+                    <h4 className="make-guess-label">Destination:</h4>
+                    <AirportSelector
+                      onSelect={(airport) => setDestination(airport)}
+                    />
+                  </>
+                )}
+
+                {!rules.useOrigin && !rules.useDestination && (
+                  <h4 className="make-guess-warning">
+                    You have disabled all types of guesses from the settings
+                    menu. There is nothing to do here now.
+                  </h4>
+                )}
               </div>
               <button
                 className="make-guess-button"
