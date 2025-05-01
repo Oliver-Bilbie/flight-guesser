@@ -1,5 +1,8 @@
 .footer {
-  padding: 2rem;
+  position: absolute;
+  top: max(600px, 100vh - 6rem);
+  width: 100%;
+  height: 6rem;
 }
 
 .footer h4 {
@@ -8,7 +11,7 @@
 
 .footer-changelog {
   height: min(70vh, 800px);
-  background: var(--color-background);
+  background: var(--color-background-strong);
   border-radius: 1rem;
   overflow: scroll;
   padding: 2rem;
