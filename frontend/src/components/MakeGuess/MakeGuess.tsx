@@ -146,29 +146,34 @@ const MakeGuess: FC = (): ReactElement => {
           onContinue={error.onContinue}
         />
       ) : (
-        <div className="make-guess">
-          <h4 className="make-guess-label">Origin:</h4>
-          <AirportSelector onSelect={(airport) => setOrigin(airport)} />
-
-          <h4 className="make-guess-label">Destination:</h4>
-          <AirportSelector onSelect={(airport) => setDestination(airport)} />
-
-          <button
-            className="make-guess-button"
-            onClick={() => handleSubmit(rules, origin, destination)}
-          >
-            Make guess
-          </button>
-
-          {flight && (
+        <>
+          {flight ? (
             <FlightDisplay
               flight={flight}
               points={points}
               alreadyGuessed={alreadyGuessed}
               onClose={() => clearGuess()}
             />
+          ) : (
+            <>
+              <div className="make-guess">
+                <h4 className="make-guess-label">Origin:</h4>
+                <AirportSelector onSelect={(airport) => setOrigin(airport)} />
+
+                <h4 className="make-guess-label">Destination:</h4>
+                <AirportSelector
+                  onSelect={(airport) => setDestination(airport)}
+                />
+              </div>
+              <button
+                className="make-guess-button"
+                onClick={() => handleSubmit(rules, origin, destination)}
+              >
+                Make guess
+              </button>
+            </>
           )}
-        </div>
+        </>
       )}
     </AirportProvider>
   );

@@ -6,7 +6,6 @@
   margin: 20px auto;
   border-radius: 1rem;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   background-color: var(--color-background);
 }
 
@@ -24,7 +23,8 @@
   text-align: center;
 }
 
-.map-label-body > p, h3 {
+.map-label-body > p,
+h3 {
   margin-top: 0.2rem;
   margin-bottom: 0.2rem;
   margin-left: 0;

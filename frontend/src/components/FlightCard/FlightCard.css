@@ -1,11 +1,10 @@
 .flight-card {
+  width: 80vw;
   max-width: 600px;
   margin: 20px auto;
   border-radius: 1rem;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  font-family: sans-serif;
-  background-color: #eff;
+  background-color: var(--color-background-transparent);
 }
 
 .flight-image {
