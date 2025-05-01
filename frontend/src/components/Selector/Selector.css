@@ -21,10 +21,14 @@
   opacity: 0.7;
 }
 
-.selector-input:hover,
-.selector-input:focus {
-  background-color: var(--color-background);
+.selector-input:hover {
   outline: none;
+  background-color: var(--color-background);
+}
+
+.selector-input:focus {
+  outline: none;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
 }
 
 .selector-input-error {
@@ -34,7 +38,8 @@
 .selector-content {
   background-color: var(--color-text-strong);
   position: absolute;
-  width: 100%;
+  left: 2.5%;
+  width: 95%;
   max-height: max(calc(90vh - 500px), 10rem);
   margin-top: 2px;
   border-radius: 4px;
@@ -53,6 +58,8 @@
   color: var(--color-text);
   cursor: pointer;
   transition: background-color 0.2s ease;
+  border-radius: 0;
+  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.3);
 }
 
 .selector-option:hover {

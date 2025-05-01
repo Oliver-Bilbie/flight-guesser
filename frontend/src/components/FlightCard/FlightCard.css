@@ -5,6 +5,7 @@
   border-radius: 1rem;
   overflow: hidden;
   background-color: var(--color-background-transparent);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .flight-image {
