@@ -32,6 +32,8 @@ const MakeGuess: FC = (): ReactElement => {
   const handleGuessResult = useGameStore((state) => state.handleGuessResult);
   const checkIfGuessed = useGameStore((state) => state.checkIfGuessed);
 
+  const allDisabled = !rules.useOrigin && !rules.useDestination;
+
   async function makeGuessRequest(
     location: GeolocationPosition,
     rules: Rules,
@@ -175,19 +177,23 @@ const MakeGuess: FC = (): ReactElement => {
                   </>
                 )}
 
-                {!rules.useOrigin && !rules.useDestination && (
+                {allDisabled && (
                   <h4 className="make-guess-warning">
                     You have disabled all types of guesses from the settings
-                    menu. There is nothing to do here now.
+                    menu. You will need to re-enable something in order to make
+                    a guess.
                   </h4>
                 )}
               </div>
-              <button
-                className="make-guess-button"
-                onClick={() => handleSubmit(rules, origin, destination)}
-              >
-                Make guess
-              </button>
+
+              {!allDisabled && (
+                <button
+                  className="make-guess-button"
+                  onClick={() => handleSubmit(rules, origin, destination)}
+                >
+                  Make guess
+                </button>
+              )}
             </>
           )}
         </>
