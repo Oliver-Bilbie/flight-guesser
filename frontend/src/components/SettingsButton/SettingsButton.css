@@ -1,0 +1,26 @@
+.settings-button {
+  padding: 0;
+  border: none;
+  cursor: pointer;
+  background: none;
+  box-shadow: none;
+  position: absolute;
+  top: max(600px, 100vh - 5rem);
+  right: 2rem;
+  z-index: 5;
+}
+
+.settings-button:hover {
+  background: none;
+  box-shadow: none;
+}
+
+.settings-button > svg {
+  display: block;
+  fill: var(--color-text);
+}
+
+.settings-button:hover > svg {
+  fill: var(--color-brand);
+  transform: translateY(1px);
+}
