@@ -68,7 +68,7 @@ button {
 }
 
 button:hover {
-  background-color: var(--color-brand);
+  background-color: var(--color-background-strong);
 }
 
 .text-button {
