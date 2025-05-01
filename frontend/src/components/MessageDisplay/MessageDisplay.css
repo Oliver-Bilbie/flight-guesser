@@ -1,0 +1,15 @@
+.message-display {
+  height: min(80vh, 200px);
+  width: min(90vw, 400px);
+  margin: 20px auto;
+  align-content: center;
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  font-family: sans-serif;
+  background-color: #eff;
+}
+
+.message-display h2 {
+  margin-top: 0;
+}
