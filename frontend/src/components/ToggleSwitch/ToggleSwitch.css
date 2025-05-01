@@ -1,0 +1,41 @@
+.toggle-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-alt);
+  user-select: none;
+}
+
+.toggle-switch input {
+  display: none;
+}
+
+.toggle-switch .slider {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  background-color: var(--color-background-strong);
+  border-radius: 34px;
+  transition: background-color 0.3s ease;
+  cursor: pointer;
+}
+
+.toggle-switch .slider::before {
+  content: "";
+  position: absolute;
+  left: 4px;
+  top: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background-color: var(--color-text-strong);
+  transition: transform 0.3s ease;
+}
+
+.toggle-switch input:checked + .slider {
+  background-color: var(--color-brand);
+}
+
+.toggle-switch input:checked + .slider::before {
+  transform: translateX(20px);
+}
