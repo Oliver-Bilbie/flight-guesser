@@ -14,6 +14,7 @@ export type Rules = {
 export type Airport = {
   name: string;
   city: string | null;
+  country: string | null;
   iata: string | null;
   icao: string | null;
   position: Position | null;
@@ -68,4 +69,18 @@ export type ErrorData = {
   message: string;
   continueText: string;
   onContinue: () => void;
+};
+
+export const zeroPoints: Points = {
+  origin: 0,
+  destination: 0,
+  total: 0,
+};
+
+export const emptyError: ErrorData = {
+  show: false,
+  title: "",
+  message: "",
+  continueText: "",
+  onContinue: () => null,
 };

@@ -13,23 +13,11 @@ import {
   Points,
   ErrorData,
   FlightApiError,
+  zeroPoints,
+  emptyError,
 } from "../../utils/types";
 import { SINGLEPLAYER_ENDPOINT } from "../../utils/endpoints";
 import MessageDisplay from "../MessageDisplay/MessageDisplay";
-
-const zeroPoints: Points = {
-  origin: 0,
-  destination: 0,
-  total: 0,
-};
-
-const emptyError: ErrorData = {
-  show: false,
-  title: "",
-  message: "",
-  continueText: "",
-  onContinue: () => null,
-};
 
 const MakeGuess: FC = (): ReactElement => {
   const [origin, setOrigin] = useState<Airport>();
