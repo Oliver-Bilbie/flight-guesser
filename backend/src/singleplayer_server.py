@@ -38,9 +38,11 @@ def lambda_handler(event, context):
             "statusCode": 200,
             "body": json.dumps(asdict(guess_result)),
             "headers": {
+                "Content-Type": "application/json",
                 "Access-Control-Allow-Origin": "*",
                 "Access-Control-Allow-Credentials": False,
             },
+            "isBase64Encoded": False,
         }
 
     except HandledException as exc:
@@ -51,9 +53,13 @@ def lambda_handler(event, context):
         print(traceback.format_exc())
         return {
             "statusCode": 500,
-            "body": "The server was unable to process your request",
+            "body": json.dumps(
+                {"message": "The server was unable to process your request"}
+            ),
             "headers": {
+                "Content-Type": "application/json",
                 "Access-Control-Allow-Origin": "*",
                 "Access-Control-Allow-Credentials": False,
             },
+            "isBase64Encoded": False,
         }

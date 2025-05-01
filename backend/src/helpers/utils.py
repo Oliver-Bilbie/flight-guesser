@@ -1,3 +1,4 @@
+import json
 from typing import Any, Union
 from helpers.data_types import Position, GameRules
 
@@ -11,11 +12,13 @@ class HandledException(Exception):
     def to_response(self):
         return {
             "statusCode": self.status_code,
-            "message": self.message,
+            "body": json.dumps({"message": self.message}),
             "headers": {
+                "Content-Type": "application/json",
                 "Access-Control-Allow-Origin": "*",
                 "Access-Control-Allow-Credentials": False,
             },
+            "isBase64Encoded": False,
         }
 
 
