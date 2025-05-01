@@ -11,13 +11,24 @@ import {
   Flight,
   FlightApiResponse,
   Points,
+  ErrorData,
+  FlightApiError,
 } from "../../utils/types";
 import { SINGLEPLAYER_ENDPOINT } from "../../utils/endpoints";
+import MessageDisplay from "../MessageDisplay/MessageDisplay";
 
-const zeroPoints = {
+const zeroPoints: Points = {
   origin: 0,
   destination: 0,
   total: 0,
+};
+
+const emptyError: ErrorData = {
+  show: false,
+  title: "",
+  message: "",
+  continueText: "",
+  onContinue: () => null,
 };
 
 const MakeGuess: FC = (): ReactElement => {
@@ -27,6 +38,7 @@ const MakeGuess: FC = (): ReactElement => {
   const [alreadyGuessed, setAlreadyGuessed] = useState(true);
   const [points, setPoints] = useState<Points>(zeroPoints);
   const [flight, setFlight] = useState<Flight>();
+  const [error, setError] = useState<ErrorData>(emptyError);
 
   const rules = useGameStore((state) => state.rules);
   const handleGuessResult = useGameStore((state) => state.handleGuessResult);
@@ -41,12 +53,12 @@ const MakeGuess: FC = (): ReactElement => {
     try {
       // TODO: Remove debugging
       // const player = {
-      //   lon: location.coords.longitude,
-      //   lat: location.coords.latitude,
+      //   lon: 8.541694,
+      //   lat: 47.376888,
       // };
       const player = {
-        lon: 8.541694,
-        lat: 47.376888,
+        lon: location.coords.longitude,
+        lat: location.coords.latitude,
       };
       const response = await fetch(SINGLEPLAYER_ENDPOINT, {
         method: "POST",
@@ -57,17 +69,54 @@ const MakeGuess: FC = (): ReactElement => {
           destination: destination?.position,
         }),
       });
-      const body: FlightApiResponse = await response.json();
-      setAlreadyGuessed(checkIfGuessed(body.flight.id));
-      setPoints(body.points);
-      setFlight(body.flight);
-      handleGuessResult(body.points.total, body.flight.id);
+
+      if (response.ok) {
+        const body: FlightApiResponse = await response.json();
+        setAlreadyGuessed(checkIfGuessed(body.flight.id));
+        setPoints(body.points);
+        setFlight(body.flight);
+        handleGuessResult(body.points.total, body.flight.id);
+      } else {
+        const body: FlightApiError = await response.json();
+        setError({
+          show: true,
+          title: "Unable to make guess",
+          message: body.message,
+          continueText: "Back",
+          onContinue: () => setError(emptyError),
+        });
+      }
     } catch (error) {
-      // TODO: Handle this properly
+      setError({
+        show: true,
+        title: "Unable to make guess",
+        message: "Something went wrong when trying to contact the server",
+        continueText: "Back",
+        onContinue: () => setError(emptyError),
+      });
       console.error(error);
     } finally {
       setIsLoading(false);
     }
+  }
+
+  function handlePositionError(
+    error: GeolocationPositionError,
+    rules: Rules,
+    origin?: Airport,
+    destination?: Airport,
+  ) {
+    setError({
+      show: true,
+      title: "Unable to read your location",
+      message: error.message,
+      continueText: "Retry",
+      onContinue: () => {
+        setError(emptyError);
+        handleSubmit(rules, origin, destination);
+      },
+    });
+    setIsLoading(false);
   }
 
   async function handleSubmit(
@@ -78,7 +127,7 @@ const MakeGuess: FC = (): ReactElement => {
     setIsLoading(true);
     navigator.geolocation.getCurrentPosition(
       (location) => makeGuessRequest(location, rules, origin, destination),
-      () => setIsLoading(false),
+      (error) => handlePositionError(error, rules, origin, destination),
       {
         enableHighAccuracy: true,
         timeout: 60000,
@@ -101,6 +150,13 @@ const MakeGuess: FC = (): ReactElement => {
         <div className="make-guess-loading">
           <LoadingSpinner />
         </div>
+      ) : error.show ? (
+        <MessageDisplay
+          title={error.title}
+          message={error.message}
+          continueText={error.continueText}
+          onContinue={error.onContinue}
+        />
       ) : (
         <div className="make-guess">
           <h4 className="make-guess-label">Origin:</h4>

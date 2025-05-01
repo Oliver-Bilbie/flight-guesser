@@ -52,8 +52,20 @@ export type FlightApiResponse = {
   flight: Flight;
 };
 
+export type FlightApiError = {
+  message: string;
+};
+
 export type MapMarker = {
   label: ReactElement;
   position: Position;
   icon: Icon;
+};
+
+export type ErrorData = {
+  show: boolean;
+  title: string;
+  message: string;
+  continueText: string;
+  onContinue: () => void;
 };
