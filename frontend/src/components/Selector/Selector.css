@@ -1,3 +1,7 @@
+.selector {
+  position: relative;
+}
+
 .selector-input {
   width: 100%;
   padding: 0.5rem 1rem;
@@ -28,30 +32,29 @@
 }
 
 .selector-content {
+  background-color: var(--color-text-strong);
   position: absolute;
-  background-color: var(--color-background);
   width: 100%;
+  max-height: max(calc(90vh - 500px), 10rem);
   margin-top: 2px;
   border-radius: 4px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  z-index: 1;
-  overflow: hidden;
+  overflow-y: scroll;
+  z-index: 10;
 }
 
 .selector-option {
   width: 100%;
   text-align: left;
-  background: none;
   border: none;
   padding: 0.5rem 1rem;
   font-size: 1rem;
   font-family: var(--font-alt);
   color: var(--color-text);
   cursor: pointer;
-  background-color: var(--color-background);
   transition: background-color 0.2s ease;
 }
 
 .selector-option:hover {
-  background-color: var(--color-background-strong);
+  background-color: var(--color-brand);
 }
