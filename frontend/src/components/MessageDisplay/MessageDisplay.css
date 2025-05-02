@@ -1,14 +1,19 @@
 .message-display {
-  height: min(80vh, 200px);
+  height: min(80vh, 350px);
   width: min(90vw, 400px);
   margin: 20px auto;
   align-content: center;
   border-radius: 1rem;
-  overflow: hidden;
   background-color: var(--color-background-transparent);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .message-display h2 {
   margin-top: 0;
+  margin: 1rem;
+}
+
+.message-display h4 {
+  margin-top: 0;
+  margin: 1rem;
 }

@@ -51,7 +51,10 @@
 .selector-option {
   width: 100%;
   text-align: left;
-  border: none;
+  border: 0;
+  border-bottom: 1px;
+  border-style: solid;
+  border-color: var(--color-background-strong);
   padding: 0.5rem 1rem;
   font-size: 1rem;
   font-family: var(--font-alt);
@@ -59,7 +62,6 @@
   cursor: pointer;
   transition: background-color 0.2s ease;
   border-radius: 0;
-  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.3);
 }
 
 .selector-option:hover {

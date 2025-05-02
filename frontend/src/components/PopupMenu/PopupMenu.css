@@ -4,15 +4,11 @@
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(0, 0, 0, 0.6);
+  background: var(--color-background-transparent-strong);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 9999;
-}
-
-:root.dark .popup-overlay {
-  background: rgba(50, 50, 50, 0.6);
 }
 
 .popup-container {

@@ -1,6 +1,6 @@
 .map-display {
   height: 90vh;
-  max-height: min(700px, 75vh);
+  max-height: min(700px, 55vh);
   width: 90vw;
   max-width: 1000px;
   margin: 20px auto;
