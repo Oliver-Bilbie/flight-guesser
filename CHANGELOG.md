@@ -1,16 +1,35 @@
 # Changelog
 
+## 2.0.0
+
+### Frontend
+
+The UI has been completely re-written, this time using Vite tooling.
+As well as a visual overhaul, the following new features have been added:
+
+- Score persists across sessions. This can be reset from the settings menu.
+- A dark theme is now available from the settings menu
+- The awarded points summary is now broken into origin and destination contributions.
+- Additional flight information is displayed, along with an image (where available).
+- Positions of airports and the flight are displayed visually on a map (where available).
+
+### Backend
+
+- The API has also been completely re-written. There are now no external dependencies, which should help to reduce cold start times.
+- Missing flight data is now handled more gracefully.
+- Multiplayer requests are now driven by a websocket API rather than HTTP. This allows for lobby data to be pushed to the client, rather than relying on polling.
+
 ## 1.10.0
 
 ### Changed
 
-- Refined pop-up menu styling for improved visual clarity and consistency
+- Reworked the pop-up menu to avoid breaking the styling when embedded in [my portfolio website](https://oliver-bilbie.co.uk).
 
 ## 1.9.0
 
 ### Changed
 
-- Major UI theme overhaul to modernize the visual identity
+- UI theme overhaul
 
 ## 1.8.0
 
