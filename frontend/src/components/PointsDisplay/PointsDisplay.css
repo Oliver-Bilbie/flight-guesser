@@ -13,7 +13,7 @@
 }
 
 .points-display h4 {
-  color: #888;
+  color: var(--color-text-light);
   font-style: italic;
   margin: 0.4rem;
 }

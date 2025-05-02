@@ -1,6 +1,4 @@
 :root {
-  color-scheme: light dark;
-
   --color-brand: #67bdd7;
   --color-background: #dce1e1;
   --color-background-strong: #c1ccd0;
@@ -21,6 +19,18 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+:root.dark {
+  --color-brand: #236d84;
+  --color-background: #1a1a1a;
+  --color-background-strong: #2b2b2b;
+  --color-background-transparent: rgba(252, 252, 253, 0.1);
+  --color-text: #fcfcfd;
+  --color-text-strong: #1e1e1e;
+  --color-highlight: #d767bd;
+  --color-text-error: #ff6666;
+  --color-background-error: #330000;
+}
+
 #root {
   width: 100vw;
   height: 100vh;
@@ -30,12 +40,27 @@
 body {
   margin: 0;
   font-family: var(--font-main);
-  background: url("assets/texture_light.png") repeat;
+  background: url("assets/texture_light.webp") repeat;
   color: var(--color-text);
   display: flex;
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
+}
+
+:root.dark body {
+  background: url("assets/texture_dark.webp") repeat;
+}
+
+:root.dark .leaflet-layer,
+.leaflet-control-zoom-in,
+.leaflet-control-zoom-out,
+.leaflet-control-attribution {
+  filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
+}
+
+:root.dark .leaflet-control-attribution svg {
+  filter: invert(100%) hue-rotate(180deg) brightness(100%) contrast(100%);
 }
 
 h1 {

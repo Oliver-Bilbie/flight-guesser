@@ -20,17 +20,15 @@
 .flight-content h2 {
   margin-top: 0;
   font-size: 24px;
-  color: #333;
 }
 
 .flight-content p {
   margin: 8px 0;
-  color: #444;
 }
 
 .flight-content .muted {
-  color: #888;
   font-style: italic;
+  color: var(--color-text-light);
 }
 
 .flight-content .small-text {

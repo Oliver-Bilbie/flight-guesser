@@ -5,7 +5,7 @@
   background: none;
   box-shadow: none;
   position: absolute;
-  top: max(600px, 100vh - 5rem);
+  top: max(600px, 100dvh - 5rem);
   right: 2rem;
   z-index: 5;
 }

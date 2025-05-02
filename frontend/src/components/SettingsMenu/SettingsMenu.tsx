@@ -2,6 +2,7 @@ import { ReactElement, FC } from "react";
 import "./SettingsMenu.css";
 import { useGameStore } from "../../utils/gameStore";
 import ToggleSwitch from "../ToggleSwitch/ToggleSwitch";
+import { useThemeStore } from "../../utils/themeStore";
 
 interface SettingsMenuProps {
   onClose: () => void;
@@ -10,6 +11,9 @@ interface SettingsMenuProps {
 const SettingsMenu: FC<SettingsMenuProps> = ({ onClose }): ReactElement => {
   const rules = useGameStore((state) => state.rules);
   const setRules = useGameStore((state) => state.setRules);
+
+  const theme = useThemeStore((state) => state.theme);
+  const toggleTheme = useThemeStore((state) => state.toggleTheme);
 
   return (
     <div className="settings-menu">
@@ -33,6 +37,14 @@ const SettingsMenu: FC<SettingsMenuProps> = ({ onClose }): ReactElement => {
             }
           />
           <h3>Enable destination guesses</h3>
+        </div>
+
+        <div className="settings-menu-option">
+          <ToggleSwitch
+            checked={theme === "dark"}
+            onChange={() => toggleTheme()}
+          />
+          <h3>Dark mode</h3>
         </div>
       </div>
       <button onClick={() => onClose()}>{"Done"}</button>
