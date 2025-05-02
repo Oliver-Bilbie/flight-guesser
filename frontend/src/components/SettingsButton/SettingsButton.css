@@ -4,10 +4,6 @@
   cursor: pointer;
   background: none;
   box-shadow: none;
-  position: absolute;
-  top: max(600px + 1rem, 100vh - 5rem);
-  right: 2rem;
-  z-index: 5;
 }
 
 .settings-button:hover {
@@ -17,10 +13,15 @@
 
 .settings-button > svg {
   display: block;
-  fill: var(--color-text);
+  color: var(--color-text);
 }
 
 .settings-button:hover > svg {
-  fill: var(--color-brand);
+  color: var(--color-brand);
+  transform: translateY(1px);
+}
+
+.settings-button:active > svg {
+  color: var(--color-brand);
   transform: translateY(1px);
 }

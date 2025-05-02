@@ -39,6 +39,8 @@
   width: 100vw;
   height: 100vh;
   text-align: center;
+  display: flex;
+  flex-direction: column;
 }
 
 body {
@@ -46,7 +48,6 @@ body {
   font-family: var(--font-main);
   background: url("assets/texture_light.webp") repeat;
   color: var(--color-text);
-  display: flex;
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
@@ -65,6 +66,10 @@ body {
 
 :root.dark .leaflet-control-attribution svg {
   filter: invert(100%) hue-rotate(180deg) brightness(100%) contrast(100%);
+}
+
+main {
+  flex: 1;
 }
 
 h1 {

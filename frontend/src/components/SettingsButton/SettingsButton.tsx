@@ -8,11 +8,7 @@ interface SettingsButtonProps {
 const SettingsButton: FC<SettingsButtonProps> = ({ onClick }) => {
   return (
     <button className="settings-button" onClick={() => onClick()}>
-      <svg
-        height="2rem"
-        width="2rem"
-        viewBox="0 0 512 512"
-      >
+      <svg height="2rem" width="2rem" viewBox="0 0 512 512" fill="currentColor">
         <g>
           <path
             d="M502.325,307.303l-39.006-30.805c-6.215-4.908-9.665-12.429-9.668-20.348c0-0.084,0-0.168,0-0.252

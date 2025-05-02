@@ -1,15 +1,11 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import Header from "./components/Header/Header";
 import Footer from "./components/Footer/Footer";
 import ScoreDisplay from "./components/ScoreDisplay/ScoreDisplay";
 import MakeGuess from "./components/MakeGuess/MakeGuess";
-import SettingsMenu from "./components/SettingsMenu/SettingsMenu";
-import SettingsButton from "./components/SettingsButton/SettingsButton";
 import { useThemeStore } from "./utils/themeStore";
 
 function App() {
-  const [showSettings, setShowSettings] = useState(false);
-
   const theme = useThemeStore((state) => state.theme);
 
   useEffect(() => {
@@ -19,12 +15,11 @@ function App() {
   return (
     <>
       <Header />
-      <ScoreDisplay />
 
-      <MakeGuess />
-
-      {showSettings && <SettingsMenu onClose={() => setShowSettings(false)} />}
-      <SettingsButton onClick={() => setShowSettings(true)} />
+      <main>
+        <ScoreDisplay />
+        <MakeGuess />
+      </main>
 
       <Footer />
     </>
