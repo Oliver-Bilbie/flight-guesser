@@ -59,26 +59,6 @@ body {
   background: url("assets/texture_dark.webp") repeat;
 }
 
-:root.dark .leaflet-layer {
-  filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
-}
-
-.leaflet-control-zoom-in,
-.leaflet-control-zoom-out,
-.leaflet-control-attribution {
-  color: var(--color-text) !important;
-  background-color: var(--color-background-transparent) !important;
-  font-family: var(--font-main) !important;
-}
-
-.leaflet-control-attribution > a {
-  font-family: var(--font-alt) !important;
-}
-
-:root.dark .leaflet-control-attribution > a {
-  color: var(--color-text-error) !important;
-}
-
 main {
   flex: 1;
 }
@@ -113,8 +93,8 @@ button {
 }
 
 button:hover {
-  background-color: var(--color-background) !important;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5) !important;
+  background-color: var(--color-background);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
 }
 
 button:active {
@@ -129,4 +109,40 @@ button:active {
 a,
 .text-button:hover {
   color: var(--color-highlight);
+}
+
+.leaflet-control-zoom-in,
+.leaflet-control-zoom-out,
+.leaflet-control-attribution {
+  color: var(--color-text) !important;
+  background-color: var(--color-background-transparent) !important;
+  font-family: var(--font-main) !important;
+}
+
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip {
+  color: var(--color-text) !important;
+  background-color: var(--color-background) !important;
+  font-family: var(--font-main) !important;
+}
+
+.leaflet-control-attribution > a {
+  font-family: var(--font-alt) !important;
+}
+
+:root.dark .leaflet-layer {
+  filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
+}
+
+:root.dark .leaflet-marker-icon {
+  filter: brightness(80%);
+}
+
+:root.dark .leaflet-control-attribution > a {
+  color: var(--color-text-error) !important;
+}
+
+:root.dark .leaflet-popup-content-wrapper,
+:root.dark .leaflet-popup-tip {
+  background-color: var(--color-background-strong) !important;
 }
