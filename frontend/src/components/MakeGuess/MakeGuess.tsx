@@ -114,16 +114,60 @@ const MakeGuess: FC = (): ReactElement => {
     origin?: Airport,
     destination?: Airport,
   ) {
-    setIsLoading(true);
-    navigator.geolocation.getCurrentPosition(
-      (location) => makeGuessRequest(location, rules, origin, destination),
-      (error) => handlePositionError(error, rules, origin, destination),
-      {
-        enableHighAccuracy: true,
-        timeout: 60000,
-        maximumAge: 60000,
-      },
-    );
+    if (validateGuess(rules, origin, destination)) {
+      setIsLoading(true);
+      navigator.geolocation.getCurrentPosition(
+        (location) => makeGuessRequest(location, rules, origin, destination),
+        (error) => handlePositionError(error, rules, origin, destination),
+        {
+          enableHighAccuracy: true,
+          timeout: 60000,
+          maximumAge: 60000,
+        },
+      );
+    }
+  }
+
+  function validateGuess(
+    rules: Rules,
+    origin?: Airport,
+    destination?: Airport,
+  ) {
+    const originMissing = rules.useOrigin && origin == null;
+    const destinationMissing = rules.useDestination && destination == null;
+    const bothMissing = originMissing && destinationMissing;
+    const isInvalid = originMissing || destinationMissing;
+
+    if (isInvalid) {
+      // This message should never be shown, but is provided as a failsafe
+      let title = "Invalid guess";
+      let message = "Please review your inputs are try again.";
+
+      if (bothMissing) {
+        title = "Neither of the airports were provided";
+        message =
+          "To make a guess, provide guesses for the origin and destination airports.";
+      } else if (originMissing) {
+        title = "An origin airport was not provided";
+        message =
+          "To make a guess, either provide an origin airport or disable origin guesses from the settings menu.";
+      } else if (destinationMissing) {
+        title = "A destination airport was not provided";
+        message =
+          "To make a guess, either provide an destination airport or disable origin guesses from the settings menu.";
+      }
+
+      setError({
+        show: true,
+        title: title,
+        message: message,
+        continueText: "Back",
+        onContinue: () => setError(emptyError),
+      });
+
+      return false;
+    }
+    return true;
   }
 
   function clearGuess() {
