@@ -1,10 +1,11 @@
 import { FC, ReactElement, useState } from "react";
 import "./FlightDisplay.css";
-import { Flight, Points } from "../../utils/types";
 import FlightCard from "../FlightCard/FlightCard";
 import MapDisplay from "../MapDisplay/MapDisplay";
 import PointsDisplay from "../PointsDisplay/PointsDisplay";
 import HideMenu from "../HideMenu/HideMenu";
+import { Flight, Points } from "../../utils/types";
+import { useGameStore } from "../../utils/gameStore";
 
 interface FlightDisplayProps {
   flight: Flight;
@@ -21,12 +22,17 @@ const FlightDisplay: FC<FlightDisplayProps> = ({
 }): ReactElement => {
   const [currentView, setCurrentView] = useState(0);
 
+  // We must clone the rules at the time the guess was made to avoid confusion if they are changed later
+  const currentRules = useGameStore((state) => state.rules);
+  const [rulesWhenGuessed] = useState(() => structuredClone(currentRules));
+
   return (
     <div className="flight-display">
       <HideMenu isHidden={currentView !== 0}>
         <PointsDisplay
           points={points}
           isAlreadyGuessed={alreadyGuessed}
+          rules={rulesWhenGuessed}
           hasOrigin={flight.origin !== null}
           hasDestination={flight.destination !== null}
         />

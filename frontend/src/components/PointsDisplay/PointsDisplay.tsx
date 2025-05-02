@@ -1,11 +1,11 @@
 import { FC, ReactElement } from "react";
 import "./PointsDisplay.css";
-import { Points } from "../../utils/types";
-import { useGameStore } from "../../utils/gameStore";
+import { Points, Rules } from "../../utils/types";
 
 interface PointsDisplayProps {
   points: Points;
   isAlreadyGuessed: boolean;
+  rules: Rules;
   hasOrigin: boolean;
   hasDestination: boolean;
 }
@@ -13,11 +13,10 @@ interface PointsDisplayProps {
 const PointsDisplay: FC<PointsDisplayProps> = ({
   points,
   isAlreadyGuessed,
+  rules,
   hasOrigin,
   hasDestination,
 }): ReactElement => {
-  const rules = useGameStore((state) => state.rules);
-
   if (isAlreadyGuessed) {
     return (
       <div className="points-display">
