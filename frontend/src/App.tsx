@@ -21,12 +21,9 @@ function App() {
       <Header />
       <ScoreDisplay />
 
-      {showSettings ? (
-        <SettingsMenu onClose={() => setShowSettings(false)} />
-      ) : (
-        <MakeGuess />
-      )}
+      <MakeGuess />
 
+      {showSettings && <SettingsMenu onClose={() => setShowSettings(false)} />}
       <SettingsButton onClick={() => setShowSettings(true)} />
 
       <Footer />
