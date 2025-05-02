@@ -1,6 +1,6 @@
 .footer {
   position: absolute;
-  top: max(600px, 100dvh - 6rem);
+  top: max(800px, 100vh - 6rem);
   width: 100%;
   height: 6rem;
 }
@@ -10,8 +10,8 @@
 }
 
 .footer-changelog {
-  height: min(70dvh, 800px);
-  background: var(--color-background-strong);
+  height: min(70vh, 800px);
+  background: var(--color-background);
   border-radius: 1rem;
   overflow: scroll;
   padding: 2rem;

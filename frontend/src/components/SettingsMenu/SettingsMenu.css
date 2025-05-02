@@ -3,9 +3,8 @@
   max-width: 400px;
   margin-left: auto;
   margin-right: auto;
-  background-color: var(--color-background-transparent);
+  background-color: var(--color-background);
   border-radius: 1rem;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   padding-top: 2rem;
   padding-bottom: 3rem;
   display: flex;
