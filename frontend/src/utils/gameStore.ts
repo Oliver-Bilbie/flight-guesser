@@ -9,6 +9,7 @@ type GameStore = {
   checkIfGuessed: (flightId: string) => boolean;
   handleGuessResult: (points: number, flightId: string) => void;
   setRules: (rules: Rules) => void;
+  reset: () => void;
 };
 
 export const useGameStore = create<GameStore>()(
@@ -43,6 +44,8 @@ export const useGameStore = create<GameStore>()(
         }),
 
       setRules: (rules) => set({ rules }),
+
+      reset: () => set({ score: 0, guessedFlights: [] }),
     }),
     {
       name: "gameState",
