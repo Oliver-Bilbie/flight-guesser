@@ -1,5 +1,6 @@
 export const AIRPORTS_ENDPOINT =
-  "https://flight-guesser-dev.s3.eu-west-1.amazonaws.com/airports.json";
+  "https://BUCKET_ENDPOINT_PLACEHOLDER/airports.json";
 
-export const SINGLEPLAYER_ENDPOINT =
-  "https://u73rrrw09k.execute-api.eu-west-1.amazonaws.com/dev/guess";
+export const SINGLEPLAYER_ENDPOINT = "SINGLEPLAYER_ENDPOINT_PLACEHOLDER";
+
+export const MULTIPLAYER_ENDPOINT = "MULTIPLAYER_ENDPOINT_PLACEHOLDER";

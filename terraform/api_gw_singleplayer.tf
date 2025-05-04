@@ -1,5 +1,5 @@
 resource "aws_apigatewayv2_api" "singleplayer_api" {
-  name                       = "${var.app-name} singleplayer (${var.environment})"
+  name          = "${var.app-name} singleplayer (${var.environment})"
   protocol_type = "HTTP"
 }
 
@@ -11,7 +11,7 @@ resource "aws_apigatewayv2_stage" "singleplayer_stage" {
 
 resource "aws_apigatewayv2_route" "make_guess_route" {
   api_id    = aws_apigatewayv2_api.singleplayer_api.id
-  route_key = "POST /guess"
+  route_key = "POST /"
 
   target = "integrations/${aws_apigatewayv2_integration.make_guess_integration.id}"
 }

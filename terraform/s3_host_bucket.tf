@@ -44,6 +44,10 @@ resource "aws_s3_bucket_website_configuration" "host-bucket-hosting-config" {
   }
 }
 
-output "host_bucket" {
-  value = "${var.app-name}-${var.environment}"
+output "bucket_name" {
+  value = aws_s3_bucket.host-bucket.id
+}
+
+output "bucket_endpoint" {
+  value = aws_s3_bucket.host-bucket.bucket_regional_domain_name
 }
