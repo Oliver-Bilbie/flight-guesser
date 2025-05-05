@@ -11,7 +11,7 @@ resource "aws_apigatewayv2_stage" "singleplayer_stage" {
 
 resource "aws_apigatewayv2_route" "make_guess_route" {
   api_id    = aws_apigatewayv2_api.singleplayer_api.id
-  route_key = "POST /"
+  route_key = "POST /guess"
 
   target = "integrations/${aws_apigatewayv2_integration.make_guess_integration.id}"
 }
@@ -32,5 +32,5 @@ resource "aws_lambda_permission" "make_guess_permission" {
 }
 
 output "singleplayer_endpoint" {
-  value = "${aws_apigatewayv2_api.singleplayer_api.api_endpoint}/${aws_apigatewayv2_stage.singleplayer_stage.name}"
+  value = "${aws_apigatewayv2_api.singleplayer_api.api_endpoint}/${aws_apigatewayv2_stage.singleplayer_stage.name}/guess"
 }
