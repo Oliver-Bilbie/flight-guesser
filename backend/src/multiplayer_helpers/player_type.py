@@ -119,7 +119,8 @@ class Player:
         return None
 
     def handle_guess(self, result: GuessResult):
-        self.points += int(result.points)
+        self.points += int(result.points.origin)
+        self.points += int(result.points.destination)
         self.guessed_flights.append(result.flight.flight_number)
         self.update()
 
