@@ -15,3 +15,4 @@ build-status.svg
 **/.pytest_cache
 backend/target
 frontend/src/assets/CHANGELOG.md
+frontend/public/airports.json
