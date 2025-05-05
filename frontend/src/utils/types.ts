@@ -71,6 +71,8 @@ export type ErrorData = {
   onContinue: () => void;
 };
 
+export const defaultRules: Rules = { useOrigin: true, useDestination: true };
+
 export const zeroPoints: Points = {
   origin: 0,
   destination: 0,

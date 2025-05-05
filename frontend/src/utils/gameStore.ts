@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { Rules } from "./types";
+import { defaultRules, Rules } from "./types";
 
 type GameStore = {
   score: number;
@@ -17,7 +17,7 @@ export const useGameStore = create<GameStore>()(
     (set, get) => ({
       score: 0,
       guessedFlights: [],
-      rules: { useOrigin: true, useDestination: true },
+      rules: defaultRules,
 
       checkIfGuessed: (flightId) => {
         const { guessedFlights } = get();
