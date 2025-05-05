@@ -8,8 +8,6 @@ from helpers.utils import HandledException, read_position, read_rules
 def lambda_handler(event, context):
     try:
         input_body = json.loads(event.get("body"))
-        print(f"Body: {input_body}")
-
         rules = read_rules(input_body.get("rules"))
         player_position = read_position(
             input_body.get("player"),

@@ -28,7 +28,6 @@ def lambda_handler(event, context):
         return {"statusCode": 200}
 
     input_body = json.loads(event.get("body"))
-    print(f"Body: {input_body}")
 
     if route_key == "create_lobby":
         return create_lobby(connection_id, input_body)
@@ -146,7 +145,6 @@ def handle_guess(connection_id, input_body):
             "lobby_data": list(map(lambda p: p.to_dict(), lobby_players)),
         }
 
-        print(f"Updating the following players in the lobby: {lobby_players}")
         for lobby_player in lobby_players:
             try:
                 post_to_connection(lobby_player.connection_id, lobby_data)
@@ -198,8 +196,6 @@ def sanitize_player_name(name: str) -> str:
 
 
 def post_to_connection(connection_id, body):
-    print(f"Sending {body} to client: {connection_id}")
-
     API_CLIENT.post_to_connection(
         ConnectionId=connection_id,
         Data=json.dumps(body).encode("utf-8"),

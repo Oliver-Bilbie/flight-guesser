@@ -41,11 +41,6 @@ const MakeGuess: FC = (): ReactElement => {
     destination?: Airport,
   ) {
     try {
-      // TODO: Remove debugging
-      // const player = {
-      //   lon: 8.541694,
-      //   lat: 47.376888,
-      // };
       const player = {
         lon: location.coords.longitude,
         lat: location.coords.latitude,
