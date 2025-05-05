@@ -19,7 +19,7 @@ resource "aws_cloudfront_distribution" "cdn" {
     target_origin_id       = "${var.app-name}-cloudfront"
     allowed_methods        = ["GET", "HEAD"]
     cached_methods         = ["GET", "HEAD"]
-    compress               = false
+    compress               = true
     viewer_protocol_policy = "redirect-to-https"
     cache_policy_id        = aws_cloudfront_cache_policy.cf_cache_policy.id
   }
