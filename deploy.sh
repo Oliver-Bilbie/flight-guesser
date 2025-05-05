@@ -21,14 +21,22 @@ mkdir -p ./build ./build/singleplayer_src ./build/multiplayer_src
 cp -r ./src/* ./build/singleplayer_src
 pushd ./build/singleplayer_src > /dev/null || exit 1
 rm -rf ./multiplayer_server.py ./multiplayer_helpers ./__pycache__
-zip -r -q ../singleplayer_server.zip .
+# Spoof the timestamps so that the zip file is deterministic.
+# This prevent terraform from replacing the files unless they change.
+TZ=UTC find . -exec touch --no-dereference -a -m -t 198002010000.00 {} +
+TZ=UTC zip -q --move --recurse-paths --symlinks -X ../singleplayer_server.zip .
+TZ=UTC touch -a -m -t 198002010000.00 ../singleplayer_server.zip
 popd > /dev/null
 
 # Build multiplayer server
 cp -r ./src/* ./build/multiplayer_src
 pushd ./build/multiplayer_src > /dev/null || exit 1
 rm -rf ./singleplayer_server.py ./__pycache__
-zip -r -q ../multiplayer_server.zip .
+# Spoof the timestamps so that the zip file is deterministic.
+# This prevent terraform from replacing the files unless they change.
+TZ=UTC find . -exec touch --no-dereference -a -m -t 198002010000.00 {} +
+TZ=UTC zip -q --move --recurse-paths --symlinks -X ../multiplayer_server.zip .
+TZ=UTC touch -a -m -t 198002010000.00 ../multiplayer_server.zip
 popd > /dev/null
 
 echo "[INFO] Deploying the backend..."
