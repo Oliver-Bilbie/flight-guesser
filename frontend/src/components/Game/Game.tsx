@@ -35,8 +35,6 @@ const Game: FC = (): ReactElement => {
   const allDisabled =
     !rulesMissing && !rules.useOrigin && !rules.useDestination;
 
-  const initLobby = useLobbyStore((state) => state.initLobby);
-
   function clearAll() {
     setOrigin(undefined);
     setDestination(undefined);
@@ -98,7 +96,6 @@ const Game: FC = (): ReactElement => {
           </>
         )
       )}
-      <button onClick={() => initLobby("", singleRules)}>Make Lobby</button>
     </AirportProvider>
   );
 };

@@ -25,6 +25,8 @@ type LobbyStore = {
 
   response: GuessResponse;
 
+  setName: (name: string) => void;
+
   onJoinLobby: (response: LobbyApiResponse) => void;
   onLeaveLobby: () => void;
 
@@ -51,6 +53,8 @@ export const useLobbyStore = create<LobbyStore>()(
     score: 0,
     rules: defaultRules,
     response: { status: "Ready", value: null, error: null },
+
+    setName: (name) => set({ name: name }),
 
     onJoinLobby: (response) =>
       set(() => {
@@ -124,7 +128,7 @@ export const useLobbyStore = create<LobbyStore>()(
     },
 
     makeApiRequest: (location, origin, destination) => {
-      const { lobbyId, name, ws, setError } = get();
+      const { lobbyId, name, rules, ws, initLobby, setError } = get();
       const guessMessage = {
         action: "handle_guess",
         lobby_id: lobbyId,
@@ -138,12 +142,18 @@ export const useLobbyStore = create<LobbyStore>()(
       };
 
       if (ws === null) {
-        setError("ClientError", {
-          title: "Not connected to a server",
-          message:
-            "The game state is invalid. This is a bug, sorry about that!",
-        });
-        return;
+        // Attempt to reconnect
+        if (lobbyId !== null && rules !== null) {
+          initLobby(lobbyId, rules);
+        }
+        if (ws === null) {
+          setError("ClientError", {
+            title: "Not connected to a server",
+            message:
+              "The game state is invalid. This is a bug, sorry about that!",
+          });
+          return;
+        }
       }
 
       ws.send(JSON.stringify(guessMessage));
@@ -190,8 +200,7 @@ export const useLobbyStore = create<LobbyStore>()(
 
     initLobby: (lobbyId, rules) => {
       set(() => {
-        const { name, onJoinLobby, handleGuessResult, setError, initLobby } =
-          get();
+        const { name, onJoinLobby, handleGuessResult, setError } = get();
 
         const ws = new WebSocket(MULTIPLAYER_ENDPOINT);
 
@@ -202,7 +211,7 @@ export const useLobbyStore = create<LobbyStore>()(
             if (ws.readyState === WebSocket.OPEN) {
               ws.send(JSON.stringify({ action: "ping" }));
             }
-          }, 60000);
+          }, 180000);
 
           if (lobbyId.length === 0) {
             const createLobbyMessage = {
@@ -277,7 +286,6 @@ export const useLobbyStore = create<LobbyStore>()(
 
         ws.onclose = () => {
           console.log("[❌] Connection closed");
-          initLobby(lobbyId);
         };
 
         return { ws: ws };

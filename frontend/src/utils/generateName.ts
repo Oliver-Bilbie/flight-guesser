@@ -23,6 +23,7 @@ const wordList = [
   "Fuel",
   "Glide",
   "Groundspeed",
+  "Guesser",
   "Inbound",
   "Instrument",
   "Jetway",

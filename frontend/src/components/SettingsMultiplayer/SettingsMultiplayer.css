@@ -1,0 +1,8 @@
+.settings-multiplayer-option {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  margin: 1.5rem 1rem;
+  margin-bottom: 2.5rem;
+  justify-content: center;
+}

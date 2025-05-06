@@ -21,6 +21,8 @@
 .reset-button > svg {
   display: block;
   color: var(--color-text);
+  margin-top: auto;
+  margin-bottom: auto;
 }
 
 .reset-button:hover > svg,
