@@ -27,6 +27,9 @@ def lambda_handler(event, context):
     if route_key == "$disconnect":
         return {"statusCode": 200}
 
+    if route_key == "ping":
+        return {"statusCode": 200}
+
     input_body = json.loads(event.get("body"))
 
     if route_key == "create_lobby":
@@ -50,17 +53,19 @@ def create_lobby(connection_id, input_body):
     )
 
     lobby = Lobby.create(rules)
-    Player.create(player_name, lobby.id, connection_id)
+    player = Player.create(player_name, lobby.id, connection_id)
 
     player_data = list(map(lambda p: p.to_dict(), lobby.get_players()))
 
     post_to_connection(
         connection_id,
         {
-            "statusCode": 200,
+            "event": "lobby_joined",
             "lobby": lobby.id,
             "rules": asdict(lobby.rules),
             "players": player_data,
+            "player_name": player.name,
+            "score": player.score,
         },
     )
 
@@ -82,11 +87,12 @@ def join_lobby(connection_id, input_body):
     post_to_connection(
         connection_id,
         {
-            "event": "lobby_join",
-            "statusCode": 200,
+            "event": "lobby_joined",
             "lobby": lobby.id,
             "rules": asdict(lobby.rules),
             "players": player_data,
+            "player_name": player.name,
+            "score": player.score,
         },
     )
 
@@ -141,7 +147,6 @@ def handle_guess(connection_id, input_body):
         lobby_players = lobby.get_players()
         lobby_data = {
             "event": "lobby_update",
-            "statusCode": 200,
             "lobby_data": list(map(lambda p: p.to_dict(), lobby_players)),
         }
 
@@ -157,7 +162,7 @@ def handle_guess(connection_id, input_body):
             connection_id,
             {
                 "event": "flight_details",
-                "statusCode": 200,
+                "score": player.score,
                 **asdict(guess_result),
             },
         )
@@ -165,7 +170,7 @@ def handle_guess(connection_id, input_body):
     except HandledException as exc:
         post_to_connection(
             connection_id,
-            {"event": "flight_details", **exc.to_response()},
+            {"event": "error", **exc.to_response()},
         )
 
     except Exception as exc:
@@ -174,8 +179,7 @@ def handle_guess(connection_id, input_body):
         post_to_connection(
             connection_id,
             {
-                "event": "flight_details",
-                "statusCode": 500,
+                "event": "error",
                 "message": "The server was unable to process your request",
             },
         )

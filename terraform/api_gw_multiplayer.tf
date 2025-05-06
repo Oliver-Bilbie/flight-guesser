@@ -23,6 +23,12 @@ resource "aws_apigatewayv2_route" "disconnect_route" {
   target    = "integrations/${aws_apigatewayv2_integration.disconnect_integration.id}"
 }
 
+resource "aws_apigatewayv2_route" "ping_route" {
+  api_id    = aws_apigatewayv2_api.multiplayer_api.id
+  route_key = "ping"
+  target    = "integrations/${aws_apigatewayv2_integration.create_lobby_integration.id}"
+}
+
 resource "aws_apigatewayv2_route" "create_lobby_route" {
   api_id    = aws_apigatewayv2_api.multiplayer_api.id
   route_key = "create_lobby"

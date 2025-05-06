@@ -18,7 +18,7 @@ class Player:
         self._lobby = lobby
         self._name = name
         self._connection_id = connection_id
-        self.points = int(0)
+        self.score = int(0)
         self.guessed_flights = []
 
     @property
@@ -46,7 +46,7 @@ class Player:
                 "lobby_id": player.lobby,
                 "player_name": player.name,
                 "connection_id": player.connection_id,
-                "points": player.points,
+                "points": player.score,
                 "guessed_flights": player.guessed_flights,
                 "last_interaction": datetime.now(timezone.utc).isoformat(),
             }
@@ -63,7 +63,7 @@ class Player:
             return None
 
         player = cls(name, lobby, connection_id)
-        player.points = int(player_record.get("points"))
+        player.score = int(player_record.get("points"))
         player.guessed_flights = player_record.get("guessed_flights")
 
         # Update connection_id if it has changed
@@ -85,7 +85,7 @@ class Player:
         guessed_flights = player_data.get("guessed_flights")
 
         player = cls(name, lobby, connection_id)
-        player.points = int(points)
+        player.score = int(points)
         player.guessed_flights = guessed_flights
 
         return player
@@ -94,11 +94,11 @@ class Player:
         PLAYER_TABLE.update_item(
             Key={"player_id": self.id},
             UpdateExpression=(
-                "SET points = :p, guessed_flights = :g, "
+                "SET score = :s, guessed_flights = :g, "
                 "last_interaction = :t, connection_id = :c"
             ),
             ExpressionAttributeValues={
-                ":p": self.points,
+                ":s": self.score,
                 ":g": self.guessed_flights,
                 ":t": datetime.now(timezone.utc).isoformat(),
                 ":c": self.connection_id,
@@ -119,15 +119,14 @@ class Player:
         return None
 
     def handle_guess(self, result: GuessResult):
-        self.points += int(result.points.origin)
-        self.points += int(result.points.destination)
+        self.score += int(result.points.origin)
+        self.score += int(result.points.destination)
         self.guessed_flights.append(result.flight.flight_number)
         self.update()
 
     def to_dict(self):
         return {
-            "lobby_id": self.lobby,
             "player_name": self.name,
-            "points": self.points,
+            "points": self.score,
             "guess_count": len(self.guessed_flights),
         }
