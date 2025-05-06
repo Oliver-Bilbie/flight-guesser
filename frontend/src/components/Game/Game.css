@@ -1,5 +1,5 @@
-.make-guess,
-.make-guess-loading {
+.game,
+.game-loading {
   width: 90vw;
   max-width: 550px;
   border-radius: 1rem;
@@ -8,23 +8,23 @@
   padding-bottom: 2.5rem;
 }
 
-.make-guess {
+.game {
   background-color: var(--color-background-transparent);
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-.make-guess-label {
+.game-label {
   text-align: start;
   padding-left: min(5vw, 2rem);
   padding-top: 1.5rem;
   margin-bottom: 0.6rem;
 }
 
-.make-guess-button {
+.game-button {
   margin-top: 2rem;
 }
 
-.make-guess-warning {
+.game-warning {
   padding: 4rem;
   padding-bottom: 0;
 }

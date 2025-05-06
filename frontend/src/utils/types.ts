@@ -53,6 +53,12 @@ export type FlightApiResponse = {
   flight: Flight;
 };
 
+export type FlightMessageResponse = {
+  points: Points;
+  flight: Flight;
+  score: number;
+};
+
 export type FlightApiError = {
   message: string;
 };
@@ -63,12 +69,54 @@ export type MapMarker = {
   icon: Icon;
 };
 
-export type ErrorData = {
-  show: boolean;
+export type Message = {
   title: string;
   message: string;
-  continueText: string;
-  onContinue: () => void;
+};
+
+const successStatusValues = ["Success", "AlreadyGuessed", "PointsUnavailable"];
+
+export type SuccessStatus =
+  (typeof successStatusValues)[keyof typeof successStatusValues];
+
+export function isSuccessStatus<T>(status: T) {
+  if (typeof status !== "string") {
+    return false;
+  }
+  return Object.values(successStatusValues).includes(status);
+}
+
+// export type SuccessStatus = "Success" | "AlreadyGuessed" | "PointsUnavailable";
+
+const errorStatusValues = [
+  "ValidationError",
+  "LocationError",
+  "ClientError",
+  "ApiError",
+  "ServerError",
+];
+
+export type ErrorStatus =
+  (typeof errorStatusValues)[keyof typeof errorStatusValues];
+
+export function isErrorStatus<T>(status: T) {
+  if (typeof status !== "string") {
+    return false;
+  }
+  return Object.values(errorStatusValues).includes(status);
+}
+
+// export type ErrorStatus =
+//   | "ValidationError"
+//   | "LocationError"
+//   | "ClientError"
+//   | "ApiError"
+//   | "ServerError";
+
+export type GuessResponse = {
+  status: "Ready" | "Loading" | SuccessStatus | ErrorStatus;
+  value: FlightApiResponse | null;
+  error: Message | null;
 };
 
 export const defaultRules: Rules = { useOrigin: true, useDestination: true };
@@ -79,10 +127,17 @@ export const zeroPoints: Points = {
   total: 0,
 };
 
-export const emptyError: ErrorData = {
-  show: false,
-  title: "",
-  message: "",
-  continueText: "",
-  onContinue: () => null,
+export type PlayerData = {
+  player_name: string;
+  points: number;
+  guess_count: number;
+};
+
+export type LobbyApiResponse = {
+  event: "lobby_joined";
+  lobby: string;
+  rules: { use_origin: boolean; use_destination: boolean };
+  player_name: string;
+  score: number;
+  players: PlayerData[];
 };

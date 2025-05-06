@@ -1,47 +1,70 @@
 import { FC, ReactElement, useState } from "react";
 import "./FlightDisplay.css";
 import FlightCard from "../FlightCard/FlightCard";
-import MapDisplay from "../MapDisplay/MapDisplay";
-import PointsDisplay from "../PointsDisplay/PointsDisplay";
 import HideMenu from "../HideMenu/HideMenu";
-import { Flight, Points } from "../../utils/types";
+import MapDisplay from "../MapDisplay/MapDisplay";
+import MessageDisplay from "../MessageDisplay/MessageDisplay";
+import PointsDisplay from "../PointsDisplay/PointsDisplay";
 import { useGameStore } from "../../utils/gameStore";
+import { useLobbyStore } from "../../utils/lobbyStore";
 
 interface FlightDisplayProps {
-  flight: Flight;
-  points: Points;
-  alreadyGuessed: boolean;
   onClose: () => void;
 }
 
-const FlightDisplay: FC<FlightDisplayProps> = ({
-  flight,
-  points,
-  alreadyGuessed,
-  onClose: onExit,
-}): ReactElement => {
+const FlightDisplay: FC<FlightDisplayProps> = ({ onClose }): ReactElement => {
   const [currentView, setCurrentView] = useState(0);
 
-  // We must clone the rules at the time the guess was made to avoid confusion if they are changed later
-  const currentRules = useGameStore((state) => state.rules);
-  const [rulesWhenGuessed] = useState(() => structuredClone(currentRules));
+  const singleRules = useGameStore((state) => state.rules);
+  const singleResponse = useGameStore((state) => state.response);
+
+  const isMultiplayer = useLobbyStore((state) => state.isActive);
+  const multiRules = useLobbyStore((state) => state.rules);
+  const multiResponse = useLobbyStore((state) => state.response);
+
+  const currentResponse = isMultiplayer ? multiResponse : singleResponse;
+  const currentRules = isMultiplayer ? multiRules : singleRules;
+
+  // We must clone the state at the time the guess was made to avoid confusion if anything changes later
+  const [response] = useState(() => structuredClone(currentResponse));
+  const [rules] = useState(() => structuredClone(currentRules));
+
+  if (response.value === null) {
+    return (
+      <MessageDisplay
+        title="No flight data available"
+        message="There is no current flight data to display"
+        continueText="Back"
+        onContinue={() => onClose()}
+      />
+    );
+  }
+
+  if (rules === null) {
+    return (
+      <MessageDisplay
+        title="No rules data available"
+        message="There is no rules data available, so it was not possible to display the flight"
+        continueText="Back"
+        onContinue={() => onClose()}
+      />
+    );
+  }
 
   return (
     <div className="flight-display">
       <HideMenu isHidden={currentView !== 0}>
         <PointsDisplay
-          points={points}
-          isAlreadyGuessed={alreadyGuessed}
-          rules={rulesWhenGuessed}
-          hasOrigin={flight.origin !== null}
-          hasDestination={flight.destination !== null}
+          points={response.value.points}
+          status={response.status}
+          rules={rules}
         />
       </HideMenu>
       <HideMenu isHidden={currentView !== 1}>
-        <FlightCard flight={flight} />
+        <FlightCard flight={response.value.flight} />
       </HideMenu>
       <HideMenu isHidden={currentView !== 2}>
-        <MapDisplay flight={flight} />
+        <MapDisplay flight={response.value.flight} />
       </HideMenu>
 
       <div className="flight-display-nav">
@@ -58,7 +81,7 @@ const FlightDisplay: FC<FlightDisplayProps> = ({
         )}
 
         {currentView === 2 && (
-          <button onClick={() => onExit()}>{"Done"}</button>
+          <button onClick={() => onClose()}>{"Done"}</button>
         )}
       </div>
     </div>

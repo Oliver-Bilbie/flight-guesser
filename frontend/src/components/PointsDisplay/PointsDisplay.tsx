@@ -1,23 +1,19 @@
 import { FC, ReactElement } from "react";
 import "./PointsDisplay.css";
-import { Points, Rules } from "../../utils/types";
+import { Points, Rules, SuccessStatus } from "../../utils/types";
 
 interface PointsDisplayProps {
   points: Points;
-  isAlreadyGuessed: boolean;
+  status: SuccessStatus;
   rules: Rules;
-  hasOrigin: boolean;
-  hasDestination: boolean;
 }
 
 const PointsDisplay: FC<PointsDisplayProps> = ({
   points,
-  isAlreadyGuessed,
+  status,
   rules,
-  hasOrigin,
-  hasDestination,
 }): ReactElement => {
-  if (isAlreadyGuessed) {
+  if (status === "AlreadyGuessed") {
     return (
       <div className="points-display">
         <h2>You have already made a guess for this flight</h2>
@@ -29,12 +25,7 @@ const PointsDisplay: FC<PointsDisplayProps> = ({
     );
   }
 
-  const noPointsAvailable = !(
-    (rules.useOrigin && hasOrigin) ||
-    (rules.useDestination && hasDestination)
-  );
-
-  if (noPointsAvailable) {
+  if (status === "NoPointsAvailable") {
     return (
       <div className="points-display">
         <h2>No points are available for this flight</h2>

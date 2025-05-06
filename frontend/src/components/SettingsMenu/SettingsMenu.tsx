@@ -3,6 +3,7 @@ import "./SettingsMenu.css";
 import ToggleSwitch from "../ToggleSwitch/ToggleSwitch";
 import ResetButton from "../ResetButton/ResetButton";
 import { useGameStore } from "../../utils/gameStore";
+import { useLobbyStore } from "../../utils/lobbyStore";
 import { useThemeStore } from "../../utils/themeStore";
 
 interface SettingsMenuProps {
@@ -10,8 +11,19 @@ interface SettingsMenuProps {
 }
 
 const SettingsMenu: FC<SettingsMenuProps> = ({ onClose }): ReactElement => {
-  const rules = useGameStore((state) => state.rules);
-  const setRules = useGameStore((state) => state.setRules);
+  const singleRules = useGameStore((state) => state.rules);
+  const singleSetRules = useGameStore((state) => state.setRules);
+
+  const isSingleplayer = !useLobbyStore((state) => state.isActive);
+  const multiRules = useLobbyStore((state) => state.rules);
+
+  const rules = isSingleplayer
+    ? singleRules
+    : multiRules !== null
+      ? multiRules
+      : { useOrigin: false, useDestination: false };
+
+  const setRules = isSingleplayer ? singleSetRules : () => null;
 
   const theme = useThemeStore((state) => state.theme);
   const toggleTheme = useThemeStore((state) => state.toggleTheme);
@@ -19,10 +31,18 @@ const SettingsMenu: FC<SettingsMenuProps> = ({ onClose }): ReactElement => {
   return (
     <div className="settings-menu">
       <h1>Settings</h1>
+      {!isSingleplayer && (
+        <h4>
+          Some settings have been locked to match the other players in the
+          multiplayer lobby
+        </h4>
+      )}
+
       <div className="settings-menu-container">
         <div className="settings-menu-option">
           <ToggleSwitch
             checked={rules.useOrigin}
+            disabled={!isSingleplayer}
             onChange={(isChecked) =>
               setRules({ ...rules, useOrigin: isChecked })
             }
@@ -33,6 +53,7 @@ const SettingsMenu: FC<SettingsMenuProps> = ({ onClose }): ReactElement => {
         <div className="settings-menu-option">
           <ToggleSwitch
             checked={rules.useDestination}
+            disabled={!isSingleplayer}
             onChange={(isChecked) =>
               setRules({ ...rules, useDestination: isChecked })
             }

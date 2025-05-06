@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import Header from "./components/Header/Header";
 import Footer from "./components/Footer/Footer";
 import ScoreDisplay from "./components/ScoreDisplay/ScoreDisplay";
-import MakeGuess from "./components/MakeGuess/MakeGuess";
+import Game from "./components/Game/Game";
 import { useThemeStore } from "./utils/themeStore";
 
 function App() {
@@ -18,7 +18,7 @@ function App() {
 
       <main>
         <ScoreDisplay />
-        <MakeGuess />
+        <Game />
       </main>
 
       <Footer />
