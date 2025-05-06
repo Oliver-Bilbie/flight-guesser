@@ -10,7 +10,8 @@
   display: none;
 }
 
-.toggle-switch .slider {
+.toggle-switch .slider,
+.toggle-switch .slider-disabled {
   position: relative;
   width: 44px;
   height: 24px;
@@ -20,7 +21,8 @@
   cursor: pointer;
 }
 
-.toggle-switch .slider::before {
+.toggle-switch .slider::before,
+.toggle-switch .slider-disabled::before {
   content: "";
   position: absolute;
   left: 4px;
@@ -38,4 +40,14 @@
 
 .toggle-switch input:checked + .slider::before {
   transform: translateX(20px);
+}
+
+.toggle-switch .slider-disabled {
+  background-color: var(--color-text);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.toggle-switch .slider-disabled::before {
+  background-color: var(--color-text-light);
 }
