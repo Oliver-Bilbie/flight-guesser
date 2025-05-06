@@ -9,7 +9,7 @@ class HandledException(Exception):
         self.message = message
         self.status_code = status_code
 
-    def to_response(self):
+    def to_http_response(self):
         return {
             "statusCode": self.status_code,
             "body": json.dumps({"message": self.message}),
@@ -19,6 +19,12 @@ class HandledException(Exception):
                 "Access-Control-Allow-Credentials": False,
             },
             "isBase64Encoded": False,
+        }
+
+    def to_ws_response(self):
+        return {
+            "event": "error",
+            "message": self.message,
         }
 
 

@@ -44,7 +44,7 @@ def lambda_handler(event, context):
         }
 
     except HandledException as exc:
-        return exc.to_response()
+        return exc.to_http_response()
 
     except Exception as exc:
         print(f"[ERROR] {str(exc)}")

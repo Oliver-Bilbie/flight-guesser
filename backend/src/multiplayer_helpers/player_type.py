@@ -46,7 +46,7 @@ class Player:
                 "lobby_id": player.lobby,
                 "player_name": player.name,
                 "connection_id": player.connection_id,
-                "points": player.score,
+                "score": player.score,
                 "guessed_flights": player.guessed_flights,
                 "last_interaction": datetime.now(timezone.utc).isoformat(),
             }
@@ -63,7 +63,7 @@ class Player:
             return None
 
         player = cls(name, lobby, connection_id)
-        player.score = int(player_record.get("points"))
+        player.score = int(player_record.get("score"))
         player.guessed_flights = player_record.get("guessed_flights")
 
         # Update connection_id if it has changed
@@ -81,11 +81,11 @@ class Player:
         name = player_data.get("player_name")
         lobby = player_data.get("lobby_id")
         connection_id = player_data.get("connection_id")
-        points = player_data.get("points")
+        score = player_data.get("score")
         guessed_flights = player_data.get("guessed_flights")
 
         player = cls(name, lobby, connection_id)
-        player.score = int(points)
+        player.score = int(score)
         player.guessed_flights = guessed_flights
 
         return player
@@ -127,6 +127,6 @@ class Player:
     def to_dict(self):
         return {
             "player_name": self.name,
-            "points": self.score,
+            "score": self.score,
             "guess_count": len(self.guessed_flights),
         }

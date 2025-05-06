@@ -45,56 +45,92 @@ def lambda_handler(event, context):
 
 
 def create_lobby(connection_id, input_body):
-    player_name = sanitize_player_name(input_body.get("player_name"))
-    rules_input = input_body.get("rules")
-    rules = GameRules(
-        use_origin=rules_input.get("use_origin"),
-        use_destination=rules_input.get("use_destination"),
-    )
+    try:
+        player_name = sanitize_player_name(input_body.get("player_name"))
+        rules_input = input_body.get("rules")
+        rules = GameRules(
+            use_origin=rules_input.get("use_origin"),
+            use_destination=rules_input.get("use_destination"),
+        )
 
-    lobby = Lobby.create(rules)
-    player = Player.create(player_name, lobby.id, connection_id)
+        lobby = Lobby.create(rules)
+        player = Player.create(player_name, lobby.id, connection_id)
 
-    player_data = list(map(lambda p: p.to_dict(), lobby.get_players()))
+        player_data = list(map(lambda p: p.to_dict(), lobby.get_players()))
 
-    post_to_connection(
-        connection_id,
-        {
-            "event": "lobby_joined",
-            "lobby": lobby.id,
-            "rules": asdict(lobby.rules),
-            "players": player_data,
-            "player_name": player.name,
-            "score": player.score,
-        },
-    )
+        post_to_connection(
+            connection_id,
+            {
+                "event": "lobby_joined",
+                "lobby": lobby.id,
+                "rules": asdict(lobby.rules),
+                "players": player_data,
+                "player_name": player.name,
+                "score": player.score,
+            },
+        )
+
+    except HandledException as exc:
+        post_to_connection(
+            connection_id,
+            {"event": "error", **exc.to_ws_response()},
+        )
+
+    except Exception as exc:
+        print(f"[ERROR] {str(exc)}")
+        print(traceback.format_exc())
+        post_to_connection(
+            connection_id,
+            {
+                "event": "error",
+                "message": "The server was unable to process your request",
+            },
+        )
 
     return {"statusCode": 200}
 
 
 def join_lobby(connection_id, input_body):
-    player_name = sanitize_player_name(input_body.get("player_name"))
-    lobby_id = input_body.get("lobby_id")
+    try:
+        player_name = sanitize_player_name(input_body.get("player_name"))
+        lobby_id = input_body.get("lobby_id")
 
-    lobby = Lobby.read(lobby_id)
+        lobby = Lobby.read(lobby_id)
 
-    player = Player.from_db(player_name, lobby.id, connection_id)
-    if player is None:
-        Player.create(player_name, lobby.id, connection_id)
+        player = Player.from_db(player_name, lobby.id, connection_id)
+        if player is None:
+            player = Player.create(player_name, lobby.id, connection_id)
 
-    player_data = list(map(lambda p: p.to_dict(), lobby.get_players()))
+        player_data = list(map(lambda p: p.to_dict(), lobby.get_players()))
 
-    post_to_connection(
-        connection_id,
-        {
-            "event": "lobby_joined",
-            "lobby": lobby.id,
-            "rules": asdict(lobby.rules),
-            "players": player_data,
-            "player_name": player.name,
-            "score": player.score,
-        },
-    )
+        post_to_connection(
+            connection_id,
+            {
+                "event": "lobby_joined",
+                "lobby": lobby.id,
+                "rules": asdict(lobby.rules),
+                "players": player_data,
+                "player_name": player.name,
+                "score": player.score,
+            },
+        )
+
+    except HandledException as exc:
+        post_to_connection(
+            connection_id,
+            {"event": "error", **exc.to_ws_response()},
+        )
+
+    except Exception as exc:
+        print(f"[ERROR] {str(exc)}")
+        print(traceback.format_exc())
+        post_to_connection(
+            connection_id,
+            {
+                "event": "error",
+                "message": "The server was unable to process your request",
+            },
+        )
 
     return {"statusCode": 200}
 
@@ -170,7 +206,7 @@ def handle_guess(connection_id, input_body):
     except HandledException as exc:
         post_to_connection(
             connection_id,
-            {"event": "error", **exc.to_response()},
+            {"event": "error", **exc.to_ws_response()},
         )
 
     except Exception as exc:
