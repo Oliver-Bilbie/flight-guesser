@@ -1,0 +1,23 @@
+.text-input {
+  height: 2rem;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  font-family: var(--font-alt);
+  background-color: var(--color-text-strong);
+  color: var(--color-text);
+  border: none;
+  border-radius: 4px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.2s ease;
+  box-sizing: border-box;
+}
+
+.text-input:hover {
+  outline: none;
+  background-color: var(--color-background);
+}
+
+.text-input:focus {
+  outline: none;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+}
