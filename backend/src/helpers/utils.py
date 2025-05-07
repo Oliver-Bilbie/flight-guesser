@@ -21,9 +21,9 @@ class HandledException(Exception):
             "isBase64Encoded": False,
         }
 
-    def to_ws_response(self):
+    def to_ws_response(self, event: str):
         return {
-            "event": "error",
+            "event": event,
             "message": self.message,
         }
 

@@ -118,11 +118,18 @@ class Player:
         PLAYER_TABLE.delete_item(Key={"player_id": self.id})
         return None
 
+    def already_guessed(self, flight_id: str):
+        return flight_id in self.guessed_flights
+
     def handle_guess(self, result: GuessResult):
-        self.score += int(result.points.origin)
-        self.score += int(result.points.destination)
-        self.guessed_flights.append(result.flight.flight_number)
-        self.update()
+        f_id = result.flight.id
+        isValidId = f_id is not None and f_id != "Blocked-None-None"
+
+        if isValidId and not self.already_guessed(result.flight.id):
+            self.score += int(result.points.origin)
+            self.score += int(result.points.destination)
+            self.guessed_flights.append(result.flight.id)
+            self.update()
 
     def to_dict(self):
         return {

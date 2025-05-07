@@ -73,7 +73,7 @@ def create_lobby(connection_id, input_body):
     except HandledException as exc:
         post_to_connection(
             connection_id,
-            {"event": "error", **exc.to_ws_response()},
+            exc.to_ws_response("lobby_error"),
         )
 
     except Exception as exc:
@@ -118,7 +118,7 @@ def join_lobby(connection_id, input_body):
     except HandledException as exc:
         post_to_connection(
             connection_id,
-            {"event": "error", **exc.to_ws_response()},
+            exc.to_ws_response("lobby_error"),
         )
 
     except Exception as exc:
@@ -177,6 +177,19 @@ def handle_guess(connection_id, input_body):
             lobby.rules,
         )
 
+        already_guessed = player.already_guessed(guess_result.flight.id)
+        points_available = (
+            lobby.rules.use_origin and guess_result.flight.origin is not None
+        ) or (
+            lobby.rules.use_destination and guess_result.flight.destination is not None
+        )
+
+        status = "Success"
+        if already_guessed:
+            status = "AlreadyGuessed"
+        elif not points_available:
+            status = "PointsUnavailable"
+
         player.handle_guess(guess_result)
 
         # Push lobby players data to the connecting client
@@ -198,6 +211,7 @@ def handle_guess(connection_id, input_body):
             connection_id,
             {
                 "event": "flight_details",
+                "status": status,
                 "score": player.score,
                 **asdict(guess_result),
             },
@@ -206,7 +220,7 @@ def handle_guess(connection_id, input_body):
     except HandledException as exc:
         post_to_connection(
             connection_id,
-            {"event": "error", **exc.to_ws_response()},
+            exc.to_ws_response("flight_error"),
         )
 
     except Exception as exc:
