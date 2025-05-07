@@ -56,6 +56,7 @@ export type FlightApiResponse = {
 export type FlightMessageResponse = {
   points: Points;
   flight: Flight;
+  status: SuccessStatus;
   score: number;
 };
 
@@ -86,8 +87,6 @@ export function isSuccessStatus<T>(status: T) {
   return Object.values(successStatusValues).includes(status);
 }
 
-// export type SuccessStatus = "Success" | "AlreadyGuessed" | "PointsUnavailable";
-
 const errorStatusValues = [
   "ValidationError",
   "LocationError",
@@ -106,16 +105,14 @@ export function isErrorStatus<T>(status: T) {
   return Object.values(errorStatusValues).includes(status);
 }
 
-// export type ErrorStatus =
-//   | "ValidationError"
-//   | "LocationError"
-//   | "ClientError"
-//   | "ApiError"
-//   | "ServerError";
-
 export type GuessResponse = {
   status: "Ready" | "Loading" | SuccessStatus | ErrorStatus;
   value: FlightApiResponse | null;
+  error: Message | null;
+};
+
+export type LobbyResponse = {
+  status: "Ready" | "NotInLobby" | "Loading" | "Error";
   error: Message | null;
 };
 

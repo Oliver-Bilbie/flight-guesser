@@ -3,6 +3,7 @@ import "./SettingsMultiplayer.css";
 import TextInput from "../TextInput/TextInput";
 import { useLobbyStore } from "../../utils/lobbyStore";
 import { useGameStore } from "../../utils/gameStore";
+import LoadingSpinner from "../LoadingSpinner/LoadingSpinner";
 
 // TODO: Remove or use
 // interface SettingsMultiplayerProps {
@@ -16,7 +17,7 @@ const SettingsMultiplayer: FC = () => {
 
   const singleRules = useGameStore((state) => state.rules);
 
-  const isMultiplayer = useLobbyStore((state) => state.isActive);
+  const lobbyResponse = useLobbyStore((state) => state.lobbyResponse);
   const name = useLobbyStore((state) => state.name);
   const currentId = useLobbyStore((state) => state.lobbyId);
   const setName = useLobbyStore((state) => state.setName);
@@ -25,7 +26,9 @@ const SettingsMultiplayer: FC = () => {
 
   return (
     <div>
-      {isMultiplayer ? (
+      {lobbyResponse.status === "Loading" ? (
+        <LoadingSpinner />
+      ) : lobbyResponse.status === "Ready" ? (
         <>
           <div className="settings-multiplayer-option">
             <h3>Currently in lobby: {currentId}</h3>

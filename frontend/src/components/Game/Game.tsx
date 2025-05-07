@@ -18,11 +18,12 @@ const Game: FC = (): ReactElement => {
   const singleMakeGuess = useGameStore((state) => state.makeGuess);
   const singleClearResponse = useGameStore((state) => state.clearResponse);
 
-  const isMultiplayer = useLobbyStore((state) => state.isActive);
+  const isMultiplayer =
+    useLobbyStore((state) => state.lobbyResponse.status) === "Ready";
   const multiRules = useLobbyStore((state) => state.rules);
-  const multiResponse = useLobbyStore((state) => state.response);
+  const multiResponse = useLobbyStore((state) => state.guessResponse);
   const multiMakeGuess = useLobbyStore((state) => state.makeGuess);
-  const multiClearResponse = useLobbyStore((state) => state.clearResponse);
+  const multiClearResponse = useLobbyStore((state) => state.clearGuessResponse);
 
   const rules = isMultiplayer ? multiRules : singleRules;
   const response = isMultiplayer ? multiResponse : singleResponse;

@@ -51,3 +51,7 @@
 .toggle-switch .slider-disabled::before {
   background-color: var(--color-text-light);
 }
+
+.toggle-switch input:checked + .slider-disabled::before {
+  transform: translateX(20px);
+}

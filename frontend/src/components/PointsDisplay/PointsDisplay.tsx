@@ -25,7 +25,7 @@ const PointsDisplay: FC<PointsDisplayProps> = ({
     );
   }
 
-  if (status === "NoPointsAvailable") {
+  if (status === "PointsUnavailable") {
     return (
       <div className="points-display">
         <h2>No points are available for this flight</h2>

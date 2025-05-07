@@ -9,7 +9,8 @@ const SettingsGeneral: FC = () => {
   const singleRules = useGameStore((state) => state.rules);
   const singleSetRules = useGameStore((state) => state.setRules);
 
-  const isSingleplayer = !useLobbyStore((state) => state.isActive);
+  const isSingleplayer =
+    useLobbyStore((state) => state.lobbyResponse.status) === "NotInLobby";
   const multiRules = useLobbyStore((state) => state.rules);
 
   const rules = isSingleplayer
