@@ -3,7 +3,7 @@
   justify-content: center;
   align-items: center;
   height: 300px;
-  overflow: hidden;
+  overflow: visible;
   position: relative;
   animation: fade-in 1.5s;
 }
@@ -22,25 +22,25 @@
 
 @keyframes float {
   0% {
-    transform: translateY(10px);
+    transform: translateY(3%);
   }
   50% {
-    transform: translateY(-10px);
+    transform: translateY(-3%);
   }
   100% {
-    transform: translateY(10px);
+    transform: translateY(3%);
   }
 }
 
 @keyframes drift {
   0% {
-    transform: translateX(10px);
+    transform: translateX(3%);
   }
   50% {
-    transform: translateX(-10px);
+    transform: translateX(-3%);
   }
   100% {
-    transform: translateX(10px);
+    transform: translateX(3%);
   }
 }
 

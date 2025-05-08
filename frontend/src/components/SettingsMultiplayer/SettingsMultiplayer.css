@@ -6,3 +6,12 @@
   margin-bottom: 2.5rem;
   justify-content: center;
 }
+
+.settings-multiplayer-loading {
+  width: 70%;
+  max-width: 550px;
+  border-radius: 1rem;
+  margin-left: auto;
+  margin-right: auto;
+  padding-bottom: 2.5rem;
+}

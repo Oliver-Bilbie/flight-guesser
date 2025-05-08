@@ -12,11 +12,7 @@ import LoadingSpinner from "../LoadingSpinner/LoadingSpinner";
 
 // const SettingsMultiplayer: FC<SettingsMultiplayerProps> = ({ onClose }) => {
 const SettingsMultiplayer: FC = () => {
-  const [doJoin, setDoJoin] = useState(false);
-  const [joinLobbyId, setJoinLobbyId] = useState("");
-
   const singleRules = useGameStore((state) => state.rules);
-
   const lobbyResponse = useLobbyStore((state) => state.lobbyResponse);
   const name = useLobbyStore((state) => state.name);
   const currentId = useLobbyStore((state) => state.lobbyId);
@@ -24,10 +20,15 @@ const SettingsMultiplayer: FC = () => {
   const initLobby = useLobbyStore((state) => state.initLobby);
   const leaveLobby = useLobbyStore((state) => state.onLeaveLobby);
 
+  const [doJoin, setDoJoin] = useState(false);
+  const [joinLobbyId, setJoinLobbyId] = useState(currentId ? currentId : "");
+
   return (
     <div>
       {lobbyResponse.status === "Loading" ? (
-        <LoadingSpinner />
+        <div className="settings-multiplayer-loading">
+          <LoadingSpinner />
+        </div>
       ) : lobbyResponse.status === "Ready" ? (
         <>
           <div className="settings-multiplayer-option">
@@ -36,6 +37,12 @@ const SettingsMultiplayer: FC = () => {
           <div className="settings-multiplayer-option">
             <button onClick={() => leaveLobby()}>Leave Lobby</button>
           </div>
+        </>
+      ) : lobbyResponse.status === "Error" ? (
+        <>
+          <h2>{lobbyResponse.error?.title}</h2>
+          <h4>{lobbyResponse.error?.message}</h4>
+          <button onClick={() => leaveLobby()}>OK</button>
         </>
       ) : (
         <>
