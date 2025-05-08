@@ -12,7 +12,9 @@ import {
   GuessResponse,
   LobbyApiResponse,
   LobbyResponse,
+  LobbyStatus,
   Message,
+  PlayerData,
   Rules,
 } from "./types";
 
@@ -22,6 +24,7 @@ type LobbyStore = {
   name: string;
   score: number;
   rules: Rules | null;
+  players: PlayerData[];
   guessResponse: GuessResponse;
   lobbyResponse: LobbyResponse;
 
@@ -39,10 +42,12 @@ type LobbyStore = {
   handleGuessResult: (response: FlightMessageResponse) => void;
   clearGuessResponse: () => void;
 
+  getLobbyStatus: () => LobbyStatus;
   setLobbyLoading: () => void;
   setLobbyError: (message: Message) => void;
   initLobby: (lobbyId: string, rules: Rules) => void;
   onJoinLobby: (response: LobbyApiResponse) => void;
+  onUpdateLobby: (response: LobbyApiResponse) => void;
   onLeaveLobby: () => void;
 };
 
@@ -54,6 +59,7 @@ export const useLobbyStore = create<LobbyStore>()(
       name: generateName(),
       score: 0,
       rules: defaultRules,
+      players: [],
       guessResponse: { status: "Ready", value: null, error: null },
       lobbyResponse: { status: "NotInLobby", error: null },
 
@@ -68,7 +74,15 @@ export const useLobbyStore = create<LobbyStore>()(
               useOrigin: response.rules.use_origin,
               useDestination: response.rules.use_destination,
             },
+            players: response.players,
             lobbyResponse: { status: "Ready", error: null },
+          };
+        }),
+
+      onUpdateLobby: (response) =>
+        set(() => {
+          return {
+            players: response.players,
           };
         }),
 
@@ -88,6 +102,7 @@ export const useLobbyStore = create<LobbyStore>()(
             name: generateName(),
             score: 0,
             rules: null,
+            players: [],
             lobbyResponse: { status: "NotInLobby", error: null },
           };
         }),
@@ -98,10 +113,15 @@ export const useLobbyStore = create<LobbyStore>()(
       setGuessLoading: () =>
         set({ guessResponse: { status: "Loading", value: null, error: null } }),
 
+      getLobbyStatus: () => {
+        const { lobbyResponse } = get();
+        return lobbyResponse.status;
+      },
+
       setLobbyLoading: () =>
         set((state) => {
           setTimeout(() => {
-            if (state.lobbyResponse.status === "Loading") {
+            if (state.getLobbyStatus() === "Loading") {
               state.setLobbyError({
                 title: "Unable to connect",
                 message: "Connection to lobby timed out",
@@ -235,6 +255,7 @@ export const useLobbyStore = create<LobbyStore>()(
             ws,
             setLobbyLoading,
             onJoinLobby,
+            onUpdateLobby,
             handleGuessResult,
             setGuessError,
             setLobbyError,
@@ -292,6 +313,7 @@ export const useLobbyStore = create<LobbyStore>()(
                   break;
 
                 case "lobby_update":
+                  onUpdateLobby(response);
                   break;
 
                 case "flight_details":

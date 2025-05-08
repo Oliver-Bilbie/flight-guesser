@@ -18,13 +18,13 @@ const FlightDisplay: FC<FlightDisplayProps> = ({ onClose }): ReactElement => {
   const singleRules = useGameStore((state) => state.rules);
   const singleResponse = useGameStore((state) => state.response);
 
-  const isSingleplayer =
-    useLobbyStore((state) => state.lobbyResponse.status) === "NotInLobby";
+  const isMultiplayer =
+    useLobbyStore((state) => state.lobbyResponse.status) === "Ready";
   const multiRules = useLobbyStore((state) => state.rules);
   const multiResponse = useLobbyStore((state) => state.guessResponse);
 
-  const currentResponse = isSingleplayer ? singleResponse : multiResponse;
-  const currentRules = isSingleplayer ? singleRules : multiRules;
+  const currentResponse = isMultiplayer ? multiResponse : singleResponse;
+  const currentRules = isMultiplayer ? multiRules : singleRules;
 
   // We must clone the state at the time the guess was made to avoid confusion if anything changes later
   const [response] = useState(() => structuredClone(currentResponse));

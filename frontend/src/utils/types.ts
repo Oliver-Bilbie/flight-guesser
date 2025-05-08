@@ -111,8 +111,10 @@ export type GuessResponse = {
   error: Message | null;
 };
 
+export type LobbyStatus = "Ready" | "NotInLobby" | "Loading" | "Error";
+
 export type LobbyResponse = {
-  status: "Ready" | "NotInLobby" | "Loading" | "Error";
+  status: LobbyStatus;
   error: Message | null;
 };
 
@@ -126,7 +128,7 @@ export const zeroPoints: Points = {
 
 export type PlayerData = {
   player_name: string;
-  points: number;
+  score: number;
   guess_count: number;
 };
 
