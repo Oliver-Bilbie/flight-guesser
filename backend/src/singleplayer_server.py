@@ -1,3 +1,7 @@
+"""
+HTTP API for handling singleplayer requests
+"""
+
 import traceback
 import json
 from dataclasses import asdict

@@ -1,3 +1,7 @@
+"""
+WebSocket API for handling multiplayer requests
+"""
+
 import os
 import json
 import traceback
@@ -115,6 +119,20 @@ def join_lobby(connection_id, input_body):
             },
         )
 
+        lobby_players = lobby.get_players()
+        lobby_data = {
+            "event": "lobby_update",
+            "players": list(map(lambda p: p.to_dict(), lobby_players)),
+        }
+
+        for lobby_player in lobby_players:
+            try:
+                post_to_connection(lobby_player.connection_id, lobby_data)
+            except Exception as e:
+                print(
+                    f"[WARNING] Failed to send to connection {lobby_player.connection_id}: {e}"
+                )
+
     except HandledException as exc:
         post_to_connection(
             connection_id,
@@ -192,11 +210,17 @@ def handle_guess(connection_id, input_body):
 
         player.handle_guess(guess_result)
 
-        # Push lobby players data to the connecting client
+        # Since we just updated the guessing player's data, we will instead use this
+        # session's data to avoid any race-conditions.
         lobby_players = lobby.get_players()
+        for lobby_player in lobby_players:
+            if lobby_player.name == player.name:
+                lobby_player = player
+                break
+
         lobby_data = {
             "event": "lobby_update",
-            "lobby_data": list(map(lambda p: p.to_dict(), lobby_players)),
+            "players": list(map(lambda p: p.to_dict(), lobby_players)),
         }
 
         for lobby_player in lobby_players:

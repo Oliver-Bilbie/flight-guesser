@@ -36,20 +36,26 @@ def get_all_flights(position, serach_area_deg=0.2):
     }
 
     url = f"https://data-cloud.flightradar24.com/zones/fcgi/feed.js?{urlencode(params)}"
-
-    req = Request(url, headers=HEADERS)
-
-    with urlopen(req) as fr_response:
-        all_flights = json.loads(fr_response.read().decode())
-
+    all_flights = make_request(url)
     return all_flights
 
 
 def get_flight_details(flight_id):
     url = f"https://data-live.flightradar24.com/clickhandler/?flight={flight_id}"
+    flight_details = make_request(url)
+    return flight_details
+
+
+def get_all_airports():
+    url = "https://www.flightradar24.com/_json/airports.php"
+    all_airports = make_request(url)
+    return all_airports
+
+
+def make_request(url):
     req = Request(url, headers=HEADERS)
 
     with urlopen(req) as fr_response:
-        flight_details = json.loads(fr_response.read().decode())
+        response = json.loads(fr_response.read().decode())
 
-    return flight_details
+    return response

@@ -15,12 +15,12 @@ pushd ./backend > /dev/null || exit 1
 
 # Create a fresh build directory
 rm -rf ./build
-mkdir -p ./build ./build/singleplayer_src ./build/multiplayer_src
+mkdir -p ./build ./build/singleplayer_src ./build/multiplayer_src ./build/update_airports_src
 
 # Build singleplayer server
 cp -r ./src/* ./build/singleplayer_src
 pushd ./build/singleplayer_src > /dev/null || exit 1
-rm -rf ./multiplayer_server.py ./multiplayer_helpers ./__pycache__
+rm -rf ./multiplayer_server.py ./multiplayer_helpers ./update_airports.py ./__pycache__
 # Spoof the timestamps so that the zip file is deterministic.
 # This prevent terraform from replacing the files unless they change.
 TZ=UTC find . -exec touch --no-dereference -a -m -t 198002010000.00 {} +
@@ -31,12 +31,23 @@ popd > /dev/null
 # Build multiplayer server
 cp -r ./src/* ./build/multiplayer_src
 pushd ./build/multiplayer_src > /dev/null || exit 1
-rm -rf ./singleplayer_server.py ./__pycache__
+rm -rf ./singleplayer_server.py ./update_airports.py ./__pycache__
 # Spoof the timestamps so that the zip file is deterministic.
 # This prevent terraform from replacing the files unless they change.
 TZ=UTC find . -exec touch --no-dereference -a -m -t 198002010000.00 {} +
 TZ=UTC zip -q --move --recurse-paths --symlinks -X ../multiplayer_server.zip .
 TZ=UTC touch -a -m -t 198002010000.00 ../multiplayer_server.zip
+popd > /dev/null
+
+# Build update aiports
+cp -r ./src/* ./build/update_airports_src
+pushd ./build/update_airports_src > /dev/null || exit 1
+rm -rf ./singleplayer_server.py ./multiplayer_server.py ./multiplayer_helpers ./__pycache__
+# Spoof the timestamps so that the zip file is deterministic.
+# This prevent terraform from replacing the files unless they change.
+TZ=UTC find . -exec touch --no-dereference -a -m -t 198002010000.00 {} +
+TZ=UTC zip -q --move --recurse-paths --symlinks -X ../update_airports.zip .
+TZ=UTC touch -a -m -t 198002010000.00 ../update_airports.zip
 popd > /dev/null
 
 echo "[INFO] Deploying the backend..."
