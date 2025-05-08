@@ -86,7 +86,7 @@ def create_lobby(connection_id, input_body):
         post_to_connection(
             connection_id,
             {
-                "event": "error",
+                "event": "lobby_error",
                 "message": "The server was unable to process your request",
             },
         )
@@ -145,7 +145,7 @@ def join_lobby(connection_id, input_body):
         post_to_connection(
             connection_id,
             {
-                "event": "error",
+                "event": "lobby_error",
                 "message": "The server was unable to process your request",
             },
         )
@@ -253,7 +253,7 @@ def handle_guess(connection_id, input_body):
         post_to_connection(
             connection_id,
             {
-                "event": "error",
+                "event": "flight_error",
                 "message": "The server was unable to process your request",
             },
         )
