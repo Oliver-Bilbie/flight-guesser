@@ -1,0 +1,42 @@
+.leaderboard {
+  border-radius: 1rem;
+  margin-left: auto;
+  margin-right: auto;
+  padding-bottom: 2.5rem;
+}
+
+.leaderboard-item-name {
+  justify: start;
+  text-align: start;
+}
+
+.leaderboard-item-score {
+  justify: center;
+}
+
+.leaderboard-item-average {
+  justify: end;
+}
+
+.leaderboard-header,
+.leaderboard-player,
+.leaderboard-current-player {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  align-items: center;
+  padding: 0.5rem;
+  position: relative;
+  width: 90vw;
+  max-width: 300px;
+  margin-left: auto;
+  margin-right: auto;
+  height: 1rem;
+}
+
+.leaderboard-header > * {
+  font-weight: 700;
+}
+
+.leaderboard-current-player > * {
+  font-weight: 700;
+}

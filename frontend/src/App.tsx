@@ -4,6 +4,7 @@ import Footer from "./components/Footer/Footer";
 import ScoreDisplay from "./components/ScoreDisplay/ScoreDisplay";
 import Game from "./components/Game/Game";
 import { useThemeStore } from "./utils/themeStore";
+import Leaderboard from "./components/Leaderboard/Leaderboard";
 
 function App() {
   const theme = useThemeStore((state) => state.theme);
@@ -18,6 +19,7 @@ function App() {
 
       <main>
         <ScoreDisplay />
+        <Leaderboard />
         <Game />
       </main>
 
