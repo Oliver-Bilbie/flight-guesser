@@ -1,17 +1,18 @@
 import { FC, useState } from "react";
 import "./SettingsMultiplayer.css";
-import TextInput from "../TextInput/TextInput";
-import { useLobbyStore } from "../../utils/lobbyStore";
-import { useGameStore } from "../../utils/gameStore";
 import LoadingSpinner from "../LoadingSpinner/LoadingSpinner";
+import PopupMenu from "../PopupMenu/PopupMenu";
+import TextInput from "../TextInput/TextInput";
+import { useGameStore } from "../../utils/gameStore";
+import { useLobbyStore } from "../../utils/lobbyStore";
 
-// TODO: Remove or use
-// interface SettingsMultiplayerProps {
-//   onClose: () => void;
-// }
+type JoinMode = "none" | "new" | "existing";
 
-// const SettingsMultiplayer: FC<SettingsMultiplayerProps> = ({ onClose }) => {
-const SettingsMultiplayer: FC = () => {
+interface SettingsMultiplayerProps {
+  onClose: () => void;
+}
+
+const SettingsMultiplayer: FC<SettingsMultiplayerProps> = ({ onClose }) => {
   const singleRules = useGameStore((state) => state.rules);
   const lobbyResponse = useLobbyStore((state) => state.lobbyResponse);
   const name = useLobbyStore((state) => state.name);
@@ -20,59 +21,93 @@ const SettingsMultiplayer: FC = () => {
   const initLobby = useLobbyStore((state) => state.initLobby);
   const leaveLobby = useLobbyStore((state) => state.onLeaveLobby);
 
-  const [doJoin, setDoJoin] = useState(false);
+  const [joinMode, setJoinMode] = useState<JoinMode>("none");
   const [joinLobbyId, setJoinLobbyId] = useState(currentId ? currentId : "");
 
   return (
-    <div>
-      {lobbyResponse.status === "Loading" ? (
-        <div className="settings-multiplayer-loading">
-          <LoadingSpinner />
-        </div>
-      ) : lobbyResponse.status === "Ready" ? (
-        <>
-          <div className="settings-multiplayer-option">
+    <PopupMenu>
+      <div className="settings-multiplayer">
+        <h1>Multiplayer</h1>
+
+        {lobbyResponse.status === "Loading" ? (
+          <div className="settings-multiplayer-loading">
+            <LoadingSpinner />
+          </div>
+        ) : lobbyResponse.status === "Ready" ? (
+          <>
             <h3>Currently in lobby: {currentId}</h3>
-          </div>
+            <h3>Name: {name}</h3>
+            <div className="settings-multiplayer-option">
+              <button onClick={() => leaveLobby()}>Leave Lobby</button>
+            </div>
+          </>
+        ) : lobbyResponse.status === "Error" ? (
+          <>
+            <h2>{lobbyResponse.error?.title}</h2>
+            <h4>{lobbyResponse.error?.message}</h4>
+            <button onClick={() => leaveLobby()}>OK</button>
+          </>
+        ) : joinMode === "none" ? (
           <div className="settings-multiplayer-option">
-            <button onClick={() => leaveLobby()}>Leave Lobby</button>
+            <button onClick={() => setJoinMode("new")}>Create Lobby</button>
+            <button onClick={() => setJoinMode("existing")}>Join Lobby</button>
           </div>
-        </>
-      ) : lobbyResponse.status === "Error" ? (
-        <>
-          <h2>{lobbyResponse.error?.title}</h2>
-          <h4>{lobbyResponse.error?.message}</h4>
-          <button onClick={() => leaveLobby()}>OK</button>
-        </>
-      ) : (
-        <>
-          <div className="settings-multiplayer-option">
-            <h3>Name</h3>
-            <TextInput value={name} setValue={setName} />
-          </div>
-          {doJoin ? (
-            <>
+        ) : (
+          <>
+            <div className="settings-multiplayer-option">
+              <h3 className="settings-multiplayer-label">Name</h3>
+              <TextInput value={name} setValue={setName} />
+            </div>
+
+            {joinMode === "existing" && (
+              <>
+                <div className="settings-multiplayer-option">
+                  <h3 className="settings-multiplayer-label">Lobby ID</h3>
+                  <TextInput value={joinLobbyId} setValue={setJoinLobbyId} />
+                </div>
+                <div className="settings-multiplayer-option">
+                  <button
+                    onClick={() => {
+                      setJoinMode("none");
+                      initLobby(joinLobbyId, singleRules);
+                    }}
+                    className="settings-multiplayer-highlight"
+                  >
+                    Join Lobby
+                  </button>
+                </div>
+              </>
+            )}
+
+            {joinMode === "new" && (
               <div className="settings-multiplayer-option">
-                <h3>Lobby ID</h3>
-                <TextInput value={joinLobbyId} setValue={setJoinLobbyId} />
-              </div>
-              <div className="settings-multiplayer-option">
-                <button onClick={() => initLobby(joinLobbyId, singleRules)}>
-                  Join Lobby
+                <button
+                  onClick={() => {
+                    setJoinMode("none");
+                    initLobby("", singleRules);
+                  }}
+                  className="settings-multiplayer-highlight"
+                >
+                  Create Lobby
                 </button>
               </div>
-            </>
-          ) : (
-            <div className="settings-multiplayer-option">
-              <button onClick={() => initLobby("", singleRules)}>
-                Create Lobby
-              </button>
-              <button onClick={() => setDoJoin(true)}>Join Lobby</button>
-            </div>
+            )}
+          </>
+        )}
+
+        <div className="settings-multiplayer-option">
+          {joinMode !== "none" && (
+            <button onClick={() => setJoinMode("none")}>Back</button>
           )}
-        </>
-      )}
-    </div>
+          <button
+            className="settings-multiplayer-close"
+            onClick={() => onClose()}
+          >
+            Done
+          </button>
+        </div>
+      </div>
+    </PopupMenu>
   );
 };
 

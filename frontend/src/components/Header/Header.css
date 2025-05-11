@@ -13,3 +13,9 @@
   font-family: var(--font-accent);
   font-size: 1.75rem;
 }
+
+.header-buttons {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+}

@@ -1,16 +1,9 @@
 .multiplayer-button {
-  height: 1.8rem;
   padding: 0;
   border: none;
   cursor: pointer;
   background: none;
   box-shadow: none;
-  display: flex;
-  flex-direction: row;
-  gap: 0.8rem;
-  margin-top: 1rem;
-  margin-left: auto;
-  margin-right: auto;
 }
 
 .multiplayer-button:hover {
@@ -18,24 +11,17 @@
   box-shadow: none;
 }
 
-.multiplayer-button > h3 {
-  margin-right: 0.2rem;
-}
-
 .multiplayer-button > svg {
   display: block;
-  color: var(--color-text);
-  margin-top: auto;
-  margin-bottom: auto;
+  color: var(--color-title);
 }
 
-.multiplayer-button:hover > svg,
-.multiplayer-button:hover > h3 {
-  color: var(--color-brand);
+.multiplayer-button:hover > svg {
+  color: var(--color-background);
   transform: translateY(1px);
 }
 
 .multiplayer-button:active > svg {
-  color: var(--color-brand);
+  color: var(--color-background);
   transform: translateY(1px);
 }

@@ -1,37 +1,86 @@
-import { FC, useState } from "react";
+import { FC } from "react";
 import "./SettingsMenu.css";
-import MultiplayerButton from "../MultiplayerButton/MultiplayerButton";
-import SettingsGeneral from "../SettingsGeneral/SettingsGeneral";
-import SettingsMultiplayer from "../SettingsMultiplayer/SettingsMultiplayer";
+import PopupMenu from "../PopupMenu/PopupMenu";
+import ResetButton from "../ResetButton/ResetButton";
+import ToggleSwitch from "../ToggleSwitch/ToggleSwitch";
+import { useGameStore } from "../../utils/gameStore";
+import { useLobbyStore } from "../../utils/lobbyStore";
+import { useThemeStore } from "../../utils/themeStore";
 
 interface SettingsMenuProps {
   onClose: () => void;
 }
 
 const SettingsMenu: FC<SettingsMenuProps> = ({ onClose }) => {
-  const [showMulti, setShowMulti] = useState(false);
+  const singleRules = useGameStore((state) => state.rules);
+  const singleSetRules = useGameStore((state) => state.setRules);
+
+  const isSingleplayer =
+    useLobbyStore((state) => state.lobbyResponse.status) === "NotInLobby";
+  const multiRules = useLobbyStore((state) => state.rules);
+
+  const rules = isSingleplayer
+    ? singleRules
+    : multiRules !== null
+      ? multiRules
+      : { useOrigin: false, useDestination: false };
+
+  const setRules = isSingleplayer ? singleSetRules : () => null;
+
+  const theme = useThemeStore((state) => state.theme);
+  const toggleTheme = useThemeStore((state) => state.toggleTheme);
 
   return (
-    <div className="settings-menu">
-      {showMulti ? (
+    <PopupMenu>
+      <div className="settings-menu">
+        <h1>Settings</h1>
         <>
-          <h1>Multiplayer</h1>
-          <SettingsMultiplayer />
+          {!isSingleplayer && (
+            <h4>
+              Some settings have been locked to match the other players in the
+              multiplayer lobby
+            </h4>
+          )}
+
+          <div className="settings-menu-container">
+            <div className="settings-menu-option">
+              <ToggleSwitch
+                checked={rules.useOrigin}
+                disabled={!isSingleplayer}
+                onChange={(isChecked) =>
+                  setRules({ ...rules, useOrigin: isChecked })
+                }
+              />
+              <h3>Enable origin guesses</h3>
+            </div>
+
+            <div className="settings-menu-option">
+              <ToggleSwitch
+                checked={rules.useDestination}
+                disabled={!isSingleplayer}
+                onChange={(isChecked) =>
+                  setRules({ ...rules, useDestination: isChecked })
+                }
+              />
+              <h3>Enable destination guesses</h3>
+            </div>
+
+            <div className="settings-menu-option">
+              <ToggleSwitch
+                checked={theme === "dark"}
+                onChange={() => toggleTheme()}
+              />
+              <h3>Dark mode</h3>
+            </div>
+
+            <div className="settings-menu-option">
+              <ResetButton />
+            </div>
+          </div>
         </>
-      ) : (
-        <>
-          <h1>Settings</h1>
-          <MultiplayerButton onClick={() => setShowMulti(true)} />
-          <SettingsGeneral />
-        </>
-      )}
-      <div className="settings-menu-option">
-        {showMulti && (
-          <button onClick={() => setShowMulti(false)}>Settings</button>
-        )}
-        <button onClick={() => onClose()}>{"Done"}</button>
+        <button onClick={() => onClose()}>Done</button>
       </div>
-    </div>
+    </PopupMenu>
   );
 };
 

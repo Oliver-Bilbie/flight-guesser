@@ -14,7 +14,7 @@
 
 .text-input:hover {
   outline: none;
-  background-color: var(--color-background);
+  background-color: var(--color-background-strong);
 }
 
 .text-input:focus {

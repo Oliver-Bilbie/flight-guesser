@@ -22,11 +22,3 @@
 .footer-text > * {
   margin: 0.5rem;
 }
-
-.footer-settings-button {
-  justify-self: end;
-  grid-column: 3;
-  height: 2rem;
-  width: 2rem;
-  margin-left: 1rem;
-}

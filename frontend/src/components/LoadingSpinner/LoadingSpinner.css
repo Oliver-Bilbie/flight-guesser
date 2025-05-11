@@ -5,22 +5,22 @@
   height: 300px;
   overflow: visible;
   position: relative;
-  animation: fade-in 1.5s;
+  animation: loading-spinner-fade-in 1.5s;
 }
 
 .loading-spinner-container {
-  animation: float 2s ease-in-out infinite;
+  animation: loading-spinner-float 2s ease-in-out infinite;
   height: 100%;
   width: 100%;
 }
 
 .loading-spinner-image {
-  animation: drift 5s ease-in-out infinite;
+  animation: loading-spinner-drift 5s ease-in-out infinite;
   max-width: 100%;
   max-height: 100%;
 }
 
-@keyframes float {
+@keyframes loading-spinner-float {
   0% {
     transform: translateY(3%);
   }
@@ -32,7 +32,7 @@
   }
 }
 
-@keyframes drift {
+@keyframes loading-spinner-drift {
   0% {
     transform: translateX(3%);
   }
@@ -44,7 +44,7 @@
   }
 }
 
-@keyframes fade-in {
+@keyframes loading-spinner-fade-in {
   0% {
     opacity: 0;
   }

@@ -13,15 +13,15 @@
 
 .settings-button > svg {
   display: block;
-  color: var(--color-text);
+  color: var(--color-title);
 }
 
 .settings-button:hover > svg {
-  color: var(--color-brand);
+  color: var(--color-background);
   transform: translateY(1px);
 }
 
 .settings-button:active > svg {
-  color: var(--color-brand);
+  color: var(--color-background);
   transform: translateY(1px);
 }
