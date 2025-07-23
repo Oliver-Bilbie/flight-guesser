@@ -1,0 +1,52 @@
+.settings-multiplayer {
+  width: 90vw;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+  background-color: var(--color-background);
+  border-radius: 1rem;
+  padding-top: 2rem;
+  padding-bottom: 3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
+}
+
+.settings-multiplayer > h1 {
+  margin: 0.5rem;
+}
+
+.settings-multiplayer > h4 {
+  margin: 0.5rem;
+}
+
+.settings-multiplayer-option {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  margin: 0.5rem;
+  justify-content: center;
+  width: 90%;
+}
+
+.settings-multiplayer-loading {
+  width: 70%;
+  max-width: 550px;
+  border-radius: 1rem;
+  margin-left: auto;
+  margin-right: auto;
+  padding-bottom: 2.5rem;
+}
+
+.settings-multiplayer-highlight {
+  background-color: var(--color-brand);
+}
+
+.settings-multiplayer .text-input {
+  width: 70%;
+}
+
+.settings-multiplayer-label {
+  margin-left: auto;
+}

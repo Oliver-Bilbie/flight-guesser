@@ -1,0 +1,33 @@
+.map-display {
+  height: 90vh;
+  max-height: min(700px, 55vh);
+  width: 90vw;
+  max-width: 1000px;
+  margin: 20px auto;
+  border-radius: 1rem;
+  overflow: hidden;
+  background-color: var(--color-background);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.map-placeholder {
+  height: 8rem;
+  min-width: 60vw;
+  margin: 20px auto;
+  border-radius: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background-color: var(--color-background);
+  align-content: center;
+}
+
+.map-label-body {
+  text-align: center;
+}
+
+.map-label-body > p,
+h3 {
+  margin-top: 0.2rem;
+  margin-bottom: 0.2rem;
+  margin-left: 0;
+  margin-right: 0;
+}

@@ -1,0 +1,149 @@
+:root {
+  --color-brand: #67bdd7;
+  --color-background: #dce1e1;
+  --color-background-strong: #c1ccd0;
+  --color-background-transparent: rgba(252, 252, 253, 0.5);
+  --color-background-transparent-strong: rgba(0, 0, 0, 0.5);
+  --color-title: #fcfcfd;
+  --color-text: #1b1b1b;
+  --color-text-strong: #fcfcfd;
+  --color-text-light: #888;
+  --color-highlight: #d767bd;
+  --color-text-error: #ff0033;
+  --color-background-error: #ffcccc;
+
+  --font-main: "Play", sans-serif;
+  --font-alt: "Chakra Petch", sans-serif;
+  --font-accent: "Lobster", cursive;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+:root.dark {
+  --color-brand: #236d84;
+  --color-background: #1a1a1a;
+  --color-background-strong: #2b2b2b;
+  --color-background-transparent: rgba(200, 200, 200, 0.2);
+  --color-background-transparent-strong: rgba(50, 50, 50, 0.5);
+  --color-title: #ddd;
+  --color-text: #fcfcfd;
+  --color-text-strong: #666;
+  --color-text-light: #999;
+  --color-highlight: #d767bd;
+  --color-text-error: #ff6666;
+  --color-background-error: #330000;
+}
+
+#root {
+  width: 100vw;
+  height: 100vh;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-main);
+  background: url("assets/texture_light.webp") repeat;
+  color: var(--color-text);
+  place-items: center;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+:root.dark body {
+  background: url("assets/texture_dark.webp") repeat;
+}
+
+main {
+  flex: 1;
+}
+
+h1 {
+  font-family: var(--font-accent);
+}
+
+h2,
+h3 {
+  font-family: var(--font-main);
+}
+
+p,
+a,
+span,
+h4 {
+  font-family: var(--font-alt);
+  font-weight: 400;
+}
+
+button {
+  background-color: var(--color-background-transparent);
+  color: var(--color-text);
+  font-family: var(--font-alt);
+  font-size: 1rem;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+button:hover {
+  background-color: var(--color-background);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+button:active {
+  transform: translateY(1px) !important;
+}
+
+.text-button {
+  cursor: pointer;
+  color: var(--color-brand);
+}
+
+a,
+.text-button:hover {
+  color: var(--color-highlight);
+}
+
+.leaflet-control-zoom-in,
+.leaflet-control-zoom-out,
+.leaflet-control-attribution {
+  color: var(--color-text) !important;
+  background-color: var(--color-background-transparent) !important;
+  font-family: var(--font-main) !important;
+}
+
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip {
+  color: var(--color-text) !important;
+  background-color: var(--color-background) !important;
+  font-family: var(--font-main) !important;
+}
+
+.leaflet-control-attribution > a {
+  font-family: var(--font-alt) !important;
+}
+
+:root.dark .leaflet-layer {
+  filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
+}
+
+:root.dark .leaflet-marker-icon {
+  filter: brightness(80%);
+}
+
+:root.dark .leaflet-control-attribution > a {
+  color: var(--color-text-error) !important;
+}
+
+:root.dark .leaflet-popup-content-wrapper,
+:root.dark .leaflet-popup-tip {
+  background-color: var(--color-background-strong) !important;
+}

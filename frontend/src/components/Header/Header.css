@@ -1,0 +1,21 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: var(--color-brand);
+  color: var(--color-title);
+  padding: 1rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.header h1 {
+  margin: 0;
+  font-family: var(--font-accent);
+  font-size: 1.75rem;
+}
+
+.header-buttons {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+}

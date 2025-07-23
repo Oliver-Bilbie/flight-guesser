@@ -1,21 +1,28 @@
-import React from "react";
-import { Anchor, Box, Text } from "grommet";
+import { FC, ReactElement, useState } from "react";
+import "./Footer.css";
+import PopupMenu from "../PopupMenu/PopupMenu";
+import Changelog from "../Changelog/Changelog";
 
-const Footer: React.FC = (): React.ReactElement => {
+const Footer: FC = (): ReactElement => {
+  const [showChanges, setShowChanges] = useState(false);
+
   return (
-    <Box align="center" pad="small">
-      <Text>Version: {process.env.REACT_APP_VERSION}</Text>
-      <Anchor
-        label="What's new?"
-        onClick={(): void => {
-          window.open(
-            "https://github.com/Oliver-Bilbie/flight-guesser/blob/main/CHANGELOG.md",
-            "_blank"
-          );
-        }}
-        a11yTitle={"changelog"}
-      />
-    </Box>
+    <div className="footer">
+      <div className="footer-text">
+        <h4>Version: {APP_VERSION}</h4>
+        <span className="text-button" onClick={() => setShowChanges(true)}>
+          What's new?
+        </span>
+      </div>
+
+      {showChanges && (
+        <PopupMenu onClose={() => setShowChanges(false)}>
+          <div className="footer-changelog">
+            <Changelog />
+          </div>
+        </PopupMenu>
+      )}
+    </div>
   );
 };
 

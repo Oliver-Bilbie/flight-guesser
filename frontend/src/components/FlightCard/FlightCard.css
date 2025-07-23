@@ -1,0 +1,38 @@
+.flight-card {
+  width: 80vw;
+  max-width: 600px;
+  margin: 20px auto;
+  border-radius: 1rem;
+  overflow: hidden;
+  background-color: var(--color-background-transparent);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.flight-image {
+  width: 100%;
+  object-fit: contain;
+}
+
+.flight-content {
+  padding: 20px;
+}
+
+.flight-content h2 {
+  margin-top: 0;
+  font-size: 24px;
+}
+
+.flight-content p {
+  margin: 8px 0;
+}
+
+.flight-content .muted {
+  font-style: italic;
+  color: var(--color-text-light);
+}
+
+.flight-content .small-text {
+  font-size: 0.9em;
+  color: #666;
+  margin-top: 12px;
+}

@@ -1,0 +1,42 @@
+.leaderboard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem;
+}
+
+.leaderboard-item-name {
+  text-align: start;
+  margin: 0;
+}
+
+.leaderboard-item-score {
+  margin: 0;
+}
+
+.leaderboard-item-average {
+  margin: 0;
+}
+
+.leaderboard-header,
+.leaderboard-player,
+.leaderboard-current-player {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  align-items: center;
+  padding: 0.5rem;
+  position: relative;
+  width: 90vw;
+  max-width: 300px;
+  margin-left: auto;
+  margin-right: auto;
+  /* height: 1rem; */
+}
+
+.leaderboard-header > * {
+  font-weight: 700;
+}
+
+.leaderboard-current-player > * {
+  font-weight: 700;
+}

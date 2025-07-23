@@ -1,120 +1,86 @@
-import React from "react";
-import {
-  Box,
-  Card,
-  CardHeader,
-  CardBody,
-  CardFooter,
-  CheckBox,
-  Heading,
-  Button,
-  Text,
-} from "grommet";
-import { CircleInformation, Close, Globe, Launch } from "grommet-icons";
-
-import { LobbyMode, SettingsType } from "../../types";
+import { FC } from "react";
+import "./SettingsMenu.css";
+import PopupMenu from "../PopupMenu/PopupMenu";
+import ResetButton from "../ResetButton/ResetButton";
+import ToggleSwitch from "../ToggleSwitch/ToggleSwitch";
+import { useGameStore } from "../../utils/gameStore";
+import { useLobbyStore } from "../../utils/lobbyStore";
+import { useThemeStore } from "../../utils/themeStore";
 
 interface SettingsMenuProps {
-  settingsValues: SettingsType;
-  locked: boolean;
-  setSettingsValues: (values: SettingsType) => void;
-  setShowLobbyMenu: (setting: LobbyMode) => void;
   onClose: () => void;
 }
 
-const SettingsMenu: React.FC<SettingsMenuProps> = ({
-  settingsValues,
-  locked,
-  setSettingsValues,
-  setShowLobbyMenu,
-  onClose,
-}): React.ReactElement => {
-  const settingsItems = [
-    {
-      label: "Guess Origin",
-      key: "useOrigin",
-      value: settingsValues.useOrigin,
-      locked: locked,
-      setValue: (value: boolean): void =>
-        setSettingsValues({ ...settingsValues, useOrigin: value }),
-    },
-    {
-      label: "Guess Destination",
-      key: "useDestination",
-      value: settingsValues.useDestination,
-      locked: locked,
-      setValue: (value: boolean): void =>
-        setSettingsValues({ ...settingsValues, useDestination: value }),
-    },
-    {
-      label: "Data Saver",
-      key: "dataSaver",
-      value: settingsValues.dataSaver,
-      locked: false,
-      setValue: (value: boolean): void =>
-        setSettingsValues({ ...settingsValues, dataSaver: value }),
-    },
-  ];
+const SettingsMenu: FC<SettingsMenuProps> = ({ onClose }) => {
+  const singleRules = useGameStore((state) => state.rules);
+  const singleSetRules = useGameStore((state) => state.setRules);
+
+  const isSingleplayer =
+    useLobbyStore((state) => state.lobbyResponse.status) === "NotInLobby";
+  const multiRules = useLobbyStore((state) => state.rules);
+
+  const rules = isSingleplayer
+    ? singleRules
+    : multiRules !== null
+      ? multiRules
+      : { useOrigin: false, useDestination: false };
+
+  const setRules = isSingleplayer ? singleSetRules : () => null;
+
+  const theme = useThemeStore((state) => state.theme);
+  const toggleTheme = useThemeStore((state) => state.toggleTheme);
 
   return (
-    <Card>
-      <CardHeader
-        pad={{ horizontal: "small", vertical: "xxsmall" }}
-        background="brand"
-      >
-        <Heading level="3" color="text-strong">
-          Settings
-        </Heading>
-        <Button icon={<Close color="text-strong" />} onClick={onClose} />
-      </CardHeader>
-      <CardBody pad="small" background="light-2">
-        {locked && (
-          <Box
-            pad={{ horizontal: "small", vertical: "medium" }}
-            direction="column"
-            width="medium"
-            align="center"
-          >
-            <CircleInformation size="medium" />
-            <Text textAlign="center">
-              Some settings have been disabled because you are currently in a
+    <PopupMenu>
+      <div className="settings-menu">
+        <h1>Settings</h1>
+        <>
+          {!isSingleplayer && (
+            <h4>
+              Some settings have been locked to match the other players in the
               multiplayer lobby
-            </Text>
-          </Box>
-        )}
-        {settingsItems.map((item) => (
-          <Box pad="xsmall" direction="row" key={item.key}>
-            <CheckBox
-              label={item.label}
-              checked={item.value}
-              onChange={(event): void => item.setValue(event.target.checked)}
-              disabled={item.locked}
-              toggle
-              fill
-              reverse
-            />
-          </Box>
-        ))}
-      </CardBody>
-      <CardFooter pad="small" background="light-2">
-        <button
-          className="custom-button"
-          onClick={(): void => setShowLobbyMenu(LobbyMode.create)}
-        >
-          <Launch color="text" />
-          <div className="pad" />
-          <h4>Create Lobby</h4>
-        </button>
-        <button
-          className="custom-button"
-          onClick={(): void => setShowLobbyMenu(LobbyMode.join)}
-        >
-          <Globe color="text" />
-          <div className="pad" />
-          <h4>Join Lobby</h4>
-        </button>
-      </CardFooter>
-    </Card>
+            </h4>
+          )}
+
+          <div className="settings-menu-container">
+            <div className="settings-menu-option">
+              <ToggleSwitch
+                checked={rules.useOrigin}
+                disabled={!isSingleplayer}
+                onChange={(isChecked) =>
+                  setRules({ ...rules, useOrigin: isChecked })
+                }
+              />
+              <h3>Enable origin guesses</h3>
+            </div>
+
+            <div className="settings-menu-option">
+              <ToggleSwitch
+                checked={rules.useDestination}
+                disabled={!isSingleplayer}
+                onChange={(isChecked) =>
+                  setRules({ ...rules, useDestination: isChecked })
+                }
+              />
+              <h3>Enable destination guesses</h3>
+            </div>
+
+            <div className="settings-menu-option">
+              <ToggleSwitch
+                checked={theme === "dark"}
+                onChange={() => toggleTheme()}
+              />
+              <h3>Dark mode</h3>
+            </div>
+
+            <div className="settings-menu-option">
+              <ResetButton />
+            </div>
+          </div>
+        </>
+        <button onClick={() => onClose()}>Done</button>
+      </div>
+    </PopupMenu>
   );
 };
 

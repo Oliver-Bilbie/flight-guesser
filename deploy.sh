@@ -4,59 +4,83 @@ set -e  # Exit immediately if a command exits with a non-zero status
 
 # Check and set STAGE
 if [ -z "$STAGE" ]; then
-  echo "Please set the STAGE environment variable (e.g., export STAGE=dev)"
+  echo "[ERROR] Please set the STAGE environment variable (e.g, export STAGE=dev)"
   exit 1
 fi
+echo "[INFO] Deploying to stage: $STAGE"
 
-echo "Using STAGE: $STAGE"
 
-# Retrieve parameters from SSM Parameter Store
-DEPLOY_BUCKET_NAME=$(aws ssm get-parameter --name "flight-guesser-${STAGE}-host-bucket" --with-decryption --query "Parameter.Value" --output text)
-CF_DISTRIBUTION_ID=$(aws ssm get-parameter --name "flight-guesser-${STAGE}-cdn-id" --with-decryption --query "Parameter.Value" --output text)
+echo "[INFO] Building the backend..."
+pushd ./backend > /dev/null || exit 1
 
-echo "Retrieved DEPLOY_BUCKET_NAME: $DEPLOY_BUCKET_NAME"
-echo "Retrieved CF_DISTRIBUTION_ID: $CF_DISTRIBUTION_ID"
+# Create a fresh build directory
+rm -rf ./build
+mkdir -p ./build ./build/singleplayer_src ./build/multiplayer_src ./build/update_airports_src
 
-# === INSTALL PHASE ===
-echo "Installing pipeline dependencies..."
-make install-python-deps
-make install-node-deps
-make install-serverless
+# Build singleplayer server
+cp -r ./src/* ./build/singleplayer_src
+pushd ./build/singleplayer_src > /dev/null || exit 1
+rm -rf ./multiplayer_server.py ./multiplayer_helpers ./update_airports.py ./__pycache__
+# Spoof the timestamps so that the zip file is deterministic.
+# This prevent terraform from replacing the files unless they change.
+TZ=UTC find . -exec touch --no-dereference -a -m -t 198002010000.00 {} +
+TZ=UTC zip -q --move --recurse-paths --symlinks -X ../singleplayer_server.zip .
+TZ=UTC touch -a -m -t 198002010000.00 ../singleplayer_server.zip
+popd > /dev/null
 
-# === PRE_BUILD PHASE ===
-echo "Preparing versioning..."
-VERSION=$(sed 's/.*"version": "\(.*\)".*/\1/;t;d' ./package.json)
-sed -i "s/VERSION_NUMBER/$VERSION/g" ./frontend/package.json
-echo "Version set to $VERSION"
+# Build multiplayer server
+cp -r ./src/* ./build/multiplayer_src
+pushd ./build/multiplayer_src > /dev/null || exit 1
+rm -rf ./singleplayer_server.py ./update_airports.py ./__pycache__
+# Spoof the timestamps so that the zip file is deterministic.
+# This prevent terraform from replacing the files unless they change.
+TZ=UTC find . -exec touch --no-dereference -a -m -t 198002010000.00 {} +
+TZ=UTC zip -q --move --recurse-paths --symlinks -X ../multiplayer_server.zip .
+TZ=UTC touch -a -m -t 198002010000.00 ../multiplayer_server.zip
+popd > /dev/null
 
-# === BUILD PHASE ===
-echo "Running Terraform deployment..."
-make deploy-terraform STAGE=$STAGE
+# Build update aiports
+cp -r ./src/* ./build/update_airports_src
+pushd ./build/update_airports_src > /dev/null || exit 1
+rm -rf ./singleplayer_server.py ./multiplayer_server.py ./multiplayer_helpers ./__pycache__
+# Spoof the timestamps so that the zip file is deterministic.
+# This prevent terraform from replacing the files unless they change.
+TZ=UTC find . -exec touch --no-dereference -a -m -t 198002010000.00 {} +
+TZ=UTC zip -q --move --recurse-paths --symlinks -X ../update_airports.zip .
+TZ=UTC touch -a -m -t 198002010000.00 ../update_airports.zip
+popd > /dev/null
 
-echo "Deploying backend..."
-make deploy-backend STAGE=$STAGE
+echo "[INFO] Deploying the backend..."
+pushd ../terraform > /dev/null || exit 1
+terraform init -upgrade -reconfigure -backend-config="./environments/${STAGE}/backend.conf"
+terraform validate
+terraform apply -var-file="./environments/${STAGE}/terraform.tfvars"
+CLOUDFRONT_DIST=$(terraform output -raw cloudfront_distribution)
+BUCKET_NAME=$(terraform output -raw bucket_name)
+SINGLEPLAYER_ENDPOINT=$(terraform output -raw singleplayer_endpoint)
+MULTIPLAYER_ENDPOINT=$(terraform output -raw multiplayer_endpoint)
+popd > /dev/null
 
-echo "Deploying frontend..."
-make deploy-frontend STAGE=$STAGE DEPLOY_BUCKET_NAME=$DEPLOY_BUCKET_NAME CF_DISTRIBUTION_ID=$CF_DISTRIBUTION_ID
+echo "[INFO] Backend deployed successfully"
+popd > /dev/null
 
-# === POST_BUILD PHASE ===
-echo "Running post-build steps..."
-# Revert version number change
-git checkout HEAD -- frontend/package.json
 
-BUILD_EXIT_CODE=$?
+echo "[INFO] Building the frontend..."
+pushd ./frontend > /dev/null || exit 1
+cp ../CHANGELOG.md ./src/assets/CHANGELOG.md
+sed -i "s&SINGLEPLAYER_ENDPOINT_PLACEHOLDER&${SINGLEPLAYER_ENDPOINT}&g" ./src/utils/endpoints.ts
+sed -i "s&MULTIPLAYER_ENDPOINT_PLACEHOLDER&${MULTIPLAYER_ENDPOINT}&g" ./src/utils/endpoints.ts
 
-if [ "$STAGE" == "prd" ]; then
-  if [ "$BUILD_EXIT_CODE" -ne 0 ]; then
-    badge_status="failing"
-    badge_colour="red"
-  else
-    badge_status="passing"
-    badge_colour="green"
-  fi
+npm run build
 
-  curl -s "https://img.shields.io/badge/build-$badge_status-$badge_colour.svg" -o "build-status.svg"
-  aws s3 cp "build-status.svg" "s3://flight-guesser-prd/build-status.svg" --cache-control no-cache
-fi
+echo "[INFO] Syncing files to S3..."
+aws s3 sync ./dist "s3://${BUCKET_NAME}"
 
-echo "Build script completed."
+echo "[INFO] Resetting CDN cache..."
+aws cloudfront create-invalidation --distribution-id $CLOUDFRONT_DIST --paths "/*"
+
+echo "[INFO] Frontend deployed successfully"
+popd > /dev/null
+
+
+echo "[INFO] Deployment completed"

@@ -1,0 +1,54 @@
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 300px;
+  overflow: visible;
+  position: relative;
+  animation: loading-spinner-fade-in 1.5s;
+}
+
+.loading-spinner-container {
+  animation: loading-spinner-float 2s ease-in-out infinite;
+  height: 100%;
+  width: 100%;
+}
+
+.loading-spinner-image {
+  animation: loading-spinner-drift 5s ease-in-out infinite;
+  max-width: 100%;
+  max-height: 100%;
+}
+
+@keyframes loading-spinner-float {
+  0% {
+    transform: translateY(3%);
+  }
+  50% {
+    transform: translateY(-3%);
+  }
+  100% {
+    transform: translateY(3%);
+  }
+}
+
+@keyframes loading-spinner-drift {
+  0% {
+    transform: translateX(3%);
+  }
+  50% {
+    transform: translateX(-3%);
+  }
+  100% {
+    transform: translateX(3%);
+  }
+}
+
+@keyframes loading-spinner-fade-in {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 100;
+  }
+}

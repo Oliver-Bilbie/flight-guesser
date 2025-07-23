@@ -1,0 +1,19 @@
+.points-display {
+  height: min(80vh, 200px);
+  width: min(90vw, 400px);
+  margin: 20px auto;
+  align-content: center;
+  border-radius: 1rem;
+  background-color: var(--color-background-transparent);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.points-display h2 {
+  margin: 1rem;
+}
+
+.points-display h4 {
+  color: var(--color-text-light);
+  font-style: italic;
+  margin: 0.4rem;
+}

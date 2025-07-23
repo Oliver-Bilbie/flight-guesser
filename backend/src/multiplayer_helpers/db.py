@@ -1,0 +1,11 @@
+import os
+import boto3
+
+
+DDB_RESOURCE = boto3.resource("dynamodb")
+
+LOBBY_TABLE_NAME = os.getenv("LOBBY_TABLE_NAME")
+LOBBY_TABLE = DDB_RESOURCE.Table(LOBBY_TABLE_NAME)
+
+PLAYER_TABLE_NAME = os.getenv("PLAYER_TABLE_NAME")
+PLAYER_TABLE = DDB_RESOURCE.Table(PLAYER_TABLE_NAME)

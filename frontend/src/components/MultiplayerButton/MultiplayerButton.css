@@ -1,0 +1,27 @@
+.multiplayer-button {
+  padding: 0;
+  border: none;
+  cursor: pointer;
+  background: none;
+  box-shadow: none;
+}
+
+.multiplayer-button:hover {
+  background: none;
+  box-shadow: none;
+}
+
+.multiplayer-button > svg {
+  display: block;
+  color: var(--color-title);
+}
+
+.multiplayer-button:hover > svg {
+  color: var(--color-background);
+  transform: translateY(1px);
+}
+
+.multiplayer-button:active > svg {
+  color: var(--color-background);
+  transform: translateY(1px);
+}

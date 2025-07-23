@@ -1,0 +1,27 @@
+.settings-button {
+  padding: 0;
+  border: none;
+  cursor: pointer;
+  background: none;
+  box-shadow: none;
+}
+
+.settings-button:hover {
+  background: none;
+  box-shadow: none;
+}
+
+.settings-button > svg {
+  display: block;
+  color: var(--color-title);
+}
+
+.settings-button:hover > svg {
+  color: var(--color-background);
+  transform: translateY(1px);
+}
+
+.settings-button:active > svg {
+  color: var(--color-background);
+  transform: translateY(1px);
+}
