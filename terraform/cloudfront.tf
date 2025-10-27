@@ -65,3 +65,7 @@ resource "aws_cloudfront_cache_policy" "cf_cache_policy" {
 output "cloudfront_distribution" {
   value = aws_cloudfront_distribution.cdn.id
 }
+
+output "airports_endpoint" {
+  value = "${var.full_domain}/airports.json"
+}
