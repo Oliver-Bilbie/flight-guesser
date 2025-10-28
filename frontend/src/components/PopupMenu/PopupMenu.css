@@ -19,7 +19,7 @@
 }
 
 .popup-content {
-  overflow: scroll;
+  overflow: hidden;
 }
 
 .popup-title {
