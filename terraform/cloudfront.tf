@@ -1,3 +1,11 @@
+data "aws_cloudfront_origin_request_policy" "cors_request_policy" {
+  name = "Managed-CORS-S3Origin"
+}
+
+data "aws_cloudfront_response_headers_policy" "cors_response_policy" {
+  name = "Managed-CORS-with-preflight-and-SecurityHeadersPolicy"
+}
+
 resource "aws_cloudfront_distribution" "cdn" {
   enabled         = true
   is_ipv6_enabled = true
@@ -15,13 +23,27 @@ resource "aws_cloudfront_distribution" "cdn" {
     }
   }
 
+  ordered_cache_behavior {
+    path_pattern               = "/airports.json"
+    target_origin_id           = "${var.app-name}-cloudfront"
+    allowed_methods            = ["GET", "HEAD"]
+    cached_methods             = ["GET", "HEAD"]
+    compress                   = true
+    viewer_protocol_policy     = "redirect-to-https"
+    cache_policy_id            = aws_cloudfront_cache_policy.airports_cache.id
+    origin_request_policy_id   = data.aws_cloudfront_origin_request_policy.cors_request_policy.id
+    response_headers_policy_id = data.aws_cloudfront_response_headers_policy.cors_response_policy.id
+  }
+
   default_cache_behavior {
-    target_origin_id       = "${var.app-name}-cloudfront"
-    allowed_methods        = ["GET", "HEAD"]
-    cached_methods         = ["GET", "HEAD"]
-    compress               = true
-    viewer_protocol_policy = "redirect-to-https"
-    cache_policy_id        = aws_cloudfront_cache_policy.cf_cache_policy.id
+    target_origin_id           = "${var.app-name}-cloudfront"
+    allowed_methods            = ["GET", "HEAD"]
+    cached_methods             = ["GET", "HEAD"]
+    compress                   = true
+    viewer_protocol_policy     = "redirect-to-https"
+    cache_policy_id            = aws_cloudfront_cache_policy.static_cache.id
+    origin_request_policy_id   = data.aws_cloudfront_origin_request_policy.cors_request_policy.id
+    response_headers_policy_id = data.aws_cloudfront_response_headers_policy.cors_response_policy.id
   }
 
   restrictions {
@@ -40,12 +62,34 @@ resource "aws_cloudfront_distribution" "cdn" {
   }
 }
 
-resource "aws_cloudfront_cache_policy" "cf_cache_policy" {
-  name        = "${var.app-name}-${var.environment}-cf"
-  comment     = "Cache policy for the ${var.app-name} application"
+resource "aws_cloudfront_cache_policy" "airports_cache" {
+  name        = "${var.app-name}-${var.environment}-airports-cache"
+  comment     = "Cache policy for airport data for the ${var.app-name} application"
+  default_ttl = 43200
+  max_ttl     = 86400
+  min_ttl     = 0
+
+  parameters_in_cache_key_and_forwarded_to_origin {
+    enable_accept_encoding_brotli = true
+    enable_accept_encoding_gzip   = true
+    cookies_config {
+      cookie_behavior = "none"
+    }
+    headers_config {
+      header_behavior = "none"
+    }
+    query_strings_config {
+      query_string_behavior = "none"
+    }
+  }
+}
+
+resource "aws_cloudfront_cache_policy" "static_cache" {
+  name        = "${var.app-name}-${var.environment}-static-cache"
+  comment     = "Cache policy for static files for the ${var.app-name} application"
   default_ttl = 86400
   max_ttl     = 604800
-  min_ttl     = 21600
+  min_ttl     = 86400
 
   parameters_in_cache_key_and_forwarded_to_origin {
     enable_accept_encoding_brotli = true
@@ -64,4 +108,8 @@ resource "aws_cloudfront_cache_policy" "cf_cache_policy" {
 
 output "cloudfront_distribution" {
   value = aws_cloudfront_distribution.cdn.id
+}
+
+output "airports_endpoint" {
+  value = "https://${var.full_domain}/airports.json"
 }

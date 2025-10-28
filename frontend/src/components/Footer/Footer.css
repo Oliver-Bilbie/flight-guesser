@@ -10,7 +10,7 @@
   height: min(70vh, 800px);
   background: var(--color-background);
   border-radius: 1rem;
-  overflow: scroll;
+  overflow-y: scroll;
   padding: 2rem;
 }
 

@@ -57,6 +57,7 @@ terraform validate
 terraform apply -var-file="./environments/${STAGE}/terraform.tfvars"
 CLOUDFRONT_DIST=$(terraform output -raw cloudfront_distribution)
 BUCKET_NAME=$(terraform output -raw bucket_name)
+AIRPORTS_ENDPOINT=$(terraform output -raw airports_endpoint)
 SINGLEPLAYER_ENDPOINT=$(terraform output -raw singleplayer_endpoint)
 MULTIPLAYER_ENDPOINT=$(terraform output -raw multiplayer_endpoint)
 popd > /dev/null
@@ -68,6 +69,7 @@ popd > /dev/null
 echo "[INFO] Building the frontend..."
 pushd ./frontend > /dev/null || exit 1
 cp ../CHANGELOG.md ./src/assets/CHANGELOG.md
+sed -i "s&AIRPORTS_ENDPOINT_PLACEHOLDER&${AIRPORTS_ENDPOINT}&g" ./src/utils/endpoints.ts
 sed -i "s&SINGLEPLAYER_ENDPOINT_PLACEHOLDER&${SINGLEPLAYER_ENDPOINT}&g" ./src/utils/endpoints.ts
 sed -i "s&MULTIPLAYER_ENDPOINT_PLACEHOLDER&${MULTIPLAYER_ENDPOINT}&g" ./src/utils/endpoints.ts
 

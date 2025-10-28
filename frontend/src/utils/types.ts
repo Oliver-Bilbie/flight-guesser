@@ -20,15 +20,6 @@ export type Airport = {
   position: Position | null;
 };
 
-export type AirportApiResponse = {
-  name: string;
-  country: string;
-  iata: string;
-  icao: string;
-  lon: number;
-  lat: number;
-};
-
 export type Points = {
   origin: number;
   destination: number;
