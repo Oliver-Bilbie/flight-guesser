@@ -2,7 +2,7 @@ import { FC, ReactElement, ReactNode, useEffect, useState } from "react";
 import AirportContext from "./AirportContext";
 import LoadingSpinner from "../LoadingSpinner/LoadingSpinner";
 import { AIRPORTS_ENDPOINT } from "../../utils/endpoints";
-import { Airport, AirportApiResponse } from "../../utils/types";
+import { Airport } from "../../utils/types";
 import "./AirportProvider.css";
 
 interface AirportProviderProps {
@@ -25,23 +25,7 @@ const AirportProvider: FC<AirportProviderProps> = ({
         return response.json();
       })
       .then((response) => {
-        const airportData: Airport[] = response.map(
-          (airport: AirportApiResponse) => {
-            return {
-              name: airport.name,
-              iata: airport.iata,
-              position: {
-                lat: airport.lat,
-                lon: airport.lon,
-              },
-              icao: airport.icao,
-              country: airport.country,
-              city: null,
-            };
-          },
-        );
-
-        setAirports(airportData);
+        setAirports(response);
         setLoading(false);
       })
       .catch((error) => {
