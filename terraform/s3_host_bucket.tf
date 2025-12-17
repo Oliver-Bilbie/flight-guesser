@@ -33,7 +33,7 @@ resource "aws_s3_bucket_cors_configuration" "host-bucket-cors" {
   cors_rule {
     allowed_headers = ["*"]
     allowed_methods = ["GET"]
-    allowed_origins = ["https://${var.full_domain}"]
+    allowed_origins = ["*"]
   }
 }
 

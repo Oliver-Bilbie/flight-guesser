@@ -42,8 +42,6 @@ resource "aws_cloudfront_distribution" "cdn" {
     compress                   = true
     viewer_protocol_policy     = "redirect-to-https"
     cache_policy_id            = aws_cloudfront_cache_policy.static_cache.id
-    origin_request_policy_id   = data.aws_cloudfront_origin_request_policy.cors_request_policy.id
-    response_headers_policy_id = data.aws_cloudfront_response_headers_policy.cors_response_policy.id
   }
 
   restrictions {
