@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.0.1
+
+- Changed the multiplayer menu icon
+- Bumped dependency versions
+
 ## 2.0.0
 
 ### Frontend
