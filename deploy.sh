@@ -75,6 +75,10 @@ sed -i "s&MULTIPLAYER_ENDPOINT_PLACEHOLDER&${MULTIPLAYER_ENDPOINT}&g" ./src/util
 
 npm run build
 
+sed -i "s&${AIRPORTS_ENDPOINT}&AIRPORTS_ENDPOINT_PLACEHOLDER&g" ./src/utils/endpoints.ts
+sed -i "s&${SINGLEPLAYER_ENDPOINT}&SINGLEPLAYER_ENDPOINT_PLACEHOLDER&g" ./src/utils/endpoints.ts
+sed -i "s&${MULTIPLAYER_ENDPOINT}&MULTIPLAYER_ENDPOINT_PLACEHOLDER&g" ./src/utils/endpoints.ts
+
 echo "[INFO] Syncing files to S3..."
 aws s3 sync ./dist "s3://${BUCKET_NAME}"
 
