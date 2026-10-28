@@ -213,9 +213,9 @@ def handle_guess(connection_id, input_body):
         # Since we just updated the guessing player's data, we will instead use this
         # session's data to avoid any race-conditions.
         lobby_players = lobby.get_players()
-        for lobby_player in lobby_players:
+        for i, lobby_player in enumerate(lobby_players):
             if lobby_player.name == player.name:
-                lobby_player = player
+                lobby_players[i] = player
                 break
 
         lobby_data = {
