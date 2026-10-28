@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.0.2
+
+- Fixed a bug which caused a delay in multiplayer personal score updates.
+- Bumped dependency versions
+
 ## 2.0.1
 
 - Changed the multiplayer menu icon
